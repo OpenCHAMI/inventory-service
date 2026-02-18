@@ -22,7 +22,7 @@ COPY . .
 
 RUN ls && \
     mkdir -p bin && \
-    go build -o bin/smd2 ./cmd/server
+    go build -o bin/smd2-server ./cmd/server
 
 # RUN set -ex && \
 #     mkdir -p bin && \
@@ -39,8 +39,8 @@ RUN addgroup -g 1000 smd && \
 
 WORKDIR /home/smd
 
-COPY --from=builder /workdir/bin/smd2 /usr/local/bin/
+COPY --from=builder /workdir/bin/smd2-server /usr/local/bin/
 
 USER smd
 
-ENTRYPOINT ["/usr/local/bin/smd2"]
+ENTRYPOINT ["/usr/local/bin/smd2-server"]

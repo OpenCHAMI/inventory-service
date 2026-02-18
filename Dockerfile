@@ -16,8 +16,8 @@ RUN useradd -m smd
 
 WORKDIR /home/smd
 
-COPY bin/smd2 /usr/local/bin/smd2
+COPY bin/smd2-server /usr/local/bin/smd2-server
 
 USER smd
 
-ENTRYPOINT ["/usr/local/bin/smd2"]
+ENTRYPOINT ["/usr/local/bin/smd2-server"]
