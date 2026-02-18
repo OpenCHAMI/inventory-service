@@ -49,4 +49,16 @@ func RegisterSmdV2Routes(r chi.Router) {
 			r.Delete("/", DeleteComponentEndpointSmdV2)
 		})
 	})
+	// EthernetInterface routes
+	r.Route("/hsm/v2/Inventory/EthernetInterfaces", func(r chi.Router) {
+		r.Get("/", GetEthernetInterfacesSmdV2)
+		r.Post("/", CreateEthernetInterfaceSmdV2)
+		// todo (optional)
+		// DELETE /Inventory/EthernetInterfaces
+		r.Route("/{id}", func(r chi.Router) {
+			r.Get("/", GetEthernetInterfaceSmdV2)
+			r.Put("/", UpdateEthernetInterfaceSmdV2)
+			r.Delete("/", DeleteEthernetInterfaceSmdV2)
+		})
+	})
 }
