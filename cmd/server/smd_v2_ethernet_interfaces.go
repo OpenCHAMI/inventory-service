@@ -26,8 +26,8 @@ func GetEthernetInterfacesSmdV2(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load ethernetinterfaces: %w", err))
 		return
 	}
-	ethernetInterfaceSpecs := make([]*v1.EthernetInterfaceSpec, len(ethernetInterfaces))
 
+	ethernetInterfaceSpecs := []*v1.EthernetInterfaceSpec{}
 	for _, e := range ethernetInterfaces {
 		ethernetInterfaceSpecs = append(ethernetInterfaceSpecs, &e.Spec)
 	}
@@ -66,7 +66,7 @@ func CreateEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
 	}
 	// Initialize metadata from request
 	ethernetInterface.Metadata.UID = uid
-	ethernetInterface.Metadata.Name = req.Id
+	ethernetInterface.Metadata.Name = req.ID
 	now := time.Now()
 	ethernetInterface.Metadata.CreatedAt = now
 	ethernetInterface.Metadata.UpdatedAt = now
@@ -115,7 +115,7 @@ func GetEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
 	}
 	var ethernetInterface *v1.EthernetInterfaceSpec
 	for _, e := range ethernetInterfaces {
-		if e.Spec.Id == id {
+		if e.Spec.ID == id {
 			ethernetInterface = &e.Spec
 			break
 		}
@@ -144,7 +144,7 @@ func UpdateEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
 	}
 	var ethernetInterface *v1.EthernetInterface
 	for _, e := range ethernetInterfaces {
-		if e.Spec.Id == id {
+		if e.Spec.ID == id {
 			ethernetInterface = e
 			break
 		}
@@ -161,7 +161,7 @@ func UpdateEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ethernetInterface.Metadata.Name = req.Id
+	ethernetInterface.Metadata.Name = req.ID
 	ethernetInterface.Spec = req
 
 	if ethernetInterface.Metadata.Labels == nil {
@@ -204,7 +204,7 @@ func DeleteEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
 	}
 	var ethernetInterface *v1.EthernetInterface
 	for _, e := range ethernetInterfaces {
-		if e.Spec.Id == id {
+		if e.Spec.ID == id {
 			ethernetInterface = e
 			break
 		}

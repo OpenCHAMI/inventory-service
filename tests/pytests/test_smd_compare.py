@@ -76,6 +76,7 @@ def discover_hardware():
 
     replicate_components()
     replicate_component_endpoints()
+    replicate_ethernet_interfaces()
 
     yield
 
@@ -104,6 +105,19 @@ def replicate_component_endpoints():
     response = requests.post(f"{smd2_base_url}/v2/Inventory/ComponentEndpoints", json=smd_components)
     if not response.ok:
         print_response("POST", response)
+
+
+def replicate_ethernet_interfaces():
+    response = requests.get(f"{smd_base_url}/v2/Inventory/EthernetInterfaces")
+    if not response.ok:
+        print_response("GET", response)
+    ethernet_interfaces = json.loads(response.text)
+
+    print("POST EthernetInterfaces to SMD2")
+    for eth in ethernet_interfaces:
+        response = requests.post(f"{smd2_base_url}/v2/Inventory/EthernetInterfaces", json=eth)
+        if not response.ok:
+            print_response("POST", response)
 
 
 def test_compare_components(discover_hardware):
@@ -145,20 +159,42 @@ def test_compare_components(discover_hardware):
     if diff:
         pytest.fail(f"The ComponentEndpoint list from SMD does not match the list from SMD2. diff: {diff}")
 
+    # /Inventory/EthernetInterfaces
+    response = requests.get(f"{smd_base_url}/v2/Inventory/EthernetInterfaces")
+    if response.status_code != 200:
+        print_response("GET", response)
+        pytest.fail(f" get {response.url}, code: {response.status_code}")
+
+    smd_ethernet_interfaces = json.loads(response.text)
+
+    response = requests.get(f"{smd2_base_url}/v2/Inventory/EthernetInterfaces")
+    if not response.ok:
+        print_response("GET", response)
+        pytest.fail(f"get {response.url}, code: {response.status_code}")
+
+    smd2_ethernet_interfaces = json.loads(response.text)
+
+    # todo
+    # diff = compare(smd_ethernet_interfaces, smd2_ethernet_interfaces, exclude_paths=["root['LastUpdate']"])
+    # if diff:
+        # pytest.fail(f"The EthernetInterfaces list from SMD does not match the list from SMD2. diff: {diff}")
+
 
 def get_discovered_nodes(redfishEndpoints):
     discovered_nodes = [ endpoint.get("ID")
                         for endpoint in redfishEndpoints.get("RedfishEndpoints", [])
                         if endpoint.get("DiscoveryInfo", {}).get("LastDiscoveryStatus") == "DiscoveryOK"]
 
-def compare(expected, actual):
+def compare(expected, actual, exclude_paths=None):
+    if exclude_paths is None:
+        exclude_paths = []
 
     print("---")
     print(json.dumps(expected, indent=4))
     print("---")
     print(json.dumps(actual, indent=4))
 
-    diff = DeepDiff(expected, actual, group_by="ID")
+    diff = DeepDiff(expected, actual, group_by="ID", exclude_paths=exclude_paths)
     print("---")
     print(diff)
     print("---")
