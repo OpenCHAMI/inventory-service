@@ -54,17 +54,10 @@ func GetComponentSmdV2(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	components, err := storage.LoadAllComponents(r.Context())
+	component, err := storage.LoadComponentByID(r.Context(), id)
 	if err != nil {
-		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load components: %w", err))
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to component %s: %w", id, err))
 		return
-	}
-	var component *v1.ComponentSpec
-	for _, c := range components {
-		if c.Spec.ID == id {
-			component = &c.Spec
-			break
-		}
 	}
 
 	if component == nil {
@@ -169,18 +162,10 @@ func UpdateComponentSmdV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// todo make function to get by id
-	components, err := storage.LoadAllComponents(r.Context())
+	component, err := storage.LoadComponentByID(r.Context(), id)
 	if err != nil {
-		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load components: %w", err))
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to component %s: %w", id, err))
 		return
-	}
-	var component *v1.Component
-	for _, c := range components {
-		if c.Spec.ID == id {
-			component = c
-			break
-		}
 	}
 
 	if component == nil {
@@ -232,17 +217,10 @@ func DeleteComponentSmdV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	components, err := storage.LoadAllComponents(r.Context())
+	component, err := storage.LoadComponentByID(r.Context(), id)
 	if err != nil {
-		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load components: %w", err))
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to component %s: %w", id, err))
 		return
-	}
-	var component *v1.Component
-	for _, c := range components {
-		if c.Spec.ID == id {
-			component = c
-			break
-		}
 	}
 
 	if component != nil {
