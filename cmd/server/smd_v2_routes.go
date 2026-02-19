@@ -49,6 +49,18 @@ func RegisterSmdV2Routes(r chi.Router) {
 			r.Delete("/", DeleteComponentEndpointSmdV2)
 		})
 	})
+	// RedfishEndpoint routes
+	r.Route("/hsm/v2/Inventory/RedfishEndpoints", func(r chi.Router) {
+		r.Get("/", GetRedfishEndpointsSmdV2)
+		r.Post("/", CreateRedfishEndpointSmdV2)
+		// todo (optional)
+		// DELETE /Inventory/RedfishEndpoints
+		r.Route("/{id}", func(r chi.Router) {
+			r.Get("/", GetRedfishEndpointSmdV2)
+			r.Put("/", UpdateRedfishEndpointV2)
+			r.Delete("/", DeleteRedfishEndpointV2)
+		})
+	})
 	// EthernetInterface routes
 	r.Route("/hsm/v2/Inventory/EthernetInterfaces", func(r chi.Router) {
 		r.Get("/", GetEthernetInterfacesSmdV2)

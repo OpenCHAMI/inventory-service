@@ -18,3 +18,7 @@ type ComponentEndpointArray struct {
 type EthernetInterfaceArray struct {
 	EthernetInterfaces []*v1.EthernetInterfaceSpec `json:"EthernetInterfaces"`
 }
+
+type RedfishEndpointArray struct {
+	RedfishEndpoints []*v1.RedfishEndpointSpec `json:"RedfishEndpoints"`
+}
