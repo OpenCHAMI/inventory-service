@@ -8,101 +8,193 @@ import (
 	"context"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqljson"
 	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
+	"github.com/OpenCHAMI/smd2/internal/storage/ent"
+	"github.com/OpenCHAMI/smd2/internal/storage/ent/predicate"
+	entresource "github.com/OpenCHAMI/smd2/internal/storage/ent/resource"
 )
 
+// LoadComponentByID loads a single Component resource by its Spec.ID from Ent storage
 func LoadComponentByID(ctx context.Context, id string) (*v1.Component, error) {
-	// todo Change to not have to read all components
-	components, err := LoadAllComponents(ctx)
+	if entClient == nil {
+		return nil, fmt.Errorf("ent client not initialized")
+	}
+
+	// Query by spec.ID and kind using a JSON predicate
+	entResource, err := entClient.Resource.Query().
+		Where(
+			entresource.KindEQ("Component"),
+			predicate.Resource(func(s *sql.Selector) {
+				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("ID")))
+			}),
+		).
+		WithLabels().
+		WithAnnotations().
+		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load components: %w", err)
-	}
-	var component *v1.Component
-	for _, c := range components {
-		if c.Spec.ID == id {
-			component = c
-			break
+		if ent.IsNotFound(err) {
+			return nil, ErrNotFound
 		}
+		return nil, fmt.Errorf("failed to load Component with ID %s: %w", id, err)
 	}
-	return component, nil
+
+	// Convert to Fabrica resource
+	fabricaResource, err := FromEntResource(ctx, entResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return fabricaResource.(*v1.Component), nil
 }
 
 func LoadComponentEndpointByID(ctx context.Context, id string) (*v1.ComponentEndpoint, error) {
-	// todo Change to not have to read all component endpoints
-	componentEndpoints, err := LoadAllComponentEndpoints(ctx)
+	if entClient == nil {
+		return nil, fmt.Errorf("ent client not initialized")
+	}
+
+	entResource, err := entClient.Resource.Query().
+		Where(
+			entresource.KindEQ("ComponentEndpoint"),
+			predicate.Resource(func(s *sql.Selector) {
+				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("ID")))
+			}),
+		).
+		WithLabels().
+		WithAnnotations().
+		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load component endpoints: %w", err)
-	}
-	var componentEndpoint *v1.ComponentEndpoint
-	for _, c := range componentEndpoints {
-		if c.Spec.ID == id {
-			componentEndpoint = c
-			break
+		if ent.IsNotFound(err) {
+			return nil, ErrNotFound
 		}
+		return nil, fmt.Errorf("failed to load ComponentEndpoint with ID %s: %w", id, err)
 	}
-	return componentEndpoint, nil
+
+	fabricaResource, err := FromEntResource(ctx, entResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return fabricaResource.(*v1.ComponentEndpoint), nil
 }
 
 func LoadRedfishEndpointByID(ctx context.Context, id string) (*v1.RedfishEndpoint, error) {
-	// todo Change to not have to read all redfish endpoints
-	redfishEndpoints, err := LoadAllRedfishEndpoints(ctx)
+	if entClient == nil {
+		return nil, fmt.Errorf("ent client not initialized")
+	}
+
+	entResource, err := entClient.Resource.Query().
+		Where(
+			entresource.KindEQ("RedfishEndpoint"),
+			predicate.Resource(func(s *sql.Selector) {
+				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("ID")))
+			}),
+		).
+		WithLabels().
+		WithAnnotations().
+		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load redfish endpoints: %w", err)
-	}
-	var redfishEndpoint *v1.RedfishEndpoint
-	for _, re := range redfishEndpoints {
-		if re.Spec.ID == id {
-			redfishEndpoint = re
-			break
+		if ent.IsNotFound(err) {
+			return nil, ErrNotFound
 		}
+		return nil, fmt.Errorf("failed to load RedfishEndpoint with ID %s: %w", id, err)
 	}
-	return redfishEndpoint, nil
+
+	fabricaResource, err := FromEntResource(ctx, entResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return fabricaResource.(*v1.RedfishEndpoint), nil
 }
 
 func LoadEthernetInterfaceByID(ctx context.Context, id string) (*v1.EthernetInterface, error) {
-	// todo Change to not have to read all ethernet interfaces
-	ethernetInterfaces, err := LoadAllEthernetInterfaces(ctx)
+	if entClient == nil {
+		return nil, fmt.Errorf("ent client not initialized")
+	}
+
+	entResource, err := entClient.Resource.Query().
+		Where(
+			entresource.KindEQ("EthernetInterface"),
+			predicate.Resource(func(s *sql.Selector) {
+				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("ID")))
+			}),
+		).
+		WithLabels().
+		WithAnnotations().
+		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load ethernet interfaces: %w", err)
-	}
-	var ethernetInterface *v1.EthernetInterface
-	for _, e := range ethernetInterfaces {
-		if e.Spec.ID == id {
-			ethernetInterface = e
-			break
+		if ent.IsNotFound(err) {
+			return nil, ErrNotFound
 		}
+		return nil, fmt.Errorf("failed to load EthernetInterface with ID %s: %w", id, err)
 	}
-	return ethernetInterface, nil
+
+	fabricaResource, err := FromEntResource(ctx, entResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return fabricaResource.(*v1.EthernetInterface), nil
 }
 
 func LoadServiceEndpointByID(ctx context.Context, id string) (*v1.ServiceEndpoint, error) {
-	// todo Change to not have to read all service endpoints
-	serviceEndpoints, err := LoadAllServiceEndpoints(ctx)
+	if entClient == nil {
+		return nil, fmt.Errorf("ent client not initialized")
+	}
+
+	entResource, err := entClient.Resource.Query().
+		Where(
+			entresource.KindEQ("ServiceEndpoint"),
+			predicate.Resource(func(s *sql.Selector) {
+				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("RedfishEndpointID")))
+			}),
+		).
+		WithLabels().
+		WithAnnotations().
+		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load service endpoints: %w", err)
-	}
-	var serviceEndpoint *v1.ServiceEndpoint
-	for _, s := range serviceEndpoints {
-		if s.Spec.RfEndpointID == id {
-			serviceEndpoint = s
-			break
+		if ent.IsNotFound(err) {
+			return nil, ErrNotFound
 		}
+		return nil, fmt.Errorf("failed to load ServiceEndpoint with ID %s: %w", id, err)
 	}
-	return serviceEndpoint, nil
+
+	fabricaResource, err := FromEntResource(ctx, entResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return fabricaResource.(*v1.ServiceEndpoint), nil
 }
 
 func LoadGroupByLabel(ctx context.Context, label string) (*v1.Group, error) {
-	// todo Change to not have to read all groups
-	groups, err := LoadAllGroups(ctx)
+	if entClient == nil {
+		return nil, fmt.Errorf("ent client not initialized")
+	}
+
+	entResource, err := entClient.Resource.Query().
+		Where(
+			entresource.KindEQ("Group"),
+			predicate.Resource(func(s *sql.Selector) {
+				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), label, sqljson.Path("label")))
+			}),
+		).
+		WithLabels().
+		WithAnnotations().
+		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load groups: %w", err)
-	}
-	var group *v1.Group
-	for _, g := range groups {
-		if g.Spec.Label == label {
-			group = g
-			break
+		if ent.IsNotFound(err) {
+			return nil, ErrNotFound
 		}
+		return nil, fmt.Errorf("failed to load Group with label %s: %w", label, err)
 	}
-	return group, nil
+
+	fabricaResource, err := FromEntResource(ctx, entResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return fabricaResource.(*v1.Group), nil
 }
