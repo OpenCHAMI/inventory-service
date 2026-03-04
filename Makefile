@@ -37,6 +37,7 @@ clean:
 	@echo "Cleaning build artifacts..."
 	rm -rf $(BINARY_DIR)
 	rm -rf data
+	rm -rf data-resttests
 	rm -f coverage.out coverage.html
 
 # Build container image
@@ -52,6 +53,12 @@ image-alpine:
 	@echo "Building container alpine image..."
 	$(CONTAINER_CMD) build -f Dockerfile-alpine -t $(BINARY_NAME):latest .
 
+
+unittest:
+	go test -cover -v ./apis/... ./cmd/... ./internal/... ./pkg/...
+
+resttest:
+	go test -cover -v ./resttests/...
 
 # Build test container image
 .PHONY: test-image

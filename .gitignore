@@ -22,6 +22,7 @@ go.work
 
 # Data directories
 data/
+data-resttests/
 *.db
 
 # Config files (may contain secrets)
