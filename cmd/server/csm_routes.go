@@ -5,17 +5,17 @@ package main
 
 import "github.com/go-chi/chi/v5"
 
-func RegisterSmdV2Routes(r chi.Router) {
+func RegisterCsmRoutes(r chi.Router) {
 
 	// Component routes
 	r.Route("/hsm/v2/State/Components", func(r chi.Router) {
-		r.Get("/", GetComponentsSmdV2)
-		r.Post("/", CreateComponentSmdV2)
-		// r.Delete("/", DeleteAllComponentSmdV2) // todo (smd has it but maybe not needed)
+		r.Get("/", GetComponentsCsm)
+		r.Post("/", CreateComponentCsm)
+		// r.Delete("/", DeleteAllComponentCsm) // todo (smd has it but maybe not needed)
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", GetComponentSmdV2)
-			r.Put("/", UpdateComponentSmdV2)
-			r.Delete("/", DeleteComponentSmdV2)
+			r.Get("/", GetComponentCsm)
+			r.Put("/", UpdateComponentCsm)
+			r.Delete("/", DeleteComponentCsm)
 		})
 		// possible todo
 		// Get /State/Components/ByNID/{nid}
@@ -38,63 +38,63 @@ func RegisterSmdV2Routes(r chi.Router) {
 	})
 	// ComponentEndpoint routes
 	r.Route("/hsm/v2/Inventory/ComponentEndpoints", func(r chi.Router) {
-		r.Get("/", GetComponentEndpointsSmdV2)
-		r.Post("/", CreateComponentEndpointSmdV2)
+		r.Get("/", GetComponentEndpointsCsm)
+		r.Post("/", CreateComponentEndpointCsm)
 		// todo (optional)
 		// DELETE /Inventory/ComponentEndpoints
-		// r.Delete("/", DeleteAllComponentSmdV2) // todo (smd has it but it is probably not needed)
+		// r.Delete("/", DeleteAllComponentCsm) // todo (smd has it but it is probably not needed)
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", GetComponentEndpointSmdV2)
-			r.Put("/", UpdateComponentEndpointSmdV2)
-			r.Delete("/", DeleteComponentEndpointSmdV2)
+			r.Get("/", GetComponentEndpointCsm)
+			r.Put("/", UpdateComponentEndpointCsm)
+			r.Delete("/", DeleteComponentEndpointCsm)
 		})
 	})
 	// ServiceEndpoint routes
 	r.Route("/hsm/v2/Inventory/ServiceEndpoints", func(r chi.Router) {
-		r.Get("/", GetServiceEndpointsSmdV2)
-		r.Post("/", CreateServiceEndpointSmdV2)
+		r.Get("/", GetServiceEndpointsCsm)
+		r.Post("/", CreateServiceEndpointCsm)
 		// todo (optional)
 		// DELETE /Inventory/ServiceEndpoints
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", GetServiceEndpointSmdV2)
-			r.Put("/", UpdateServiceEndpointSmdV2)
-			r.Delete("/", DeleteServiceEndpointSmdV2)
+			r.Get("/", GetServiceEndpointCsm)
+			r.Put("/", UpdateServiceEndpointCsm)
+			r.Delete("/", DeleteServiceEndpointCsm)
 			// GET /ServiceEndpoints/{id}/RedfishEndpoints/{redfish_endpoint_id}
 			// DELETE /ServiceEndpoints/{id}/RedfishEndpoints/{redfish_endpoint_id}
 		})
 	})
 	// RedfishEndpoint routes
 	r.Route("/hsm/v2/Inventory/RedfishEndpoints", func(r chi.Router) {
-		r.Get("/", GetRedfishEndpointsSmdV2)
-		r.Post("/", CreateRedfishEndpointSmdV2)
+		r.Get("/", GetRedfishEndpointsCsm)
+		r.Post("/", CreateRedfishEndpointCsm)
 		// todo (optional)
 		// DELETE /Inventory/RedfishEndpoints
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", GetRedfishEndpointSmdV2)
+			r.Get("/", GetRedfishEndpointCsm)
 			r.Put("/", UpdateRedfishEndpointV2)
 			r.Delete("/", DeleteRedfishEndpointV2)
 		})
 	})
 	// EthernetInterface routes
 	r.Route("/hsm/v2/Inventory/EthernetInterfaces", func(r chi.Router) {
-		r.Get("/", GetEthernetInterfacesSmdV2)
-		r.Post("/", CreateEthernetInterfaceSmdV2)
+		r.Get("/", GetEthernetInterfacesCsm)
+		r.Post("/", CreateEthernetInterfaceCsm)
 		// todo (optional)
 		// DELETE /Inventory/EthernetInterfaces
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", GetEthernetInterfaceSmdV2)
-			r.Put("/", UpdateEthernetInterfaceSmdV2)
-			r.Delete("/", DeleteEthernetInterfaceSmdV2)
+			r.Get("/", GetEthernetInterfaceCsm)
+			r.Put("/", UpdateEthernetInterfaceCsm)
+			r.Delete("/", DeleteEthernetInterfaceCsm)
 		})
 	})
 	// Group routes
 	r.Route("/hsm/v2/groups", func(r chi.Router) {
-		r.Get("/", GetGroupsSmdV2)
-		r.Post("/", CreateGroupSmdV2)
+		r.Get("/", GetGroupsCsm)
+		r.Post("/", CreateGroupCsm)
 		r.Route("/{group_label}", func(r chi.Router) {
-			r.Get("/", GetGroupSmdV2)
-			r.Put("/", UpdateGroupSmdV2)
-			r.Delete("/", DeleteGroupSmdV2)
+			r.Get("/", GetGroupCsm)
+			r.Put("/", UpdateGroupCsm)
+			r.Delete("/", DeleteGroupCsm)
 			// GET /groups/{group_label}/members
 			// POST /groups/{group_label}/members
 			// PUT /groups/{group_label}/members

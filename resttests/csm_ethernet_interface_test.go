@@ -91,8 +91,8 @@ func newCsmEthernetInterface(id, mac, componentID string) csmEthernetInterfaceSp
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// TestCreateEthernetInterfaceSmdV2 verifies POST /hsm/v2/Inventory/EthernetInterfaces returns 201.
-func TestCreateEthernetInterfaceSmdV2(t *testing.T) {
+// TestCreateEthernetInterfaceCsm verifies POST /hsm/v2/Inventory/EthernetInterfaces returns 201.
+func TestCreateEthernetInterfaceCsm(t *testing.T) {
 	id := "b0:00:00:00:00:01"
 	csmEICreate(t, newCsmEthernetInterface(id, id, "x3000c0s0b0n0"))
 	defer csmEIDelete(t, id)
@@ -106,9 +106,9 @@ func TestCreateEthernetInterfaceSmdV2(t *testing.T) {
 	}
 }
 
-// TestGetEthernetInterfacesSmdV2 verifies GET /hsm/v2/Inventory/EthernetInterfaces
+// TestGetEthernetInterfacesCsm verifies GET /hsm/v2/Inventory/EthernetInterfaces
 // returns HTTP 200 and a plain array containing the created interface.
-func TestGetEthernetInterfacesSmdV2(t *testing.T) {
+func TestGetEthernetInterfacesCsm(t *testing.T) {
 	id := "b0:00:00:00:00:02"
 	csmEICreate(t, newCsmEthernetInterface(id, id, "x3000c0s0b0n0"))
 	defer csmEIDelete(t, id)
@@ -131,9 +131,9 @@ func TestGetEthernetInterfacesSmdV2(t *testing.T) {
 	}
 }
 
-// TestGetEthernetInterfaceSmdV2 verifies GET /hsm/v2/Inventory/EthernetInterfaces/{id}
+// TestGetEthernetInterfaceCsm verifies GET /hsm/v2/Inventory/EthernetInterfaces/{id}
 // returns 200 and the correct spec.
-func TestGetEthernetInterfaceSmdV2(t *testing.T) {
+func TestGetEthernetInterfaceCsm(t *testing.T) {
 	id := "b0:00:00:00:00:03"
 	csmEICreate(t, newCsmEthernetInterface(id, id, "x3000c0s0b0n1"))
 	defer csmEIDelete(t, id)
@@ -150,9 +150,9 @@ func TestGetEthernetInterfaceSmdV2(t *testing.T) {
 	}
 }
 
-// TestUpdateEthernetInterfaceSmdV2 verifies PUT /hsm/v2/Inventory/EthernetInterfaces/{id}
+// TestUpdateEthernetInterfaceCsm verifies PUT /hsm/v2/Inventory/EthernetInterfaces/{id}
 // updates the spec and returns 200.
-func TestUpdateEthernetInterfaceSmdV2(t *testing.T) {
+func TestUpdateEthernetInterfaceCsm(t *testing.T) {
 	id := "b0:00:00:00:00:04"
 	csmEICreate(t, newCsmEthernetInterface(id, id, "x3000c0s0b0n0"))
 	defer csmEIDelete(t, id)
@@ -177,9 +177,9 @@ func TestUpdateEthernetInterfaceSmdV2(t *testing.T) {
 	}
 }
 
-// TestDeleteEthernetInterfaceSmdV2 verifies DELETE /hsm/v2/Inventory/EthernetInterfaces/{id}
+// TestDeleteEthernetInterfaceCsm verifies DELETE /hsm/v2/Inventory/EthernetInterfaces/{id}
 // returns 200 and that a subsequent GET does not return 200.
-func TestDeleteEthernetInterfaceSmdV2(t *testing.T) {
+func TestDeleteEthernetInterfaceCsm(t *testing.T) {
 	id := "b0:00:00:00:00:05"
 	csmEICreate(t, newCsmEthernetInterface(id, id, "x3000c0s0b0n0"))
 

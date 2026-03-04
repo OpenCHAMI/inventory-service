@@ -19,8 +19,8 @@ import (
 	"github.com/openchami/fabrica/pkg/versioning"
 )
 
-// GetServiceEndpointsSmdV2 returns all ServiceEndpoint resources
-func GetServiceEndpointsSmdV2(w http.ResponseWriter, r *http.Request) {
+// GetServiceEndpointsCsm returns all ServiceEndpoint resources
+func GetServiceEndpointsCsm(w http.ResponseWriter, r *http.Request) {
 	serviceEndpoints, err := storage.LoadAllServiceEndpoints(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load serviceendpoints: %w", err))
@@ -35,8 +35,8 @@ func GetServiceEndpointsSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, serviceEndpointArray)
 }
 
-// GetServiceEndpointSmdV2 returns a specific ServiceEndpoint resource by RedfishEndpointID
-func GetServiceEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+// GetServiceEndpointCsm returns a specific ServiceEndpoint resource by RedfishEndpointID
+func GetServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint RedfishEndpointID is required"))
@@ -56,8 +56,8 @@ func GetServiceEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, &serviceEndpoint.Spec)
 }
 
-// CreateServiceEndpointSmdV2 creates one or more new ServiceEndpoint resources
-func CreateServiceEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+// CreateServiceEndpointCsm creates one or more new ServiceEndpoint resources
+func CreateServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	var req ServiceEndpointArray
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
@@ -116,9 +116,9 @@ func CreateServiceEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusCreated, req)
 }
 
-// UpdateServiceEndpointSmdV2 updates the spec of an existing ServiceEndpoint resource
+// UpdateServiceEndpointCsm updates the spec of an existing ServiceEndpoint resource
 // NOTE: This endpoint ONLY updates the spec. Use PUT /ServiceEndpoints/{id}/status to update status.
-func UpdateServiceEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+func UpdateServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint ID is required"))
@@ -170,8 +170,8 @@ func UpdateServiceEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, serviceEndpoint.Spec)
 }
 
-// DeleteServiceEndpointSmdV2 deletes a ServiceEndpoint resource
-func DeleteServiceEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+// DeleteServiceEndpointCsm deletes a ServiceEndpoint resource
+func DeleteServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint ID is required"))

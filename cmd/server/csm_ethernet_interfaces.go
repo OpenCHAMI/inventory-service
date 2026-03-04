@@ -19,8 +19,8 @@ import (
 	"github.com/openchami/fabrica/pkg/versioning"
 )
 
-// GetEthernetInterfacesSmdV2 returns all EthernetInterface resources
-func GetEthernetInterfacesSmdV2(w http.ResponseWriter, r *http.Request) {
+// GetEthernetInterfacesCsm returns all EthernetInterface resources
+func GetEthernetInterfacesCsm(w http.ResponseWriter, r *http.Request) {
 	ethernetInterfaces, err := storage.LoadAllEthernetInterfaces(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load ethernetinterfaces: %w", err))
@@ -34,8 +34,8 @@ func GetEthernetInterfacesSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, ethernetInterfaceSpecs)
 }
 
-// CreateEthernetInterfaceSmdV2 creates one or more new EthernetInterface resources
-func CreateEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
+// CreateEthernetInterfaceCsm creates one or more new EthernetInterface resources
+func CreateEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 	var req v1.EthernetInterfaceSpec
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
@@ -100,8 +100,8 @@ func CreateEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusCreated, req)
 }
 
-// GetEthernetInterfaceSmdV2 returns a specific EthernetInterface resource by ID
-func GetEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
+// GetEthernetInterfaceCsm returns a specific EthernetInterface resource by ID
+func GetEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("EthernetInterface ID is required"))
@@ -121,9 +121,9 @@ func GetEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, &ethernetInterface.Spec)
 }
 
-// UpdateEthernetInterfaceSmdV2 updates the spec of an existing EthernetInterface resource
+// UpdateEthernetInterfaceCsm updates the spec of an existing EthernetInterface resource
 // NOTE: This endpoint ONLY updates the spec. Use PUT /EthernetInterfaces/{id}/Status to update status.
-func UpdateEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
+func UpdateEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("EthernetInterface ID is required"))
@@ -175,8 +175,8 @@ func UpdateEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, ethernetInterface.Spec)
 }
 
-// DeleteEthernetInterfaceSmdV2 deletes an EthernetInterface resource
-func DeleteEthernetInterfaceSmdV2(w http.ResponseWriter, r *http.Request) {
+// DeleteEthernetInterfaceCsm deletes an EthernetInterface resource
+func DeleteEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("EthernetInterface ID is required"))

@@ -89,8 +89,8 @@ func newCsmGroup(label string, memberIDs ...string) csmGroupSpec {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// TestCreateGroupSmdV2 verifies POST /hsm/v2/groups returns 201.
-func TestCreateGroupSmdV2(t *testing.T) {
+// TestCreateGroupCsm verifies POST /hsm/v2/groups returns 201.
+func TestCreateGroupCsm(t *testing.T) {
 	label := "csm-compute-nodes"
 	csmGroupCreate(t, newCsmGroup(label, "x3000c0s0b0n0", "x3000c0s0b0n1"))
 	defer csmGroupDelete(t, label)
@@ -107,9 +107,9 @@ func TestCreateGroupSmdV2(t *testing.T) {
 	}
 }
 
-// TestGetGroupsSmdV2 verifies GET /hsm/v2/groups returns a plain array
+// TestGetGroupsCsm verifies GET /hsm/v2/groups returns a plain array
 // containing the created group.
-func TestGetGroupsSmdV2(t *testing.T) {
+func TestGetGroupsCsm(t *testing.T) {
 	label := "csm-io-nodes"
 	csmGroupCreate(t, newCsmGroup(label))
 	defer csmGroupDelete(t, label)
@@ -132,9 +132,9 @@ func TestGetGroupsSmdV2(t *testing.T) {
 	}
 }
 
-// TestGetGroupSmdV2 verifies GET /hsm/v2/groups/{group_label} returns 200
+// TestGetGroupCsm verifies GET /hsm/v2/groups/{group_label} returns 200
 // and the correct GroupSpec.
-func TestGetGroupSmdV2(t *testing.T) {
+func TestGetGroupCsm(t *testing.T) {
 	label := "csm-storage-nodes"
 	csmGroupCreate(t, newCsmGroup(label, "x3000c0s1b0n0"))
 	defer csmGroupDelete(t, label)
@@ -148,9 +148,9 @@ func TestGetGroupSmdV2(t *testing.T) {
 	}
 }
 
-// TestUpdateGroupSmdV2 verifies PUT /hsm/v2/groups/{group_label} updates
+// TestUpdateGroupCsm verifies PUT /hsm/v2/groups/{group_label} updates
 // the GroupSpec and returns 200.
-func TestUpdateGroupSmdV2(t *testing.T) {
+func TestUpdateGroupCsm(t *testing.T) {
 	label := "csm-mgmt-nodes"
 	csmGroupCreate(t, newCsmGroup(label, "x3000c0s0b0n0"))
 	defer csmGroupDelete(t, label)
@@ -176,9 +176,9 @@ func TestUpdateGroupSmdV2(t *testing.T) {
 	}
 }
 
-// TestDeleteGroupSmdV2 verifies DELETE /hsm/v2/groups/{group_label} returns 200
+// TestDeleteGroupCsm verifies DELETE /hsm/v2/groups/{group_label} returns 200
 // and that a subsequent GET does not return 200.
-func TestDeleteGroupSmdV2(t *testing.T) {
+func TestDeleteGroupCsm(t *testing.T) {
 	label := "csm-ephemeral-group"
 	csmGroupCreate(t, newCsmGroup(label))
 

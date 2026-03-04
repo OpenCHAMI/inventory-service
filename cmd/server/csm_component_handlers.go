@@ -20,7 +20,7 @@ import (
 )
 
 // GetComponents returns all Component resources
-func GetComponentsSmdV2(w http.ResponseWriter, r *http.Request) {
+func GetComponentsCsm(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
@@ -29,17 +29,17 @@ func GetComponentsSmdV2(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load components: %w", err))
 		return
 	}
-	componentsSmdV2 := ComponentArray{
+	componentsCsm := ComponentArray{
 		Components: make([]*v1.ComponentSpec, len(components)),
 	}
 	for i, c := range components {
-		componentsSmdV2.Components[i] = &c.Spec
+		componentsCsm.Components[i] = &c.Spec
 	}
-	respondJSON(w, http.StatusOK, componentsSmdV2)
+	respondJSON(w, http.StatusOK, componentsCsm)
 }
 
 // GetComponent returns a specific Component resource by UID
-func GetComponentSmdV2(w http.ResponseWriter, r *http.Request) {
+func GetComponentCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("component id is required"))
@@ -68,7 +68,7 @@ func GetComponentSmdV2(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateComponent creates a new Component resource
-func CreateComponentSmdV2(w http.ResponseWriter, r *http.Request) {
+func CreateComponentCsm(w http.ResponseWriter, r *http.Request) {
 	var req ComponentArray
 	// var req CreateComponentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -155,7 +155,7 @@ func CreateComponentSmdV2(w http.ResponseWriter, r *http.Request) {
 
 // UpdateComponent updates the spec of an existing Component resource
 // NOTE: This endpoint ONLY updates the spec. Use PUT //components/{uid}/status to update status.
-func UpdateComponentSmdV2(w http.ResponseWriter, r *http.Request) {
+func UpdateComponentCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("Component ID is required"))
@@ -210,7 +210,7 @@ func UpdateComponentSmdV2(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteComponent deletes a Component resource
-func DeleteComponentSmdV2(w http.ResponseWriter, r *http.Request) {
+func DeleteComponentCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("Component ID is required"))

@@ -104,8 +104,8 @@ func newCsmRedfishEndpoint(id, hostname string) csmRedfishEndpointSpec {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// TestCreateRedfishEndpointSmdV2 verifies POST /hsm/v2/Inventory/RedfishEndpoints returns 201.
-func TestCreateRedfishEndpointSmdV2(t *testing.T) {
+// TestCreateRedfishEndpointCsm verifies POST /hsm/v2/Inventory/RedfishEndpoints returns 201.
+func TestCreateRedfishEndpointCsm(t *testing.T) {
 	id := "x3000c0s7b0"
 	csmRECreate(t, newCsmRedfishEndpoint(id, "bmc7.example.com"))
 	defer csmREDelete(t, id)
@@ -119,9 +119,9 @@ func TestCreateRedfishEndpointSmdV2(t *testing.T) {
 	}
 }
 
-// TestGetRedfishEndpointsSmdV2 verifies GET /hsm/v2/Inventory/RedfishEndpoints
+// TestGetRedfishEndpointsCsm verifies GET /hsm/v2/Inventory/RedfishEndpoints
 // returns HTTP 200 and a RedfishEndpointArray containing the created endpoint.
-func TestGetRedfishEndpointsSmdV2(t *testing.T) {
+func TestGetRedfishEndpointsCsm(t *testing.T) {
 	id := "x3000c0s8b0"
 	csmRECreate(t, newCsmRedfishEndpoint(id, "bmc8.example.com"))
 	defer csmREDelete(t, id)
@@ -144,9 +144,9 @@ func TestGetRedfishEndpointsSmdV2(t *testing.T) {
 	}
 }
 
-// TestGetRedfishEndpointSmdV2 verifies GET /hsm/v2/Inventory/RedfishEndpoints/{id}
+// TestGetRedfishEndpointCsm verifies GET /hsm/v2/Inventory/RedfishEndpoints/{id}
 // returns 200 and the correct spec.
-func TestGetRedfishEndpointSmdV2(t *testing.T) {
+func TestGetRedfishEndpointCsm(t *testing.T) {
 	id := "x3000c0s9b0"
 	csmRECreate(t, newCsmRedfishEndpoint(id, "bmc9.example.com"))
 	defer csmREDelete(t, id)
@@ -163,9 +163,9 @@ func TestGetRedfishEndpointSmdV2(t *testing.T) {
 	}
 }
 
-// TestUpdateRedfishEndpointSmdV2 verifies PUT /hsm/v2/Inventory/RedfishEndpoints/{id}
+// TestUpdateRedfishEndpointCsm verifies PUT /hsm/v2/Inventory/RedfishEndpoints/{id}
 // updates the spec and returns 200.
-func TestUpdateRedfishEndpointSmdV2(t *testing.T) {
+func TestUpdateRedfishEndpointCsm(t *testing.T) {
 	id := "x3000c0s10b0"
 	csmRECreate(t, newCsmRedfishEndpoint(id, "bmc10.example.com"))
 	defer csmREDelete(t, id)
@@ -198,9 +198,9 @@ func TestUpdateRedfishEndpointSmdV2(t *testing.T) {
 	}
 }
 
-// TestDeleteRedfishEndpointSmdV2 verifies DELETE /hsm/v2/Inventory/RedfishEndpoints/{id}
+// TestDeleteRedfishEndpointCsm verifies DELETE /hsm/v2/Inventory/RedfishEndpoints/{id}
 // returns 200 and that a subsequent GET does not return 200.
-func TestDeleteRedfishEndpointSmdV2(t *testing.T) {
+func TestDeleteRedfishEndpointCsm(t *testing.T) {
 	id := "x3000c0s11b0"
 	csmRECreate(t, newCsmRedfishEndpoint(id, "bmc11.example.com"))
 

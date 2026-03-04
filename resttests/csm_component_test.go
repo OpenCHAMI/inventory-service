@@ -51,7 +51,7 @@ type csmComponentArray struct {
 	Components []*csmComponentSpec `json:"Components"`
 }
 
-// csmComponentFull mirrors v1.Component returned by GetComponentSmdV2.
+// csmComponentFull mirrors v1.Component returned by GetComponentCsm.
 type csmComponentFull struct {
 	APIVersion string            `json:"apiVersion"`
 	Kind       string            `json:"kind"`
@@ -92,9 +92,9 @@ func csmDelete(t *testing.T, xname string) {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// TestCreateComponentSmdV2 verifies that POST /hsm/v2/State/Components with a
+// TestCreateComponentCsm verifies that POST /hsm/v2/State/Components with a
 // ComponentArray body returns HTTP 201.
-func TestCreateComponentSmdV2(t *testing.T) {
+func TestCreateComponentCsm(t *testing.T) {
 	xname := "x3000c0s2b0n0"
 	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node"})
 	defer csmDelete(t, xname)
@@ -109,9 +109,9 @@ func TestCreateComponentSmdV2(t *testing.T) {
 	}
 }
 
-// TestCreateComponentSmdV2Bulk verifies that multiple components can be created
+// TestCreateComponentCsmBulk verifies that multiple components can be created
 // in a single POST.
-func TestCreateComponentSmdV2Bulk(t *testing.T) {
+func TestCreateComponentCsmBulk(t *testing.T) {
 	xnames := []string{"x3000c0s2b0n1", "x3000c0s2b0n2", "x3000c0s2b0n3"}
 	specs := make([]*csmComponentSpec, len(xnames))
 	for i, x := range xnames {
@@ -137,9 +137,9 @@ func TestCreateComponentSmdV2Bulk(t *testing.T) {
 	}
 }
 
-// TestGetComponentsSmdV2 verifies that GET /hsm/v2/State/Components returns
+// TestGetComponentsCsm verifies that GET /hsm/v2/State/Components returns
 // HTTP 200 and a ComponentArray with at least the created component.
-func TestGetComponentsSmdV2(t *testing.T) {
+func TestGetComponentsCsm(t *testing.T) {
 	xname := "x3000c0s2b0n4"
 	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node"})
 	defer csmDelete(t, xname)
@@ -162,9 +162,9 @@ func TestGetComponentsSmdV2(t *testing.T) {
 	}
 }
 
-// TestGetComponentSmdV2 verifies that GET /hsm/v2/State/Components/{id} returns
+// TestGetComponentCsm verifies that GET /hsm/v2/State/Components/{id} returns
 // HTTP 200 and the correct component.
-func TestGetComponentSmdV2(t *testing.T) {
+func TestGetComponentCsm(t *testing.T) {
 	xname := "x3000c0s2b0n5"
 	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node"})
 	defer csmDelete(t, xname)
@@ -181,9 +181,9 @@ func TestGetComponentSmdV2(t *testing.T) {
 	}
 }
 
-// TestUpdateComponentSmdV2 verifies that PUT /hsm/v2/State/Components/{id}
+// TestUpdateComponentCsm verifies that PUT /hsm/v2/State/Components/{id}
 // updates the component spec and returns HTTP 200.
-func TestUpdateComponentSmdV2(t *testing.T) {
+func TestUpdateComponentCsm(t *testing.T) {
 	xname := "x3000c0s2b0n6"
 	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node"})
 	defer csmDelete(t, xname)
@@ -212,9 +212,9 @@ func TestUpdateComponentSmdV2(t *testing.T) {
 	}
 }
 
-// TestDeleteComponentSmdV2 verifies that DELETE /hsm/v2/State/Components/{id}
+// TestDeleteComponentCsm verifies that DELETE /hsm/v2/State/Components/{id}
 // returns HTTP 200 and that a subsequent GET does not return HTTP 200.
-func TestDeleteComponentSmdV2(t *testing.T) {
+func TestDeleteComponentCsm(t *testing.T) {
 	xname := "x3000c0s2b0n7"
 	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node"})
 

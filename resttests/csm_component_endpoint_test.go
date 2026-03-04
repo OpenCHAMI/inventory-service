@@ -100,8 +100,8 @@ func csmCEDelete(t *testing.T, id string) {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// TestCreateComponentEndpointSmdV2 verifies POST /hsm/v2/Inventory/ComponentEndpoints returns 201.
-func TestCreateComponentEndpointSmdV2(t *testing.T) {
+// TestCreateComponentEndpointCsm verifies POST /hsm/v2/Inventory/ComponentEndpoints returns 201.
+func TestCreateComponentEndpointCsm(t *testing.T) {
 	id := "x5000c0s0b0n0"
 	csmCECreate(t, newCsmComponentEndpoint(id, "x5000c0s0b0"))
 	defer csmCEDelete(t, id)
@@ -115,8 +115,8 @@ func TestCreateComponentEndpointSmdV2(t *testing.T) {
 	}
 }
 
-// TestCreateComponentEndpointSmdV2Bulk verifies multiple component endpoints can be created in a single POST.
-func TestCreateComponentEndpointSmdV2Bulk(t *testing.T) {
+// TestCreateComponentEndpointCsmBulk verifies multiple component endpoints can be created in a single POST.
+func TestCreateComponentEndpointCsmBulk(t *testing.T) {
 	ids := []string{"x5000c0s1b0n0", "x5000c0s1b0n1", "x5000c0s1b0n2"}
 	specs := make([]*csmComponentEndpointSpec, len(ids))
 	for i, id := range ids {
@@ -141,9 +141,9 @@ func TestCreateComponentEndpointSmdV2Bulk(t *testing.T) {
 	}
 }
 
-// TestGetComponentEndpointsSmdV2 verifies GET /hsm/v2/Inventory/ComponentEndpoints
+// TestGetComponentEndpointsCsm verifies GET /hsm/v2/Inventory/ComponentEndpoints
 // returns HTTP 200 and a ComponentEndpointArray containing the created endpoint.
-func TestGetComponentEndpointsSmdV2(t *testing.T) {
+func TestGetComponentEndpointsCsm(t *testing.T) {
 	id := "x5000c0s2b0n0"
 	csmCECreate(t, newCsmComponentEndpoint(id, "x5000c0s2b0"))
 	defer csmCEDelete(t, id)
@@ -166,9 +166,9 @@ func TestGetComponentEndpointsSmdV2(t *testing.T) {
 	}
 }
 
-// TestGetComponentEndpointSmdV2 verifies GET /hsm/v2/Inventory/ComponentEndpoints/{id}
+// TestGetComponentEndpointCsm verifies GET /hsm/v2/Inventory/ComponentEndpoints/{id}
 // returns 200 and the correct spec.
-func TestGetComponentEndpointSmdV2(t *testing.T) {
+func TestGetComponentEndpointCsm(t *testing.T) {
 	id := "x5000c0s3b0n0"
 	csmCECreate(t, newCsmComponentEndpoint(id, "x5000c0s3b0"))
 	defer csmCEDelete(t, id)
@@ -185,9 +185,9 @@ func TestGetComponentEndpointSmdV2(t *testing.T) {
 	}
 }
 
-// TestUpdateComponentEndpointSmdV2 verifies PUT /hsm/v2/Inventory/ComponentEndpoints/{id}
+// TestUpdateComponentEndpointCsm verifies PUT /hsm/v2/Inventory/ComponentEndpoints/{id}
 // updates the spec and returns 200.
-func TestUpdateComponentEndpointSmdV2(t *testing.T) {
+func TestUpdateComponentEndpointCsm(t *testing.T) {
 	id := "x5000c0s4b0n0"
 	csmCECreate(t, newCsmComponentEndpoint(id, "x5000c0s4b0"))
 	defer csmCEDelete(t, id)
@@ -218,9 +218,9 @@ func TestUpdateComponentEndpointSmdV2(t *testing.T) {
 	}
 }
 
-// TestDeleteComponentEndpointSmdV2 verifies DELETE /hsm/v2/Inventory/ComponentEndpoints/{id}
+// TestDeleteComponentEndpointCsm verifies DELETE /hsm/v2/Inventory/ComponentEndpoints/{id}
 // returns 200 and that a subsequent GET does not return 200.
-func TestDeleteComponentEndpointSmdV2(t *testing.T) {
+func TestDeleteComponentEndpointCsm(t *testing.T) {
 	id := "x5000c0s5b0n0"
 	csmCECreate(t, newCsmComponentEndpoint(id, "x5000c0s5b0"))
 

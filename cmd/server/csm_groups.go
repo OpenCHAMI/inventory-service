@@ -19,8 +19,8 @@ import (
 	"github.com/openchami/fabrica/pkg/versioning"
 )
 
-// GetGroupsSmdV2 returns all Group resources
-func GetGroupsSmdV2(w http.ResponseWriter, r *http.Request) {
+// GetGroupsCsm returns all Group resources
+func GetGroupsCsm(w http.ResponseWriter, r *http.Request) {
 	groups, err := storage.LoadAllGroups(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load groups: %w", err))
@@ -34,8 +34,8 @@ func GetGroupsSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, groupSpecs)
 }
 
-// CreateGroupSmdV2 creates a new Group resource
-func CreateGroupSmdV2(w http.ResponseWriter, r *http.Request) {
+// CreateGroupCsm creates a new Group resource
+func CreateGroupCsm(w http.ResponseWriter, r *http.Request) {
 	var req v1.GroupSpec
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
@@ -92,8 +92,8 @@ func CreateGroupSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusCreated, req)
 }
 
-// GetGroupSmdV2 returns a specific Group resource by label
-func GetGroupSmdV2(w http.ResponseWriter, r *http.Request) {
+// GetGroupCsm returns a specific Group resource by label
+func GetGroupCsm(w http.ResponseWriter, r *http.Request) {
 	label := chi.URLParam(r, "group_label")
 	if label == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("Group label is required"))
@@ -113,9 +113,9 @@ func GetGroupSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, &group.Spec)
 }
 
-// UpdateGroupSmdV2 updates the spec of an existing Group resource
+// UpdateGroupCsm updates the spec of an existing Group resource
 // NOTE: This endpoint ONLY updates the spec. Use PUT /groups/{group_label}/status to update status.
-func UpdateGroupSmdV2(w http.ResponseWriter, r *http.Request) {
+func UpdateGroupCsm(w http.ResponseWriter, r *http.Request) {
 	label := chi.URLParam(r, "group_label")
 	if label == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("Group label is required"))
@@ -167,8 +167,8 @@ func UpdateGroupSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, group.Spec)
 }
 
-// DeleteGroupSmdV2 deletes a Group resource
-func DeleteGroupSmdV2(w http.ResponseWriter, r *http.Request) {
+// DeleteGroupCsm deletes a Group resource
+func DeleteGroupCsm(w http.ResponseWriter, r *http.Request) {
 	label := chi.URLParam(r, "group_label")
 	if label == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("Group label is required"))

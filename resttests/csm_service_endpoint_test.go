@@ -81,8 +81,8 @@ func csmSEDelete(t *testing.T, rfID string) {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// TestCreateServiceEndpointSmdV2 verifies POST /hsm/v2/Inventory/ServiceEndpoints returns 201.
-func TestCreateServiceEndpointSmdV2(t *testing.T) {
+// TestCreateServiceEndpointCsm verifies POST /hsm/v2/Inventory/ServiceEndpoints returns 201.
+func TestCreateServiceEndpointCsm(t *testing.T) {
 	rfID := "x3000c0r1b0"
 	csmSECreate(t, &csmServiceEndpointSpec{
 		RedfishEndpointID: rfID,
@@ -100,8 +100,8 @@ func TestCreateServiceEndpointSmdV2(t *testing.T) {
 	}
 }
 
-// TestCreateServiceEndpointSmdV2Bulk verifies multiple service endpoints can be created in a single POST.
-func TestCreateServiceEndpointSmdV2Bulk(t *testing.T) {
+// TestCreateServiceEndpointCsmBulk verifies multiple service endpoints can be created in a single POST.
+func TestCreateServiceEndpointCsmBulk(t *testing.T) {
 	rfIDs := []string{"x3000c0r1b1", "x3000c0r1b2", "x3000c0r1b3"}
 	specs := make([]*csmServiceEndpointSpec, len(rfIDs))
 	for i, id := range rfIDs {
@@ -126,8 +126,8 @@ func TestCreateServiceEndpointSmdV2Bulk(t *testing.T) {
 	}
 }
 
-// TestGetServiceEndpointsSmdV2 verifies GET /hsm/v2/Inventory/ServiceEndpoints returns ServiceEndpointArray.
-func TestGetServiceEndpointsSmdV2(t *testing.T) {
+// TestGetServiceEndpointsCsm verifies GET /hsm/v2/Inventory/ServiceEndpoints returns ServiceEndpointArray.
+func TestGetServiceEndpointsCsm(t *testing.T) {
 	rfID := "x3000c0r1b4"
 	csmSECreate(t, &csmServiceEndpointSpec{RedfishEndpointID: rfID, RedfishType: "Chassis"})
 	defer csmSEDelete(t, rfID)
@@ -150,8 +150,8 @@ func TestGetServiceEndpointsSmdV2(t *testing.T) {
 	}
 }
 
-// TestGetServiceEndpointSmdV2 verifies GET /hsm/v2/Inventory/ServiceEndpoints/{id} returns the spec.
-func TestGetServiceEndpointSmdV2(t *testing.T) {
+// TestGetServiceEndpointCsm verifies GET /hsm/v2/Inventory/ServiceEndpoints/{id} returns the spec.
+func TestGetServiceEndpointCsm(t *testing.T) {
 	rfID := "x3000c0r1b5"
 	csmSECreate(t, &csmServiceEndpointSpec{RedfishEndpointID: rfID, RedfishType: "Manager"})
 	defer csmSEDelete(t, rfID)
@@ -165,9 +165,9 @@ func TestGetServiceEndpointSmdV2(t *testing.T) {
 	}
 }
 
-// TestUpdateServiceEndpointSmdV2 verifies PUT /hsm/v2/Inventory/ServiceEndpoints/{id}
+// TestUpdateServiceEndpointCsm verifies PUT /hsm/v2/Inventory/ServiceEndpoints/{id}
 // updates the resource and returns the updated spec.
-func TestUpdateServiceEndpointSmdV2(t *testing.T) {
+func TestUpdateServiceEndpointCsm(t *testing.T) {
 	rfID := "x3000c0r1b6"
 	csmSECreate(t, &csmServiceEndpointSpec{
 		RedfishEndpointID: rfID,
@@ -199,9 +199,9 @@ func TestUpdateServiceEndpointSmdV2(t *testing.T) {
 	}
 }
 
-// TestDeleteServiceEndpointSmdV2 verifies DELETE /hsm/v2/Inventory/ServiceEndpoints/{id}
+// TestDeleteServiceEndpointCsm verifies DELETE /hsm/v2/Inventory/ServiceEndpoints/{id}
 // returns 200 and that a subsequent GET does not return 200.
-func TestDeleteServiceEndpointSmdV2(t *testing.T) {
+func TestDeleteServiceEndpointCsm(t *testing.T) {
 	rfID := "x3000c0r1b7"
 	csmSECreate(t, &csmServiceEndpointSpec{RedfishEndpointID: rfID, RedfishType: "Chassis"})
 

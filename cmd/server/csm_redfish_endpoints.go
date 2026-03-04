@@ -23,8 +23,8 @@ import (
 	"github.com/openchami/fabrica/pkg/versioning"
 )
 
-// GetRedfishEndpointsSmdV2 returns all RedfishEndpoint resources
-func GetRedfishEndpointsSmdV2(w http.ResponseWriter, r *http.Request) {
+// GetRedfishEndpointsCsm returns all RedfishEndpoint resources
+func GetRedfishEndpointsCsm(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
@@ -42,8 +42,8 @@ func GetRedfishEndpointsSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, redfishEndpointArray)
 }
 
-// GetRedfishEndpointSmdV2 returns a specific RedfishEndpoint resource by ID
-func GetRedfishEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+// GetRedfishEndpointCsm returns a specific RedfishEndpoint resource by ID
+func GetRedfishEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("RedfishEndpoint ID is required"))
@@ -71,13 +71,13 @@ func GetRedfishEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, &redfishEndpoint.Spec)
 }
 
-// CreateRedfishEndpointSmdV2 creates a new RedfishEndpoint resource.
+// CreateRedfishEndpointCsm creates a new RedfishEndpoint resource.
 // Accepts two input formats:
 //  1. Standard format: a single v1.RedfishEndpointSpec JSON object.
 //  2. V2 inventory format (from OpenCHAMI/smd parseRedfishEndpointDataV2): a JSON object
 //     with the same endpoint-level fields (ID, FQDN, …) plus optional "Systems" and
 //     "Managers" inventory arrays. The presence of either array indicates V2 format.
-func CreateRedfishEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+func CreateRedfishEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("failed to read request body: %w", err))
@@ -94,7 +94,7 @@ func CreateRedfishEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 
 	isV2Format := len(v2req.Systems) > 0 || len(v2req.Managers) > 0
 	if isV2Format {
-		fmt.Printf("Info: CreateRedfishEndpointSmdV2: received V2 inventory format for endpoint %s (systems=%d, managers=%d)\n",
+		fmt.Printf("Info: CreateRedfishEndpointCsm: received V2 inventory format for endpoint %s (systems=%d, managers=%d)\n",
 			v2req.ID, len(v2req.Systems), len(v2req.Managers))
 	}
 
@@ -167,7 +167,7 @@ func CreateRedfishEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 	if isV2Format {
 		if err := createV2SubResources(r.Context(), req, v2req, versionCtx); err != nil {
 			// Log but do not fail — the RedfishEndpoint itself was saved successfully.
-			fmt.Printf("Warning: CreateRedfishEndpointSmdV2: failed to create V2 sub-resources for %s: %v\n", req.ID, err)
+			fmt.Printf("Warning: CreateRedfishEndpointCsm: failed to create V2 sub-resources for %s: %v\n", req.ID, err)
 		}
 	}
 
@@ -180,7 +180,7 @@ func CreateRedfishEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusCreated, redfishEndpoint.Spec)
 }
 
-// UpdateRedfishEndpointSmdV2 updates the spec of an existing RedfishEndpoint resource
+// UpdateRedfishEndpointCsm updates the spec of an existing RedfishEndpoint resource
 // NOTE: This endpoint ONLY updates the spec. Use PUT /redfishendpoints/{id}/status to update status.
 func UpdateRedfishEndpointV2(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
@@ -242,7 +242,7 @@ func UpdateRedfishEndpointV2(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, redfishEndpoint.Spec)
 }
 
-// DeleteRedfishEndpointSmdV2 deletes a RedfishEndpoint resource
+// DeleteRedfishEndpointCsm deletes a RedfishEndpoint resource
 func DeleteRedfishEndpointV2(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {

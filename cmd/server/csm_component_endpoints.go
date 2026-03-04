@@ -20,7 +20,7 @@ import (
 )
 
 // GetComponentEndpoint returns all Component resources
-func GetComponentEndpointsSmdV2(w http.ResponseWriter, r *http.Request) {
+func GetComponentEndpointsCsm(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
@@ -39,7 +39,7 @@ func GetComponentEndpointsSmdV2(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetComponentEndpoint returns a specific Component resource by UID
-func GetComponentEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+func GetComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("ComponentEndpoint ID is required"))
@@ -68,7 +68,7 @@ func GetComponentEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateComponentEndpoint creates a new ComponentEndpoint resource
-func CreateComponentEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+func CreateComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	var req ComponentEndpointArray
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
@@ -142,7 +142,7 @@ func CreateComponentEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 
 // UpdateComponent updates the spec of an existing Component resource
 // NOTE: This endpoint ONLY updates the spec. Use PUT //components/{uid}/status to update status.
-func UpdateComponentEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+func UpdateComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("ComponentEndpoint ID is required"))
@@ -204,7 +204,7 @@ func UpdateComponentEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteComponent deletes a Component resource
-func DeleteComponentEndpointSmdV2(w http.ResponseWriter, r *http.Request) {
+func DeleteComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("Component Endpoint ID is required"))
