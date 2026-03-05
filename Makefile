@@ -46,14 +46,6 @@ image: build
 	@echo "Building container image..."
 	$(CONTAINER_CMD) build -t $(BINARY_NAME):latest .
 
-
-# Build binary and alpine based image
-.PHONY: image-alpine
-image-alpine:
-	@echo "Building container alpine image..."
-	$(CONTAINER_CMD) build -f Dockerfile-alpine -t $(BINARY_NAME):latest .
-
-
 unittest:
 	go test -cover -v ./apis/... ./cmd/... ./internal/... ./pkg/...
 
