@@ -2,26 +2,28 @@
 #
 # SPDX-License-Identifier: MIT
 
+FROM debian:bookworm-slim AS builder
+
+
+RUN mkdir -p /data && chown 1000:1000 /data
+
+# FROM rockylinux:9.3.20231119 
 # FROM docker.io/library/alpine:3.15
 # FROM docker.io/library/alpine:3.23
-FROM rockylinux:9.3.20231119
+
+
+
+FROM gcr.io/distroless/static-debian12:nonroot
 
 ENV SMD_PORT=8080
 
-# add user on alpine linux
-# RUN addgroup -g 1000 smd && \
-#     adduser -D -u 1000 -G smd smd && \
-#     chown -R smd:smd /home/smd
+WORKDIR /app
 
-# add user on rocky
-RUN useradd -m smd
-
-WORKDIR /home/smd
+COPY --from=builder /data /data
 
 COPY bin/smd2-server /usr/local/bin/smd2-server
 
-USER smd
+USER nonroot:nonroot
 
-RUN mkdir -p data
-
-ENTRYPOINT ["sh", "-c", "/usr/local/bin/smd2-server serve --port $SMD_PORT --database-url file:data/smd2.db?_fk=1"]
+ENTRYPOINT ["/usr/local/bin/smd2-server"]
+CMD ["serve", "--database-url", "file:/data/smd2.db?_fk=1"]
