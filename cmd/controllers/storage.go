@@ -1,0 +1,132 @@
+package controllers
+
+import (
+	"context"
+
+	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
+	"github.com/OpenCHAMI/smd2/internal/storage"
+)
+
+// EntStorage implements the plugins.Storage interface by delegating to the
+// package-level functions in internal/storage.
+type EntStorage struct{}
+
+func (s *EntStorage) LoadAllComponents(ctx context.Context) ([]*v1.Component, error) {
+	return storage.LoadAllComponents(ctx)
+}
+
+func (s *EntStorage) LoadComponent(ctx context.Context, uid string) (*v1.Component, error) {
+	return storage.LoadComponent(ctx, uid)
+}
+
+func (s *EntStorage) SaveComponent(ctx context.Context, resource *v1.Component) error {
+	return storage.SaveComponent(ctx, resource)
+}
+
+func (s *EntStorage) DeleteComponent(ctx context.Context, uid string) error {
+	return storage.DeleteComponent(ctx, uid)
+}
+
+func (s *EntStorage) LoadAllComponentEndpoints(ctx context.Context) ([]*v1.ComponentEndpoint, error) {
+	return storage.LoadAllComponentEndpoints(ctx)
+}
+
+func (s *EntStorage) LoadComponentEndpoint(ctx context.Context, uid string) (*v1.ComponentEndpoint, error) {
+	return storage.LoadComponentEndpoint(ctx, uid)
+}
+
+func (s *EntStorage) SaveComponentEndpoint(ctx context.Context, resource *v1.ComponentEndpoint) error {
+	return storage.SaveComponentEndpoint(ctx, resource)
+}
+
+func (s *EntStorage) DeleteComponentEndpoint(ctx context.Context, uid string) error {
+	return storage.DeleteComponentEndpoint(ctx, uid)
+}
+
+func (s *EntStorage) LoadAllEthernetInterfaces(ctx context.Context) ([]*v1.EthernetInterface, error) {
+	return storage.LoadAllEthernetInterfaces(ctx)
+}
+
+func (s *EntStorage) LoadEthernetInterface(ctx context.Context, uid string) (*v1.EthernetInterface, error) {
+	return storage.LoadEthernetInterface(ctx, uid)
+}
+
+func (s *EntStorage) SaveEthernetInterface(ctx context.Context, resource *v1.EthernetInterface) error {
+	return storage.SaveEthernetInterface(ctx, resource)
+}
+
+func (s *EntStorage) DeleteEthernetInterface(ctx context.Context, uid string) error {
+	return storage.DeleteEthernetInterface(ctx, uid)
+}
+
+func (s *EntStorage) LoadAllGroups(ctx context.Context) ([]*v1.Group, error) {
+	return storage.LoadAllGroups(ctx)
+}
+
+func (s *EntStorage) LoadGroup(ctx context.Context, uid string) (*v1.Group, error) {
+	return storage.LoadGroup(ctx, uid)
+}
+
+func (s *EntStorage) SaveGroup(ctx context.Context, resource *v1.Group) error {
+	return storage.SaveGroup(ctx, resource)
+}
+
+func (s *EntStorage) DeleteGroup(ctx context.Context, uid string) error {
+	return storage.DeleteGroup(ctx, uid)
+}
+
+func (s *EntStorage) LoadAllRedfishEndpoints(ctx context.Context) ([]*v1.RedfishEndpoint, error) {
+	return storage.LoadAllRedfishEndpoints(ctx)
+}
+
+func (s *EntStorage) LoadRedfishEndpoint(ctx context.Context, uid string) (*v1.RedfishEndpoint, error) {
+	return storage.LoadRedfishEndpoint(ctx, uid)
+}
+
+func (s *EntStorage) SaveRedfishEndpoint(ctx context.Context, resource *v1.RedfishEndpoint) error {
+	return storage.SaveRedfishEndpoint(ctx, resource)
+}
+
+func (s *EntStorage) DeleteRedfishEndpoint(ctx context.Context, uid string) error {
+	return storage.DeleteRedfishEndpoint(ctx, uid)
+}
+
+func (s *EntStorage) LoadAllServiceEndpoints(ctx context.Context) ([]*v1.ServiceEndpoint, error) {
+	return storage.LoadAllServiceEndpoints(ctx)
+}
+
+func (s *EntStorage) LoadServiceEndpoint(ctx context.Context, uid string) (*v1.ServiceEndpoint, error) {
+	return storage.LoadServiceEndpoint(ctx, uid)
+}
+
+func (s *EntStorage) SaveServiceEndpoint(ctx context.Context, resource *v1.ServiceEndpoint) error {
+	return storage.SaveServiceEndpoint(ctx, resource)
+}
+
+func (s *EntStorage) DeleteServiceEndpoint(ctx context.Context, uid string) error {
+	return storage.DeleteServiceEndpoint(ctx, uid)
+}
+
+func (s *EntStorage) LoadComponentByID(ctx context.Context, id string) (*v1.Component, error) {
+	return storage.LoadComponentByID(ctx, id)
+}
+
+func (s *EntStorage) LoadComponentEndpointByID(ctx context.Context, id string) (*v1.ComponentEndpoint, error) {
+	return storage.LoadComponentEndpointByID(ctx, id)
+}
+
+func (s *EntStorage) LoadRedfishEndpointByID(ctx context.Context, id string) (*v1.RedfishEndpoint, error) {
+	return storage.LoadRedfishEndpointByID(ctx, id)
+}
+
+func (s *EntStorage) LoadEthernetInterfaceByID(ctx context.Context, id string) (*v1.EthernetInterface, error) {
+	return storage.LoadEthernetInterfaceByID(ctx, id)
+}
+
+func (s *EntStorage) LoadServiceEndpointByID(ctx context.Context, id string) (*v1.ServiceEndpoint, error) {
+	return storage.LoadServiceEndpointByID(ctx, id)
+}
+
+func (s *EntStorage) LoadGroupByLabel(ctx context.Context, label string) (*v1.Group, error) {
+	return storage.LoadGroupByLabel(ctx, label)
+}

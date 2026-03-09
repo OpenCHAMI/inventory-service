@@ -216,6 +216,7 @@ func UpdateComponent(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	component.Metadata.UpdatedAt = time.Now()
 
+	v1.ComponentPlugin.PreSave(component)
 	if err := storage.SaveComponent(r.Context(), component); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Component: %w", err))
 		return
@@ -288,6 +289,10 @@ func PatchComponent(w http.ResponseWriter, r *http.Request) {
 
 	component.Metadata.UpdatedAt = time.Now()
 
+	if err := v1.ComponentPlugin.PreSave(component); err != nil {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("validation failed: %w", err))
+		return
+	}
 	// Save the patched resource
 	if err := storage.SaveComponent(r.Context(), component); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched Component: %w", err))
