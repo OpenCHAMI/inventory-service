@@ -129,16 +129,16 @@ func (_c *ResourceCreate) SetNillableNamespace(v *string) *ResourceCreate {
 	return _c
 }
 
-// SetAlternateID sets the "alternate_id" field.
-func (_c *ResourceCreate) SetAlternateID(v string) *ResourceCreate {
-	_c.mutation.SetAlternateID(v)
+// SetResourceID sets the "resource_id" field.
+func (_c *ResourceCreate) SetResourceID(v string) *ResourceCreate {
+	_c.mutation.SetResourceID(v)
 	return _c
 }
 
-// SetNillableAlternateID sets the "alternate_id" field if the given value is not nil.
-func (_c *ResourceCreate) SetNillableAlternateID(v *string) *ResourceCreate {
+// SetNillableResourceID sets the "resource_id" field if the given value is not nil.
+func (_c *ResourceCreate) SetNillableResourceID(v *string) *ResourceCreate {
 	if v != nil {
-		_c.SetAlternateID(*v)
+		_c.SetResourceID(*v)
 	}
 	return _c
 }
@@ -345,9 +345,9 @@ func (_c *ResourceCreate) createSpec() (*Resource, *sqlgraph.CreateSpec) {
 		_spec.SetField(resource.FieldNamespace, field.TypeString, value)
 		_node.Namespace = value
 	}
-	if value, ok := _c.mutation.AlternateID(); ok {
-		_spec.SetField(resource.FieldAlternateID, field.TypeString, value)
-		_node.AlternateID = value
+	if value, ok := _c.mutation.ResourceID(); ok {
+		_spec.SetField(resource.FieldResourceID, field.TypeString, value)
+		_node.ResourceID = value
 	}
 	if nodes := _c.mutation.LabelsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -184,7 +184,7 @@ func ToEntResource(fabricaResource interface{}) (*ent.ResourceCreate, map[string
 	}
 
 	if alternateID != "" {
-		create = create.SetAlternateID(alternateID)
+		create = create.SetResourceID(alternateID)
 	}
 
 	return create, labels, annotations, nil

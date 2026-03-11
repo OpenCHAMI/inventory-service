@@ -945,7 +945,7 @@ type ResourceMutation struct {
 	updated_at         *time.Time
 	resource_version   *string
 	namespace          *string
-	alternate_id       *string
+	resource_id        *string
 	clearedFields      map[string]struct{}
 	labels             map[int]struct{}
 	removedlabels      map[int]struct{}
@@ -1509,53 +1509,53 @@ func (m *ResourceMutation) ResetNamespace() {
 	delete(m.clearedFields, resource.FieldNamespace)
 }
 
-// SetAlternateID sets the "alternate_id" field.
-func (m *ResourceMutation) SetAlternateID(s string) {
-	m.alternate_id = &s
+// SetResourceID sets the "resource_id" field.
+func (m *ResourceMutation) SetResourceID(s string) {
+	m.resource_id = &s
 }
 
-// AlternateID returns the value of the "alternate_id" field in the mutation.
-func (m *ResourceMutation) AlternateID() (r string, exists bool) {
-	v := m.alternate_id
+// ResourceID returns the value of the "resource_id" field in the mutation.
+func (m *ResourceMutation) ResourceID() (r string, exists bool) {
+	v := m.resource_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAlternateID returns the old "alternate_id" field's value of the Resource entity.
+// OldResourceID returns the old "resource_id" field's value of the Resource entity.
 // If the Resource object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ResourceMutation) OldAlternateID(ctx context.Context) (v string, err error) {
+func (m *ResourceMutation) OldResourceID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAlternateID is only allowed on UpdateOne operations")
+		return v, errors.New("OldResourceID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAlternateID requires an ID field in the mutation")
+		return v, errors.New("OldResourceID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAlternateID: %w", err)
+		return v, fmt.Errorf("querying old value for OldResourceID: %w", err)
 	}
-	return oldValue.AlternateID, nil
+	return oldValue.ResourceID, nil
 }
 
-// ClearAlternateID clears the value of the "alternate_id" field.
-func (m *ResourceMutation) ClearAlternateID() {
-	m.alternate_id = nil
-	m.clearedFields[resource.FieldAlternateID] = struct{}{}
+// ClearResourceID clears the value of the "resource_id" field.
+func (m *ResourceMutation) ClearResourceID() {
+	m.resource_id = nil
+	m.clearedFields[resource.FieldResourceID] = struct{}{}
 }
 
-// AlternateIDCleared returns if the "alternate_id" field was cleared in this mutation.
-func (m *ResourceMutation) AlternateIDCleared() bool {
-	_, ok := m.clearedFields[resource.FieldAlternateID]
+// ResourceIDCleared returns if the "resource_id" field was cleared in this mutation.
+func (m *ResourceMutation) ResourceIDCleared() bool {
+	_, ok := m.clearedFields[resource.FieldResourceID]
 	return ok
 }
 
-// ResetAlternateID resets all changes to the "alternate_id" field.
-func (m *ResourceMutation) ResetAlternateID() {
-	m.alternate_id = nil
-	delete(m.clearedFields, resource.FieldAlternateID)
+// ResetResourceID resets all changes to the "resource_id" field.
+func (m *ResourceMutation) ResetResourceID() {
+	m.resource_id = nil
+	delete(m.clearedFields, resource.FieldResourceID)
 }
 
 // AddLabelIDs adds the "labels" edge to the Label entity by ids.
@@ -1734,8 +1734,8 @@ func (m *ResourceMutation) Fields() []string {
 	if m.namespace != nil {
 		fields = append(fields, resource.FieldNamespace)
 	}
-	if m.alternate_id != nil {
-		fields = append(fields, resource.FieldAlternateID)
+	if m.resource_id != nil {
+		fields = append(fields, resource.FieldResourceID)
 	}
 	return fields
 }
@@ -1767,8 +1767,8 @@ func (m *ResourceMutation) Field(name string) (ent.Value, bool) {
 		return m.ResourceVersion()
 	case resource.FieldNamespace:
 		return m.Namespace()
-	case resource.FieldAlternateID:
-		return m.AlternateID()
+	case resource.FieldResourceID:
+		return m.ResourceID()
 	}
 	return nil, false
 }
@@ -1800,8 +1800,8 @@ func (m *ResourceMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldResourceVersion(ctx)
 	case resource.FieldNamespace:
 		return m.OldNamespace(ctx)
-	case resource.FieldAlternateID:
-		return m.OldAlternateID(ctx)
+	case resource.FieldResourceID:
+		return m.OldResourceID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Resource field %s", name)
 }
@@ -1888,12 +1888,12 @@ func (m *ResourceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetNamespace(v)
 		return nil
-	case resource.FieldAlternateID:
+	case resource.FieldResourceID:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAlternateID(v)
+		m.SetResourceID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Resource field %s", name)
@@ -1931,8 +1931,8 @@ func (m *ResourceMutation) ClearedFields() []string {
 	if m.FieldCleared(resource.FieldNamespace) {
 		fields = append(fields, resource.FieldNamespace)
 	}
-	if m.FieldCleared(resource.FieldAlternateID) {
-		fields = append(fields, resource.FieldAlternateID)
+	if m.FieldCleared(resource.FieldResourceID) {
+		fields = append(fields, resource.FieldResourceID)
 	}
 	return fields
 }
@@ -1954,8 +1954,8 @@ func (m *ResourceMutation) ClearField(name string) error {
 	case resource.FieldNamespace:
 		m.ClearNamespace()
 		return nil
-	case resource.FieldAlternateID:
-		m.ClearAlternateID()
+	case resource.FieldResourceID:
+		m.ClearResourceID()
 		return nil
 	}
 	return fmt.Errorf("unknown Resource nullable field %s", name)
@@ -1998,8 +1998,8 @@ func (m *ResourceMutation) ResetField(name string) error {
 	case resource.FieldNamespace:
 		m.ResetNamespace()
 		return nil
-	case resource.FieldAlternateID:
-		m.ResetAlternateID()
+	case resource.FieldResourceID:
+		m.ResetResourceID()
 		return nil
 	}
 	return fmt.Errorf("unknown Resource field %s", name)

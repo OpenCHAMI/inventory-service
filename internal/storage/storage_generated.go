@@ -137,9 +137,9 @@ func SaveComponent(ctx context.Context, resource *v1.Component) error {
 			SetUpdatedAt(time.Now())
 
 		if resource.ID != "" {
-			updateOp = updateOp.SetAlternateID(resource.ID)
+			updateOp = updateOp.SetResourceID(resource.ID)
 		} else {
-			updateOp = updateOp.ClearAlternateID()
+			updateOp = updateOp.ClearResourceID()
 		}
 
 		savedResource, err = updateOp.Save(ctx)
@@ -288,9 +288,9 @@ func SaveComponentEndpoint(ctx context.Context, resource *v1.ComponentEndpoint) 
 			SetUpdatedAt(time.Now())
 
 		if resource.ID != "" {
-			updateOp = updateOp.SetAlternateID(resource.ID)
+			updateOp = updateOp.SetResourceID(resource.ID)
 		} else {
-			updateOp = updateOp.ClearAlternateID()
+			updateOp = updateOp.ClearResourceID()
 		}
 
 		savedResource, err = updateOp.Save(ctx)
@@ -439,9 +439,9 @@ func SaveEthernetInterface(ctx context.Context, resource *v1.EthernetInterface) 
 			SetUpdatedAt(time.Now())
 
 		if resource.ID != "" {
-			updateOp = updateOp.SetAlternateID(resource.ID)
+			updateOp = updateOp.SetResourceID(resource.ID)
 		} else {
-			updateOp = updateOp.ClearAlternateID()
+			updateOp = updateOp.ClearResourceID()
 		}
 
 		savedResource, err = updateOp.Save(ctx)
@@ -590,9 +590,9 @@ func SaveGroup(ctx context.Context, resource *v1.Group) error {
 			SetUpdatedAt(time.Now())
 
 		if resource.ID != "" {
-			updateOp = updateOp.SetAlternateID(resource.ID)
+			updateOp = updateOp.SetResourceID(resource.ID)
 		} else {
-			updateOp = updateOp.ClearAlternateID()
+			updateOp = updateOp.ClearResourceID()
 		}
 
 		savedResource, err = updateOp.Save(ctx)
@@ -741,9 +741,9 @@ func SaveRedfishEndpoint(ctx context.Context, resource *v1.RedfishEndpoint) erro
 			SetUpdatedAt(time.Now())
 
 		if resource.ID != "" {
-			updateOp = updateOp.SetAlternateID(resource.ID)
+			updateOp = updateOp.SetResourceID(resource.ID)
 		} else {
-			updateOp = updateOp.ClearAlternateID()
+			updateOp = updateOp.ClearResourceID()
 		}
 
 		savedResource, err = updateOp.Save(ctx)
@@ -892,9 +892,9 @@ func SaveServiceEndpoint(ctx context.Context, resource *v1.ServiceEndpoint) erro
 			SetUpdatedAt(time.Now())
 
 		if resource.ID != "" {
-			updateOp = updateOp.SetAlternateID(resource.ID)
+			updateOp = updateOp.SetResourceID(resource.ID)
 		} else {
-			updateOp = updateOp.ClearAlternateID()
+			updateOp = updateOp.ClearResourceID()
 		}
 
 		savedResource, err = updateOp.Save(ctx)

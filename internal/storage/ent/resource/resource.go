@@ -36,8 +36,8 @@ const (
 	FieldResourceVersion = "resource_version"
 	// FieldNamespace holds the string denoting the namespace field in the database.
 	FieldNamespace = "namespace"
-	// FieldAlternateID holds the string denoting the alternate_id field in the database.
-	FieldAlternateID = "alternate_id"
+	// FieldResourceID holds the string denoting the resource_id field in the database.
+	FieldResourceID = "resource_id"
 	// EdgeLabels holds the string denoting the labels edge name in mutations.
 	EdgeLabels = "labels"
 	// EdgeAnnotations holds the string denoting the annotations edge name in mutations.
@@ -74,7 +74,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldResourceVersion,
 	FieldNamespace,
-	FieldAlternateID,
+	FieldResourceID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -161,9 +161,9 @@ func ByNamespace(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNamespace, opts...).ToFunc()
 }
 
-// ByAlternateID orders the results by the alternate_id field.
-func ByAlternateID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAlternateID, opts...).ToFunc()
+// ByResourceID orders the results by the resource_id field.
+func ByResourceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldResourceID, opts...).ToFunc()
 }
 
 // ByLabelsCount orders the results by labels count.

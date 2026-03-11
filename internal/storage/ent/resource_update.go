@@ -158,23 +158,23 @@ func (_u *ResourceUpdate) ClearNamespace() *ResourceUpdate {
 	return _u
 }
 
-// SetAlternateID sets the "alternate_id" field.
-func (_u *ResourceUpdate) SetAlternateID(v string) *ResourceUpdate {
-	_u.mutation.SetAlternateID(v)
+// SetResourceID sets the "resource_id" field.
+func (_u *ResourceUpdate) SetResourceID(v string) *ResourceUpdate {
+	_u.mutation.SetResourceID(v)
 	return _u
 }
 
-// SetNillableAlternateID sets the "alternate_id" field if the given value is not nil.
-func (_u *ResourceUpdate) SetNillableAlternateID(v *string) *ResourceUpdate {
+// SetNillableResourceID sets the "resource_id" field if the given value is not nil.
+func (_u *ResourceUpdate) SetNillableResourceID(v *string) *ResourceUpdate {
 	if v != nil {
-		_u.SetAlternateID(*v)
+		_u.SetResourceID(*v)
 	}
 	return _u
 }
 
-// ClearAlternateID clears the value of the "alternate_id" field.
-func (_u *ResourceUpdate) ClearAlternateID() *ResourceUpdate {
-	_u.mutation.ClearAlternateID()
+// ClearResourceID clears the value of the "resource_id" field.
+func (_u *ResourceUpdate) ClearResourceID() *ResourceUpdate {
+	_u.mutation.ClearResourceID()
 	return _u
 }
 
@@ -366,11 +366,11 @@ func (_u *ResourceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.NamespaceCleared() {
 		_spec.ClearField(resource.FieldNamespace, field.TypeString)
 	}
-	if value, ok := _u.mutation.AlternateID(); ok {
-		_spec.SetField(resource.FieldAlternateID, field.TypeString, value)
+	if value, ok := _u.mutation.ResourceID(); ok {
+		_spec.SetField(resource.FieldResourceID, field.TypeString, value)
 	}
-	if _u.mutation.AlternateIDCleared() {
-		_spec.ClearField(resource.FieldAlternateID, field.TypeString)
+	if _u.mutation.ResourceIDCleared() {
+		_spec.ClearField(resource.FieldResourceID, field.TypeString)
 	}
 	if _u.mutation.LabelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -608,23 +608,23 @@ func (_u *ResourceUpdateOne) ClearNamespace() *ResourceUpdateOne {
 	return _u
 }
 
-// SetAlternateID sets the "alternate_id" field.
-func (_u *ResourceUpdateOne) SetAlternateID(v string) *ResourceUpdateOne {
-	_u.mutation.SetAlternateID(v)
+// SetResourceID sets the "resource_id" field.
+func (_u *ResourceUpdateOne) SetResourceID(v string) *ResourceUpdateOne {
+	_u.mutation.SetResourceID(v)
 	return _u
 }
 
-// SetNillableAlternateID sets the "alternate_id" field if the given value is not nil.
-func (_u *ResourceUpdateOne) SetNillableAlternateID(v *string) *ResourceUpdateOne {
+// SetNillableResourceID sets the "resource_id" field if the given value is not nil.
+func (_u *ResourceUpdateOne) SetNillableResourceID(v *string) *ResourceUpdateOne {
 	if v != nil {
-		_u.SetAlternateID(*v)
+		_u.SetResourceID(*v)
 	}
 	return _u
 }
 
-// ClearAlternateID clears the value of the "alternate_id" field.
-func (_u *ResourceUpdateOne) ClearAlternateID() *ResourceUpdateOne {
-	_u.mutation.ClearAlternateID()
+// ClearResourceID clears the value of the "resource_id" field.
+func (_u *ResourceUpdateOne) ClearResourceID() *ResourceUpdateOne {
+	_u.mutation.ClearResourceID()
 	return _u
 }
 
@@ -846,11 +846,11 @@ func (_u *ResourceUpdateOne) sqlSave(ctx context.Context) (_node *Resource, err 
 	if _u.mutation.NamespaceCleared() {
 		_spec.ClearField(resource.FieldNamespace, field.TypeString)
 	}
-	if value, ok := _u.mutation.AlternateID(); ok {
-		_spec.SetField(resource.FieldAlternateID, field.TypeString, value)
+	if value, ok := _u.mutation.ResourceID(); ok {
+		_spec.SetField(resource.FieldResourceID, field.TypeString, value)
 	}
-	if _u.mutation.AlternateIDCleared() {
-		_spec.ClearField(resource.FieldAlternateID, field.TypeString)
+	if _u.mutation.ResourceIDCleared() {
+		_spec.ClearField(resource.FieldResourceID, field.TypeString)
 	}
 	if _u.mutation.LabelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
