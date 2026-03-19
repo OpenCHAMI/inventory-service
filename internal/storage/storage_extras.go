@@ -159,14 +159,14 @@ func LoadServiceEndpointByID(ctx context.Context, id string) (*v1.ServiceEndpoin
 }
 
 // LoadServiceEndpointsByServiceID loads all ServiceEndpoint resources whose
-// spec.RedfishType matches the given serviceID.
-func LoadServiceEndpointsByRedfishType(ctx context.Context, serviceID string) ([]*v1.ServiceEndpoint, error) {
+// spec.RedfishType matches the given redfishType.
+func LoadServiceEndpointsByRedfishType(ctx context.Context, redfishType string) ([]*v1.ServiceEndpoint, error) {
 	if entClient == nil {
 		return nil, fmt.Errorf("ent client not initialized")
 	}
 
 	jsonPredicate := entpredicate.Resource(func(s *entsql.Selector) {
-		s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), serviceID,
+		s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), redfishType,
 			sqljson.Path("RedfishType")))
 	})
 
@@ -174,6 +174,47 @@ func LoadServiceEndpointsByRedfishType(ctx context.Context, serviceID string) ([
 		Where(
 			entresource.KindEQ("ServiceEndpoint"),
 			jsonPredicate,
+		).
+		WithLabels().
+		WithAnnotations().
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load ServiceEndpoint resources: %w", err)
+	}
+
+	var results []*v1.ServiceEndpoint
+	for _, entResource := range entResources {
+		fabricaResource, err := FromEntResource(ctx, entResource)
+		if err != nil {
+			continue
+		}
+		results = append(results, fabricaResource.(*v1.ServiceEndpoint))
+	}
+
+	return results, nil
+}
+
+// LoadServiceEndpointsByRedfishTypeAndID loads all ServiceEndpoint resources whose
+// Spec JSON contains "RedfishType" == redfishType and "RedfishEndpointID" == redfishID.
+func LoadServiceEndpointsByRedfishTypeAndID(ctx context.Context, redfishType string, redfishID string) ([]*v1.ServiceEndpoint, error) {
+	if entClient == nil {
+		return nil, fmt.Errorf("ent client not initialized")
+	}
+
+	typePredicate := entpredicate.Resource(func(s *entsql.Selector) {
+		s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), redfishType,
+			sqljson.Path("RedfishType")))
+	})
+	idPredicate := entpredicate.Resource(func(s *entsql.Selector) {
+		s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), redfishID,
+			sqljson.Path("RedfishEndpointID")))
+	})
+
+	entResources, err := entClient.Resource.Query().
+		Where(
+			entresource.KindEQ("ServiceEndpoint"),
+			typePredicate,
+			idPredicate,
 		).
 		WithLabels().
 		WithAnnotations().

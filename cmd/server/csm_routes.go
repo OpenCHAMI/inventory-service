@@ -55,12 +55,13 @@ func RegisterCsmRoutes(r chi.Router) {
 		r.Post("/", CreateServiceEndpointCsm)
 		// todo (optional)
 		// DELETE /Inventory/ServiceEndpoints
-		r.Route("/{id}", func(r chi.Router) {
+		r.Route("/{redfishType}", func(r chi.Router) {
 			r.Get("/", GetServiceEndpointCsm)
-			r.Put("/", UpdateServiceEndpointCsm)
-			r.Delete("/", DeleteServiceEndpointCsm)
-			// GET /ServiceEndpoints/{id}/RedfishEndpoints/{redfish_endpoint_id}
-			// DELETE /ServiceEndpoints/{id}/RedfishEndpoints/{redfish_endpoint_id}
+			r.Route("/RedfishEndpoints/{redfishID}", func(r chi.Router) {
+				r.Get("/", GetServiceEndpointByTypeAndIdCsm)
+				r.Put("/", UpdateServiceEndpointCsm)
+				r.Delete("/", DeleteServiceEndpointCsm)
+			})
 		})
 	})
 	// RedfishEndpoint routes

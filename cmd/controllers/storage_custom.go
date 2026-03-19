@@ -109,7 +109,7 @@ func (s *EntStorage) LoadServiceEndpoint(ctx context.Context, uid string) (*v1.S
 }
 
 func (s *EntStorage) SaveServiceEndpoint(ctx context.Context, resource *v1.ServiceEndpoint) error {
-	resource.ID = resource.Spec.URL
+	resource.ID = resource.Spec.RedfishType + "-" + resource.Spec.RfEndpointID
 	return storage.SaveServiceEndpoint(ctx, resource)
 }
 
@@ -141,6 +141,10 @@ func (s *EntStorage) LoadGroupByLabel(ctx context.Context, label string) (*v1.Gr
 	return storage.LoadGroupByLabel(ctx, label)
 }
 
-func (s *EntStorage) LoadServiceEndpointsByRedfishType(ctx context.Context, serviceID string) ([]*v1.ServiceEndpoint, error) {
-	return storage.LoadServiceEndpointsByRedfishType(ctx, serviceID)
+func (s *EntStorage) LoadServiceEndpointsByRedfishType(ctx context.Context, redfishType string) ([]*v1.ServiceEndpoint, error) {
+	return storage.LoadServiceEndpointsByRedfishType(ctx, redfishType)
+}
+
+func (s *EntStorage) LoadServiceEndpointsByRedfishTypeAndID(ctx context.Context, redfishType string, redfishID string) ([]*v1.ServiceEndpoint, error) {
+	return storage.LoadServiceEndpointsByRedfishTypeAndID(ctx, redfishType, redfishID)
 }

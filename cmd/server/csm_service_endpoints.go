@@ -37,24 +37,59 @@ func GetServiceEndpointsCsm(w http.ResponseWriter, r *http.Request) {
 
 // GetServiceEndpointCsm returns a specific ServiceEndpoint resource by RedfishEndpointID
 func GetServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	redfishType := chi.URLParam(r, "redfishType")
+	if redfishType == "" {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint RedfishType is required"))
+		return
+	}
+
+	serviceEndpoints, err := plugins.Store.LoadServiceEndpointsByRedfishType(r.Context(), redfishType)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load serviceendpoint %s: %w", redfishType, err))
+		return
+	}
+
+	serviceEndpointArray := ServiceEndpointArray{
+		ServiceEndpoints: make([]*v1.ServiceEndpointSpec, len(serviceEndpoints)),
+	}
+	for i, s := range serviceEndpoints {
+		serviceEndpointArray.ServiceEndpoints[i] = &s.Spec
+	}
+
+	respondJSON(w, http.StatusOK, serviceEndpointArray)
+}
+
+// GetServiceEndpointCsm returns a specific ServiceEndpoint resource by RedfishEndpointID
+func GetServiceEndpointByTypeAndIdCsm(w http.ResponseWriter, r *http.Request) {
+	redfishType := chi.URLParam(r, "redfishType")
+	if redfishType == "" {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint RedfishType is required"))
+		return
+	}
+	redfishID := chi.URLParam(r, "redfishID")
+	if redfishID == "" {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint RedfishEndpointID is required"))
 		return
 	}
 
-	serviceEndpoints, err := plugins.Store.LoadServiceEndpointsByRedfishType(r.Context(), id)
+	serviceEndpoints, err := plugins.Store.LoadServiceEndpointsByRedfishTypeAndID(r.Context(), redfishType, redfishID)
 	if err != nil {
-		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load serviceendpoint %s: %w", id, err))
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load serviceendpoint %s, %s: %w", redfishType, redfishID, err))
 		return
 	}
 
-	services := make([]*v1.ServiceEndpointSpec, len(serviceEndpoints))
+	services := make([]*v1.ServiceEndpointSpec, 0)
 	for _, serviceEndpoint := range serviceEndpoints {
 		services = append(services, &serviceEndpoint.Spec)
 	}
 
-	respondJSON(w, http.StatusOK, services)
+	// todo change to enforce uniquenes of the type and id
+	if len(services) == 0 {
+		respondError(w, http.StatusNotFound, fmt.Errorf("serviceendpoint not found: %s, %s", redfishType, redfishID))
+	} else {
+		respondJSON(w, http.StatusOK, services[0])
+
+	}
 }
 
 // CreateServiceEndpointCsm creates one or more new ServiceEndpoint resources
@@ -120,20 +155,25 @@ func CreateServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
 // UpdateServiceEndpointCsm updates the spec of an existing ServiceEndpoint resource
 // NOTE: This endpoint ONLY updates the spec. Use PUT /ServiceEndpoints/{id}/status to update status.
 func UpdateServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint ID is required"))
+	redfishType := chi.URLParam(r, "redfishType")
+	if redfishType == "" {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint RedfishType is required"))
+		return
+	}
+	redfishID := chi.URLParam(r, "redfishID")
+	if redfishID == "" {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint RedfishEndpointID is required"))
 		return
 	}
 
-	serviceEndpoint, err := plugins.Store.LoadServiceEndpointByID(r.Context(), id)
+	serviceEndpoints, err := plugins.Store.LoadServiceEndpointsByRedfishTypeAndID(r.Context(), redfishType, redfishID)
 	if err != nil {
-		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load serviceendpoint %s: %w", id, err))
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load serviceendpoint %s %s: %w", redfishType, redfishID, err))
 		return
 	}
 
-	if serviceEndpoint == nil {
-		respondError(w, http.StatusNotFound, fmt.Errorf("serviceendpoint not found: %s", id))
+	if len(serviceEndpoints) == 0 {
+		respondError(w, http.StatusNotFound, fmt.Errorf("serviceendpoint not found: %s %s", redfishType, redfishID))
 		return
 	}
 
@@ -142,6 +182,8 @@ func UpdateServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
 		return
 	}
+
+	serviceEndpoint := serviceEndpoints[0]
 
 	serviceEndpoint.Metadata.Name = req.RfEndpointID
 	serviceEndpoint.Spec = req
@@ -173,19 +215,25 @@ func UpdateServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
 
 // DeleteServiceEndpointCsm deletes a ServiceEndpoint resource
 func DeleteServiceEndpointCsm(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint ID is required"))
+	redfishType := chi.URLParam(r, "redfishType")
+	if redfishType == "" {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint RedfishType is required"))
+		return
+	}
+	redfishID := chi.URLParam(r, "redfishID")
+	if redfishID == "" {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("ServiceEndpoint RedfishEndpointID is required"))
 		return
 	}
 
-	serviceEndpoint, err := plugins.Store.LoadServiceEndpointByID(r.Context(), id)
+	serviceEndpoints, err := plugins.Store.LoadServiceEndpointsByRedfishTypeAndID(r.Context(), redfishType, redfishID)
 	if err != nil {
-		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load serviceendpoint %s: %w", id, err))
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load serviceendpoint %s, %s: %w", redfishType, redfishID, err))
 		return
 	}
 
-	if serviceEndpoint != nil {
+	if len(serviceEndpoints) != 0 {
+		serviceEndpoint := serviceEndpoints[0]
 		uid := serviceEndpoint.GetUID()
 		if err := plugins.Store.DeleteServiceEndpoint(r.Context(), uid); err != nil {
 			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete ServiceEndpoint: %w", err))
