@@ -10,6 +10,7 @@ type RedfishEndpoint struct {
 	APIVersion string                `json:"apiVersion"`
 	Kind       string                `json:"kind"`
 	Metadata   fabrica.Metadata      `json:"metadata"`
+	ID         string                `json:"id,omitempty"`
 	Spec       RedfishEndpointSpec   `json:"spec" validate:"required"`
 	Status     RedfishEndpointStatus `json:"status,omitempty"`
 }

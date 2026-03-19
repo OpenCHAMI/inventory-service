@@ -201,10 +201,9 @@ def test_compare_components(discover_hardware):
 
     smd2_ethernet_interfaces = json.loads(response.text)
 
-    # todo
-    # diff = compare(smd_ethernet_interfaces, smd2_ethernet_interfaces, exclude_paths=["root['LastUpdate']"])
-    # if diff:
-        # pytest.fail(f"The EthernetInterfaces list from SMD does not match the list from SMD2. diff: {diff}")
+    diff = compare(smd_ethernet_interfaces, smd2_ethernet_interfaces, exclude_paths=["root['LastUpdate']"])
+    if diff:
+        pytest.fail(f"The EthernetInterfaces list from SMD does not match the list from SMD2. diff: {diff}")
 
     # /Inventory/RedfishEndpoints
     response = requests.get(f"{smd_base_url}/v2/Inventory/RedfishEndpoints")

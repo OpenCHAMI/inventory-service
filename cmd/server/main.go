@@ -18,6 +18,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/OpenCHAMI/smd2/cmd/controllers"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 	_ "github.com/OpenCHAMI/smd2/pkg/apiversion"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -121,6 +123,7 @@ func init() {
 	rootCmd.AddCommand(newExportCommand())
 	rootCmd.AddCommand(newImportCommand())
 
+	plugins.Store = &controllers.EntStorage{}
 }
 
 func initConfig() {

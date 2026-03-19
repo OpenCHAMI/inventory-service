@@ -24,13 +24,13 @@
 //   - PATCH /groups/{uid}/status (patch Group status)
 //
 // Authorization: Add custom middleware for authentication/authorization
-// Storage: Uses storage.LoadGroup*/SaveGroup*/DeleteGroup*
+// Storage: Uses plugins.Store.LoadGroup*/SaveGroup*/DeleteGroup*
 // Version Support: Available (see version context in handlers)
 //
 // To enable full version conversion for this resource:
 //  1. Add new version: fabrica add version <group> <version>
 //  2. Implement converter: apis/<group>/<version>/converter.go
-//  3. Add version-aware storage: storage.LoadGroupWithVersion()
+//  3. Add version-aware storage: plugins.Store.LoadGroupWithVersion()
 //  4. Register versions in cmd/server/main.go
 package main
 
@@ -49,7 +49,7 @@ import (
 	"github.com/openchami/fabrica/pkg/validation"
 	"github.com/openchami/fabrica/pkg/versioning"
 
-	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 )
 
 // GetGroups returns all Group resources
@@ -57,7 +57,7 @@ func GetGroups(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	groups, err := storage.LoadAllGroups(r.Context())
+	groups, err := plugins.Store.LoadAllGroups(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load groups: %w", err))
 		return
@@ -76,12 +76,12 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 	// Version context available here for version-aware operations
 	// versionCtx := versioning.GetVersionContext(r.Context())
 	// Requested version: versionCtx.ServeVersion
-	// To enable: replace storage.LoadGroup() with version-aware function
+	// To enable: replace plugins.Store.LoadGroup() with version-aware function
 
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	group, err := storage.LoadGroup(r.Context(), uid)
+	group, err := plugins.Store.LoadGroup(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Group not found: %w", err))
 		return
@@ -152,7 +152,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 	// to this template, and that the resource has a .Status.Phase field.
 
 	// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-	if err := storage.SaveGroup(r.Context(), group); err != nil {
+	if err := plugins.Store.SaveGroup(r.Context(), group); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Group: %w", err))
 		return
 	}
@@ -177,7 +177,7 @@ func UpdateGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	group, err := storage.LoadGroup(r.Context(), uid)
+	group, err := plugins.Store.LoadGroup(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Group not found: %w", err))
 		return
@@ -216,7 +216,7 @@ func UpdateGroup(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	group.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveGroup(r.Context(), group); err != nil {
+	if err := plugins.Store.SaveGroup(r.Context(), group); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Group: %w", err))
 		return
 	}
@@ -244,7 +244,7 @@ func PatchGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	group, err := storage.LoadGroup(r.Context(), uid)
+	group, err := plugins.Store.LoadGroup(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Group not found: %w", err))
 		return
@@ -289,7 +289,7 @@ func PatchGroup(w http.ResponseWriter, r *http.Request) {
 	group.Metadata.UpdatedAt = time.Now()
 
 	// Save the patched resource
-	if err := storage.SaveGroup(r.Context(), group); err != nil {
+	if err := plugins.Store.SaveGroup(r.Context(), group); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched Group: %w", err))
 		return
 	}
@@ -325,7 +325,7 @@ func UpdateGroupStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status update authorization
 	// Status updates can have different permissions than spec updates
 
-	res, err := storage.LoadGroup(r.Context(), uid)
+	res, err := plugins.Store.LoadGroup(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Group not found: %w", err))
 		return
@@ -342,7 +342,7 @@ func UpdateGroupStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveGroup(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveGroup(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Group status: %w", err))
 		return
 	}
@@ -375,7 +375,7 @@ func PatchGroupStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status patch authorization
 	// Status patches can have different permissions than spec patches
 
-	res, err := storage.LoadGroup(r.Context(), uid)
+	res, err := plugins.Store.LoadGroup(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Group not found: %w", err))
 		return
@@ -414,7 +414,7 @@ func PatchGroupStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveGroup(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveGroup(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched Group status: %w", err))
 		return
 	}
@@ -443,13 +443,13 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Load resource before deletion for event publishing
-	group, err := storage.LoadGroup(r.Context(), uid)
+	group, err := plugins.Store.LoadGroup(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Group not found: %w", err))
 		return
 	}
 
-	if err := storage.DeleteGroup(r.Context(), uid); err != nil {
+	if err := plugins.Store.DeleteGroup(r.Context(), uid); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete Group: %w", err))
 		return
 	}

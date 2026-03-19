@@ -24,13 +24,13 @@
 //   - PATCH /componentendpoints/{uid}/status (patch ComponentEndpoint status)
 //
 // Authorization: Add custom middleware for authentication/authorization
-// Storage: Uses storage.LoadComponentEndpoint*/SaveComponentEndpoint*/DeleteComponentEndpoint*
+// Storage: Uses plugins.Store.LoadComponentEndpoint*/SaveComponentEndpoint*/DeleteComponentEndpoint*
 // Version Support: Available (see version context in handlers)
 //
 // To enable full version conversion for this resource:
 //  1. Add new version: fabrica add version <group> <version>
 //  2. Implement converter: apis/<group>/<version>/converter.go
-//  3. Add version-aware storage: storage.LoadComponentEndpointWithVersion()
+//  3. Add version-aware storage: plugins.Store.LoadComponentEndpointWithVersion()
 //  4. Register versions in cmd/server/main.go
 package main
 
@@ -49,7 +49,7 @@ import (
 	"github.com/openchami/fabrica/pkg/validation"
 	"github.com/openchami/fabrica/pkg/versioning"
 
-	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 )
 
 // GetComponentEndpoints returns all ComponentEndpoint resources
@@ -57,7 +57,7 @@ func GetComponentEndpoints(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	componentendpoints, err := storage.LoadAllComponentEndpoints(r.Context())
+	componentendpoints, err := plugins.Store.LoadAllComponentEndpoints(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load componentendpoints: %w", err))
 		return
@@ -76,12 +76,12 @@ func GetComponentEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Version context available here for version-aware operations
 	// versionCtx := versioning.GetVersionContext(r.Context())
 	// Requested version: versionCtx.ServeVersion
-	// To enable: replace storage.LoadComponentEndpoint() with version-aware function
+	// To enable: replace plugins.Store.LoadComponentEndpoint() with version-aware function
 
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	componentEndpoint, err := storage.LoadComponentEndpoint(r.Context(), uid)
+	componentEndpoint, err := plugins.Store.LoadComponentEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ComponentEndpoint not found: %w", err))
 		return
@@ -152,7 +152,7 @@ func CreateComponentEndpoint(w http.ResponseWriter, r *http.Request) {
 	// to this template, and that the resource has a .Status.Phase field.
 
 	// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-	if err := storage.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
+	if err := plugins.Store.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save ComponentEndpoint: %w", err))
 		return
 	}
@@ -177,7 +177,7 @@ func UpdateComponentEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	componentEndpoint, err := storage.LoadComponentEndpoint(r.Context(), uid)
+	componentEndpoint, err := plugins.Store.LoadComponentEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ComponentEndpoint not found: %w", err))
 		return
@@ -216,7 +216,7 @@ func UpdateComponentEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	componentEndpoint.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
+	if err := plugins.Store.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save ComponentEndpoint: %w", err))
 		return
 	}
@@ -244,7 +244,7 @@ func PatchComponentEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	componentEndpoint, err := storage.LoadComponentEndpoint(r.Context(), uid)
+	componentEndpoint, err := plugins.Store.LoadComponentEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ComponentEndpoint not found: %w", err))
 		return
@@ -289,7 +289,7 @@ func PatchComponentEndpoint(w http.ResponseWriter, r *http.Request) {
 	componentEndpoint.Metadata.UpdatedAt = time.Now()
 
 	// Save the patched resource
-	if err := storage.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
+	if err := plugins.Store.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched ComponentEndpoint: %w", err))
 		return
 	}
@@ -325,7 +325,7 @@ func UpdateComponentEndpointStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status update authorization
 	// Status updates can have different permissions than spec updates
 
-	res, err := storage.LoadComponentEndpoint(r.Context(), uid)
+	res, err := plugins.Store.LoadComponentEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ComponentEndpoint not found: %w", err))
 		return
@@ -342,7 +342,7 @@ func UpdateComponentEndpointStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveComponentEndpoint(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveComponentEndpoint(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save ComponentEndpoint status: %w", err))
 		return
 	}
@@ -375,7 +375,7 @@ func PatchComponentEndpointStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status patch authorization
 	// Status patches can have different permissions than spec patches
 
-	res, err := storage.LoadComponentEndpoint(r.Context(), uid)
+	res, err := plugins.Store.LoadComponentEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ComponentEndpoint not found: %w", err))
 		return
@@ -414,7 +414,7 @@ func PatchComponentEndpointStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveComponentEndpoint(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveComponentEndpoint(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched ComponentEndpoint status: %w", err))
 		return
 	}
@@ -443,13 +443,13 @@ func DeleteComponentEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Load resource before deletion for event publishing
-	componentEndpoint, err := storage.LoadComponentEndpoint(r.Context(), uid)
+	componentEndpoint, err := plugins.Store.LoadComponentEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ComponentEndpoint not found: %w", err))
 		return
 	}
 
-	if err := storage.DeleteComponentEndpoint(r.Context(), uid); err != nil {
+	if err := plugins.Store.DeleteComponentEndpoint(r.Context(), uid); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete ComponentEndpoint: %w", err))
 		return
 	}

@@ -129,13 +129,20 @@ func SaveComponent(ctx context.Context, resource *v1.Component) error {
 		spec, _ := json.Marshal(resource.Spec)
 		status, _ := json.Marshal(resource.Status)
 
-		savedResource, err = entClient.Resource.UpdateOne(entResource).
+		updateOp := entClient.Resource.UpdateOne(entResource).
 			SetName(resource.Metadata.Name).
 			SetAPIVersion(resource.APIVersion).
 			SetSpec(spec).
 			SetStatus(status).
-			SetUpdatedAt(time.Now()).
-			Save(ctx)
+			SetUpdatedAt(time.Now())
+
+		if resource.ID != "" {
+			updateOp = updateOp.SetResourceID(resource.ID)
+		} else {
+			updateOp = updateOp.ClearResourceID()
+		}
+
+		savedResource, err = updateOp.Save(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to update Component: %w", err)
 		}
@@ -273,13 +280,20 @@ func SaveComponentEndpoint(ctx context.Context, resource *v1.ComponentEndpoint) 
 		spec, _ := json.Marshal(resource.Spec)
 		status, _ := json.Marshal(resource.Status)
 
-		savedResource, err = entClient.Resource.UpdateOne(entResource).
+		updateOp := entClient.Resource.UpdateOne(entResource).
 			SetName(resource.Metadata.Name).
 			SetAPIVersion(resource.APIVersion).
 			SetSpec(spec).
 			SetStatus(status).
-			SetUpdatedAt(time.Now()).
-			Save(ctx)
+			SetUpdatedAt(time.Now())
+
+		if resource.ID != "" {
+			updateOp = updateOp.SetResourceID(resource.ID)
+		} else {
+			updateOp = updateOp.ClearResourceID()
+		}
+
+		savedResource, err = updateOp.Save(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to update ComponentEndpoint: %w", err)
 		}
@@ -417,13 +431,20 @@ func SaveEthernetInterface(ctx context.Context, resource *v1.EthernetInterface) 
 		spec, _ := json.Marshal(resource.Spec)
 		status, _ := json.Marshal(resource.Status)
 
-		savedResource, err = entClient.Resource.UpdateOne(entResource).
+		updateOp := entClient.Resource.UpdateOne(entResource).
 			SetName(resource.Metadata.Name).
 			SetAPIVersion(resource.APIVersion).
 			SetSpec(spec).
 			SetStatus(status).
-			SetUpdatedAt(time.Now()).
-			Save(ctx)
+			SetUpdatedAt(time.Now())
+
+		if resource.ID != "" {
+			updateOp = updateOp.SetResourceID(resource.ID)
+		} else {
+			updateOp = updateOp.ClearResourceID()
+		}
+
+		savedResource, err = updateOp.Save(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to update EthernetInterface: %w", err)
 		}
@@ -561,13 +582,20 @@ func SaveGroup(ctx context.Context, resource *v1.Group) error {
 		spec, _ := json.Marshal(resource.Spec)
 		status, _ := json.Marshal(resource.Status)
 
-		savedResource, err = entClient.Resource.UpdateOne(entResource).
+		updateOp := entClient.Resource.UpdateOne(entResource).
 			SetName(resource.Metadata.Name).
 			SetAPIVersion(resource.APIVersion).
 			SetSpec(spec).
 			SetStatus(status).
-			SetUpdatedAt(time.Now()).
-			Save(ctx)
+			SetUpdatedAt(time.Now())
+
+		if resource.ID != "" {
+			updateOp = updateOp.SetResourceID(resource.ID)
+		} else {
+			updateOp = updateOp.ClearResourceID()
+		}
+
+		savedResource, err = updateOp.Save(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to update Group: %w", err)
 		}
@@ -705,13 +733,20 @@ func SaveRedfishEndpoint(ctx context.Context, resource *v1.RedfishEndpoint) erro
 		spec, _ := json.Marshal(resource.Spec)
 		status, _ := json.Marshal(resource.Status)
 
-		savedResource, err = entClient.Resource.UpdateOne(entResource).
+		updateOp := entClient.Resource.UpdateOne(entResource).
 			SetName(resource.Metadata.Name).
 			SetAPIVersion(resource.APIVersion).
 			SetSpec(spec).
 			SetStatus(status).
-			SetUpdatedAt(time.Now()).
-			Save(ctx)
+			SetUpdatedAt(time.Now())
+
+		if resource.ID != "" {
+			updateOp = updateOp.SetResourceID(resource.ID)
+		} else {
+			updateOp = updateOp.ClearResourceID()
+		}
+
+		savedResource, err = updateOp.Save(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to update RedfishEndpoint: %w", err)
 		}
@@ -849,13 +884,20 @@ func SaveServiceEndpoint(ctx context.Context, resource *v1.ServiceEndpoint) erro
 		spec, _ := json.Marshal(resource.Spec)
 		status, _ := json.Marshal(resource.Status)
 
-		savedResource, err = entClient.Resource.UpdateOne(entResource).
+		updateOp := entClient.Resource.UpdateOne(entResource).
 			SetName(resource.Metadata.Name).
 			SetAPIVersion(resource.APIVersion).
 			SetSpec(spec).
 			SetStatus(status).
-			SetUpdatedAt(time.Now()).
-			Save(ctx)
+			SetUpdatedAt(time.Now())
+
+		if resource.ID != "" {
+			updateOp = updateOp.SetResourceID(resource.ID)
+		} else {
+			updateOp = updateOp.ClearResourceID()
+		}
+
+		savedResource, err = updateOp.Save(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to update ServiceEndpoint: %w", err)
 		}

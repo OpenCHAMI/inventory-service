@@ -24,13 +24,13 @@
 //   - PATCH /redfishendpoints/{uid}/status (patch RedfishEndpoint status)
 //
 // Authorization: Add custom middleware for authentication/authorization
-// Storage: Uses storage.LoadRedfishEndpoint*/SaveRedfishEndpoint*/DeleteRedfishEndpoint*
+// Storage: Uses plugins.Store.LoadRedfishEndpoint*/SaveRedfishEndpoint*/DeleteRedfishEndpoint*
 // Version Support: Available (see version context in handlers)
 //
 // To enable full version conversion for this resource:
 //  1. Add new version: fabrica add version <group> <version>
 //  2. Implement converter: apis/<group>/<version>/converter.go
-//  3. Add version-aware storage: storage.LoadRedfishEndpointWithVersion()
+//  3. Add version-aware storage: plugins.Store.LoadRedfishEndpointWithVersion()
 //  4. Register versions in cmd/server/main.go
 package main
 
@@ -49,7 +49,7 @@ import (
 	"github.com/openchami/fabrica/pkg/validation"
 	"github.com/openchami/fabrica/pkg/versioning"
 
-	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 )
 
 // GetRedfishEndpoints returns all RedfishEndpoint resources
@@ -57,7 +57,7 @@ func GetRedfishEndpoints(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	redfishendpoints, err := storage.LoadAllRedfishEndpoints(r.Context())
+	redfishendpoints, err := plugins.Store.LoadAllRedfishEndpoints(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load redfishendpoints: %w", err))
 		return
@@ -76,12 +76,12 @@ func GetRedfishEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Version context available here for version-aware operations
 	// versionCtx := versioning.GetVersionContext(r.Context())
 	// Requested version: versionCtx.ServeVersion
-	// To enable: replace storage.LoadRedfishEndpoint() with version-aware function
+	// To enable: replace plugins.Store.LoadRedfishEndpoint() with version-aware function
 
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	redfishEndpoint, err := storage.LoadRedfishEndpoint(r.Context(), uid)
+	redfishEndpoint, err := plugins.Store.LoadRedfishEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("RedfishEndpoint not found: %w", err))
 		return
@@ -152,7 +152,7 @@ func CreateRedfishEndpoint(w http.ResponseWriter, r *http.Request) {
 	// to this template, and that the resource has a .Status.Phase field.
 
 	// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-	if err := storage.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
+	if err := plugins.Store.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save RedfishEndpoint: %w", err))
 		return
 	}
@@ -177,7 +177,7 @@ func UpdateRedfishEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redfishEndpoint, err := storage.LoadRedfishEndpoint(r.Context(), uid)
+	redfishEndpoint, err := plugins.Store.LoadRedfishEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("RedfishEndpoint not found: %w", err))
 		return
@@ -216,7 +216,7 @@ func UpdateRedfishEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	redfishEndpoint.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
+	if err := plugins.Store.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save RedfishEndpoint: %w", err))
 		return
 	}
@@ -244,7 +244,7 @@ func PatchRedfishEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redfishEndpoint, err := storage.LoadRedfishEndpoint(r.Context(), uid)
+	redfishEndpoint, err := plugins.Store.LoadRedfishEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("RedfishEndpoint not found: %w", err))
 		return
@@ -289,7 +289,7 @@ func PatchRedfishEndpoint(w http.ResponseWriter, r *http.Request) {
 	redfishEndpoint.Metadata.UpdatedAt = time.Now()
 
 	// Save the patched resource
-	if err := storage.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
+	if err := plugins.Store.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched RedfishEndpoint: %w", err))
 		return
 	}
@@ -325,7 +325,7 @@ func UpdateRedfishEndpointStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status update authorization
 	// Status updates can have different permissions than spec updates
 
-	res, err := storage.LoadRedfishEndpoint(r.Context(), uid)
+	res, err := plugins.Store.LoadRedfishEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("RedfishEndpoint not found: %w", err))
 		return
@@ -342,7 +342,7 @@ func UpdateRedfishEndpointStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveRedfishEndpoint(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveRedfishEndpoint(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save RedfishEndpoint status: %w", err))
 		return
 	}
@@ -375,7 +375,7 @@ func PatchRedfishEndpointStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status patch authorization
 	// Status patches can have different permissions than spec patches
 
-	res, err := storage.LoadRedfishEndpoint(r.Context(), uid)
+	res, err := plugins.Store.LoadRedfishEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("RedfishEndpoint not found: %w", err))
 		return
@@ -414,7 +414,7 @@ func PatchRedfishEndpointStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveRedfishEndpoint(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveRedfishEndpoint(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched RedfishEndpoint status: %w", err))
 		return
 	}
@@ -443,13 +443,13 @@ func DeleteRedfishEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Load resource before deletion for event publishing
-	redfishEndpoint, err := storage.LoadRedfishEndpoint(r.Context(), uid)
+	redfishEndpoint, err := plugins.Store.LoadRedfishEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("RedfishEndpoint not found: %w", err))
 		return
 	}
 
-	if err := storage.DeleteRedfishEndpoint(r.Context(), uid); err != nil {
+	if err := plugins.Store.DeleteRedfishEndpoint(r.Context(), uid); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete RedfishEndpoint: %w", err))
 		return
 	}

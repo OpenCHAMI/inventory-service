@@ -24,13 +24,13 @@
 //   - PATCH /serviceendpoints/{uid}/status (patch ServiceEndpoint status)
 //
 // Authorization: Add custom middleware for authentication/authorization
-// Storage: Uses storage.LoadServiceEndpoint*/SaveServiceEndpoint*/DeleteServiceEndpoint*
+// Storage: Uses plugins.Store.LoadServiceEndpoint*/SaveServiceEndpoint*/DeleteServiceEndpoint*
 // Version Support: Available (see version context in handlers)
 //
 // To enable full version conversion for this resource:
 //  1. Add new version: fabrica add version <group> <version>
 //  2. Implement converter: apis/<group>/<version>/converter.go
-//  3. Add version-aware storage: storage.LoadServiceEndpointWithVersion()
+//  3. Add version-aware storage: plugins.Store.LoadServiceEndpointWithVersion()
 //  4. Register versions in cmd/server/main.go
 package main
 
@@ -49,7 +49,7 @@ import (
 	"github.com/openchami/fabrica/pkg/validation"
 	"github.com/openchami/fabrica/pkg/versioning"
 
-	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 )
 
 // GetServiceEndpoints returns all ServiceEndpoint resources
@@ -57,7 +57,7 @@ func GetServiceEndpoints(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	serviceendpoints, err := storage.LoadAllServiceEndpoints(r.Context())
+	serviceendpoints, err := plugins.Store.LoadAllServiceEndpoints(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load serviceendpoints: %w", err))
 		return
@@ -76,12 +76,12 @@ func GetServiceEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Version context available here for version-aware operations
 	// versionCtx := versioning.GetVersionContext(r.Context())
 	// Requested version: versionCtx.ServeVersion
-	// To enable: replace storage.LoadServiceEndpoint() with version-aware function
+	// To enable: replace plugins.Store.LoadServiceEndpoint() with version-aware function
 
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	serviceEndpoint, err := storage.LoadServiceEndpoint(r.Context(), uid)
+	serviceEndpoint, err := plugins.Store.LoadServiceEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ServiceEndpoint not found: %w", err))
 		return
@@ -152,7 +152,7 @@ func CreateServiceEndpoint(w http.ResponseWriter, r *http.Request) {
 	// to this template, and that the resource has a .Status.Phase field.
 
 	// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-	if err := storage.SaveServiceEndpoint(r.Context(), serviceEndpoint); err != nil {
+	if err := plugins.Store.SaveServiceEndpoint(r.Context(), serviceEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save ServiceEndpoint: %w", err))
 		return
 	}
@@ -177,7 +177,7 @@ func UpdateServiceEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serviceEndpoint, err := storage.LoadServiceEndpoint(r.Context(), uid)
+	serviceEndpoint, err := plugins.Store.LoadServiceEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ServiceEndpoint not found: %w", err))
 		return
@@ -216,7 +216,7 @@ func UpdateServiceEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	serviceEndpoint.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveServiceEndpoint(r.Context(), serviceEndpoint); err != nil {
+	if err := plugins.Store.SaveServiceEndpoint(r.Context(), serviceEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save ServiceEndpoint: %w", err))
 		return
 	}
@@ -244,7 +244,7 @@ func PatchServiceEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serviceEndpoint, err := storage.LoadServiceEndpoint(r.Context(), uid)
+	serviceEndpoint, err := plugins.Store.LoadServiceEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ServiceEndpoint not found: %w", err))
 		return
@@ -289,7 +289,7 @@ func PatchServiceEndpoint(w http.ResponseWriter, r *http.Request) {
 	serviceEndpoint.Metadata.UpdatedAt = time.Now()
 
 	// Save the patched resource
-	if err := storage.SaveServiceEndpoint(r.Context(), serviceEndpoint); err != nil {
+	if err := plugins.Store.SaveServiceEndpoint(r.Context(), serviceEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched ServiceEndpoint: %w", err))
 		return
 	}
@@ -325,7 +325,7 @@ func UpdateServiceEndpointStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status update authorization
 	// Status updates can have different permissions than spec updates
 
-	res, err := storage.LoadServiceEndpoint(r.Context(), uid)
+	res, err := plugins.Store.LoadServiceEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ServiceEndpoint not found: %w", err))
 		return
@@ -342,7 +342,7 @@ func UpdateServiceEndpointStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveServiceEndpoint(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveServiceEndpoint(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save ServiceEndpoint status: %w", err))
 		return
 	}
@@ -375,7 +375,7 @@ func PatchServiceEndpointStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status patch authorization
 	// Status patches can have different permissions than spec patches
 
-	res, err := storage.LoadServiceEndpoint(r.Context(), uid)
+	res, err := plugins.Store.LoadServiceEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ServiceEndpoint not found: %w", err))
 		return
@@ -414,7 +414,7 @@ func PatchServiceEndpointStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveServiceEndpoint(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveServiceEndpoint(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched ServiceEndpoint status: %w", err))
 		return
 	}
@@ -443,13 +443,13 @@ func DeleteServiceEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Load resource before deletion for event publishing
-	serviceEndpoint, err := storage.LoadServiceEndpoint(r.Context(), uid)
+	serviceEndpoint, err := plugins.Store.LoadServiceEndpoint(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("ServiceEndpoint not found: %w", err))
 		return
 	}
 
-	if err := storage.DeleteServiceEndpoint(r.Context(), uid); err != nil {
+	if err := plugins.Store.DeleteServiceEndpoint(r.Context(), uid); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete ServiceEndpoint: %w", err))
 		return
 	}

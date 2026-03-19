@@ -25,6 +25,7 @@ import (
 func ToEntResource(fabricaResource interface{}) (*ent.ResourceCreate, map[string]string, map[string]string, error) {
 	// Type assertion to get Resource fields
 	var apiVersion, kind, name, uid string
+	var alternateID string
 	var spec, status json.RawMessage
 	var labels, annotations map[string]string
 	var createdAt, updatedAt time.Time
@@ -36,6 +37,7 @@ func ToEntResource(fabricaResource interface{}) (*ent.ResourceCreate, map[string
 		kind = v.Kind
 		name = v.Metadata.Name
 		uid = v.Metadata.UID
+		alternateID = v.ID
 		labels = v.Metadata.Labels
 		annotations = v.Metadata.Annotations
 		createdAt = v.Metadata.CreatedAt
@@ -57,6 +59,7 @@ func ToEntResource(fabricaResource interface{}) (*ent.ResourceCreate, map[string
 		kind = v.Kind
 		name = v.Metadata.Name
 		uid = v.Metadata.UID
+		alternateID = v.ID
 		labels = v.Metadata.Labels
 		annotations = v.Metadata.Annotations
 		createdAt = v.Metadata.CreatedAt
@@ -78,6 +81,7 @@ func ToEntResource(fabricaResource interface{}) (*ent.ResourceCreate, map[string
 		kind = v.Kind
 		name = v.Metadata.Name
 		uid = v.Metadata.UID
+		alternateID = v.ID
 		labels = v.Metadata.Labels
 		annotations = v.Metadata.Annotations
 		createdAt = v.Metadata.CreatedAt
@@ -99,6 +103,7 @@ func ToEntResource(fabricaResource interface{}) (*ent.ResourceCreate, map[string
 		kind = v.Kind
 		name = v.Metadata.Name
 		uid = v.Metadata.UID
+		alternateID = v.ID
 		labels = v.Metadata.Labels
 		annotations = v.Metadata.Annotations
 		createdAt = v.Metadata.CreatedAt
@@ -120,6 +125,7 @@ func ToEntResource(fabricaResource interface{}) (*ent.ResourceCreate, map[string
 		kind = v.Kind
 		name = v.Metadata.Name
 		uid = v.Metadata.UID
+		alternateID = v.ID
 		labels = v.Metadata.Labels
 		annotations = v.Metadata.Annotations
 		createdAt = v.Metadata.CreatedAt
@@ -141,6 +147,7 @@ func ToEntResource(fabricaResource interface{}) (*ent.ResourceCreate, map[string
 		kind = v.Kind
 		name = v.Metadata.Name
 		uid = v.Metadata.UID
+		alternateID = v.ID
 		labels = v.Metadata.Labels
 		annotations = v.Metadata.Annotations
 		createdAt = v.Metadata.CreatedAt
@@ -176,6 +183,10 @@ func ToEntResource(fabricaResource interface{}) (*ent.ResourceCreate, map[string
 		create = create.SetStatus(status)
 	}
 
+	if alternateID != "" {
+		create = create.SetResourceID(alternateID)
+	}
+
 	return create, labels, annotations, nil
 }
 
@@ -189,6 +200,7 @@ func FromEntResource(ctx context.Context, entResource *ent.Resource) (interface{
 
 			APIVersion: entResource.APIVersion,
 			Kind:       entResource.Kind,
+			ID:         entResource.ResourceID,
 			Metadata: fabrica.Metadata{
 				Name:        entResource.Name,
 				UID:         entResource.UID,
@@ -232,6 +244,7 @@ func FromEntResource(ctx context.Context, entResource *ent.Resource) (interface{
 
 			APIVersion: entResource.APIVersion,
 			Kind:       entResource.Kind,
+			ID:         entResource.ResourceID,
 			Metadata: fabrica.Metadata{
 				Name:        entResource.Name,
 				UID:         entResource.UID,
@@ -275,6 +288,7 @@ func FromEntResource(ctx context.Context, entResource *ent.Resource) (interface{
 
 			APIVersion: entResource.APIVersion,
 			Kind:       entResource.Kind,
+			ID:         entResource.ResourceID,
 			Metadata: fabrica.Metadata{
 				Name:        entResource.Name,
 				UID:         entResource.UID,
@@ -318,6 +332,7 @@ func FromEntResource(ctx context.Context, entResource *ent.Resource) (interface{
 
 			APIVersion: entResource.APIVersion,
 			Kind:       entResource.Kind,
+			ID:         entResource.ResourceID,
 			Metadata: fabrica.Metadata{
 				Name:        entResource.Name,
 				UID:         entResource.UID,
@@ -361,6 +376,7 @@ func FromEntResource(ctx context.Context, entResource *ent.Resource) (interface{
 
 			APIVersion: entResource.APIVersion,
 			Kind:       entResource.Kind,
+			ID:         entResource.ResourceID,
 			Metadata: fabrica.Metadata{
 				Name:        entResource.Name,
 				UID:         entResource.UID,
@@ -404,6 +420,7 @@ func FromEntResource(ctx context.Context, entResource *ent.Resource) (interface{
 
 			APIVersion: entResource.APIVersion,
 			Kind:       entResource.Kind,
+			ID:         entResource.ResourceID,
 			Metadata: fabrica.Metadata{
 				Name:        entResource.Name,
 				UID:         entResource.UID,

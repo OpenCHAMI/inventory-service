@@ -83,6 +83,12 @@ func (Resource) Fields() []ent.Field {
 		field.String("namespace").
 			Optional().
 			Comment("Namespace for multi-tenancy"),
+
+		// Optional alternate identifier picked by the client, and it matches the ID in the Spec.
+		// This allows for efficient lookups by alternate ID without needing to parse the JSON Spec.
+		field.String("resource_id").
+			Optional().
+			Comment("Alternate identifier that matches ID in the Spec"),
 	}
 }
 
@@ -103,5 +109,6 @@ func (Resource) Indexes() []ent.Index {
 		index.Fields("resource_type", "name"),
 		index.Fields("resource_type", "namespace"),
 		index.Fields("kind"),
+		index.Fields("resource_type", "resource_id").Unique(),
 	}
 }

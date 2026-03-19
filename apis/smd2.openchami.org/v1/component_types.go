@@ -11,6 +11,7 @@ type Component struct {
 	APIVersion string           `json:"apiVersion"`
 	Kind       string           `json:"kind"`
 	Metadata   fabrica.Metadata `json:"metadata"`
+	ID         string           `json:"id,omitempty"`
 	Spec       ComponentSpec    `json:"spec" validate:"required"`
 	Status     ComponentStatus  `json:"status,omitempty"`
 }

@@ -8,11 +8,11 @@ import (
 	"context"
 	"fmt"
 
-	"entgo.io/ent/dialect/sql"
+	entsql "entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqljson"
 	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
 	"github.com/OpenCHAMI/smd2/internal/storage/ent"
-	"github.com/OpenCHAMI/smd2/internal/storage/ent/predicate"
+	entpredicate "github.com/OpenCHAMI/smd2/internal/storage/ent/predicate"
 	entresource "github.com/OpenCHAMI/smd2/internal/storage/ent/resource"
 )
 
@@ -22,13 +22,10 @@ func LoadComponentByID(ctx context.Context, id string) (*v1.Component, error) {
 		return nil, fmt.Errorf("ent client not initialized")
 	}
 
-	// Query by spec.ID and kind using a JSON predicate
 	entResource, err := entClient.Resource.Query().
 		Where(
 			entresource.KindEQ("Component"),
-			predicate.Resource(func(s *sql.Selector) {
-				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("ID")))
-			}),
+			entresource.ResourceIDEQ(id),
 		).
 		WithLabels().
 		WithAnnotations().
@@ -57,9 +54,7 @@ func LoadComponentEndpointByID(ctx context.Context, id string) (*v1.ComponentEnd
 	entResource, err := entClient.Resource.Query().
 		Where(
 			entresource.KindEQ("ComponentEndpoint"),
-			predicate.Resource(func(s *sql.Selector) {
-				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("ID")))
-			}),
+			entresource.ResourceIDEQ(id),
 		).
 		WithLabels().
 		WithAnnotations().
@@ -87,9 +82,7 @@ func LoadRedfishEndpointByID(ctx context.Context, id string) (*v1.RedfishEndpoin
 	entResource, err := entClient.Resource.Query().
 		Where(
 			entresource.KindEQ("RedfishEndpoint"),
-			predicate.Resource(func(s *sql.Selector) {
-				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("ID")))
-			}),
+			entresource.ResourceIDEQ(id),
 		).
 		WithLabels().
 		WithAnnotations().
@@ -117,9 +110,7 @@ func LoadEthernetInterfaceByID(ctx context.Context, id string) (*v1.EthernetInte
 	entResource, err := entClient.Resource.Query().
 		Where(
 			entresource.KindEQ("EthernetInterface"),
-			predicate.Resource(func(s *sql.Selector) {
-				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("ID")))
-			}),
+			entresource.ResourceIDEQ(id),
 		).
 		WithLabels().
 		WithAnnotations().
@@ -147,9 +138,7 @@ func LoadServiceEndpointByID(ctx context.Context, id string) (*v1.ServiceEndpoin
 	entResource, err := entClient.Resource.Query().
 		Where(
 			entresource.KindEQ("ServiceEndpoint"),
-			predicate.Resource(func(s *sql.Selector) {
-				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), id, sqljson.Path("RedfishEndpointID")))
-			}),
+			entresource.ResourceIDEQ(id),
 		).
 		WithLabels().
 		WithAnnotations().
@@ -169,6 +158,83 @@ func LoadServiceEndpointByID(ctx context.Context, id string) (*v1.ServiceEndpoin
 	return fabricaResource.(*v1.ServiceEndpoint), nil
 }
 
+// LoadServiceEndpointsByServiceID loads all ServiceEndpoint resources whose
+// spec.RedfishType matches the given redfishType.
+func LoadServiceEndpointsByRedfishType(ctx context.Context, redfishType string) ([]*v1.ServiceEndpoint, error) {
+	if entClient == nil {
+		return nil, fmt.Errorf("ent client not initialized")
+	}
+
+	jsonPredicate := entpredicate.Resource(func(s *entsql.Selector) {
+		s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), redfishType,
+			sqljson.Path("RedfishType")))
+	})
+
+	entResources, err := entClient.Resource.Query().
+		Where(
+			entresource.KindEQ("ServiceEndpoint"),
+			jsonPredicate,
+		).
+		WithLabels().
+		WithAnnotations().
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load ServiceEndpoint resources: %w", err)
+	}
+
+	var results []*v1.ServiceEndpoint
+	for _, entResource := range entResources {
+		fabricaResource, err := FromEntResource(ctx, entResource)
+		if err != nil {
+			continue
+		}
+		results = append(results, fabricaResource.(*v1.ServiceEndpoint))
+	}
+
+	return results, nil
+}
+
+// LoadServiceEndpointsByRedfishTypeAndID loads all ServiceEndpoint resources whose
+// Spec JSON contains "RedfishType" == redfishType and "RedfishEndpointID" == redfishID.
+func LoadServiceEndpointsByRedfishTypeAndID(ctx context.Context, redfishType string, redfishID string) ([]*v1.ServiceEndpoint, error) {
+	if entClient == nil {
+		return nil, fmt.Errorf("ent client not initialized")
+	}
+
+	typePredicate := entpredicate.Resource(func(s *entsql.Selector) {
+		s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), redfishType,
+			sqljson.Path("RedfishType")))
+	})
+	idPredicate := entpredicate.Resource(func(s *entsql.Selector) {
+		s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), redfishID,
+			sqljson.Path("RedfishEndpointID")))
+	})
+
+	entResources, err := entClient.Resource.Query().
+		Where(
+			entresource.KindEQ("ServiceEndpoint"),
+			typePredicate,
+			idPredicate,
+		).
+		WithLabels().
+		WithAnnotations().
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load ServiceEndpoint resources: %w", err)
+	}
+
+	var results []*v1.ServiceEndpoint
+	for _, entResource := range entResources {
+		fabricaResource, err := FromEntResource(ctx, entResource)
+		if err != nil {
+			continue
+		}
+		results = append(results, fabricaResource.(*v1.ServiceEndpoint))
+	}
+
+	return results, nil
+}
+
 func LoadGroupByLabel(ctx context.Context, label string) (*v1.Group, error) {
 	if entClient == nil {
 		return nil, fmt.Errorf("ent client not initialized")
@@ -177,9 +243,7 @@ func LoadGroupByLabel(ctx context.Context, label string) (*v1.Group, error) {
 	entResource, err := entClient.Resource.Query().
 		Where(
 			entresource.KindEQ("Group"),
-			predicate.Resource(func(s *sql.Selector) {
-				s.Where(sqljson.ValueEQ(s.C(entresource.FieldSpec), label, sqljson.Path("label")))
-			}),
+			entresource.ResourceIDEQ(label),
 		).
 		WithLabels().
 		WithAnnotations().

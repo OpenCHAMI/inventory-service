@@ -11,7 +11,7 @@ import (
 	"time"
 
 	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
-	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 	"github.com/go-chi/chi/v5"
 	"github.com/openchami/fabrica/pkg/events"
 	"github.com/openchami/fabrica/pkg/resource"
@@ -24,7 +24,7 @@ func GetComponentsCsm(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	components, err := storage.LoadAllComponents(r.Context())
+	components, err := plugins.Store.LoadAllComponents(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load components: %w", err))
 		return
@@ -49,12 +49,12 @@ func GetComponentCsm(w http.ResponseWriter, r *http.Request) {
 	// Version context available here for version-aware operations
 	// versionCtx := versioning.GetVersionContext(r.Context())
 	// Requested version: versionCtx.ServeVersion
-	// To enable: replace storage.LoadComponent() with version-aware function
+	// To enable: replace plugins.Store.LoadComponent() with version-aware function
 
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	component, err := storage.LoadComponentByID(r.Context(), id)
+	component, err := plugins.Store.LoadComponentByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to component %s: %w", id, err))
 		return
@@ -137,7 +137,7 @@ func CreateComponentCsm(w http.ResponseWriter, r *http.Request) {
 		// to this template, and that the resource has a .Status.Phase field.
 
 		// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-		if err := storage.SaveComponent(r.Context(), component); err != nil {
+		if err := plugins.Store.SaveComponent(r.Context(), component); err != nil {
 			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Component: %w", err))
 			return
 		}
@@ -162,7 +162,7 @@ func UpdateComponentCsm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	component, err := storage.LoadComponentByID(r.Context(), id)
+	component, err := plugins.Store.LoadComponentByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to component %s: %w", id, err))
 		return
@@ -190,7 +190,7 @@ func UpdateComponentCsm(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	component.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveComponent(r.Context(), component); err != nil {
+	if err := plugins.Store.SaveComponent(r.Context(), component); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Component: %w", err))
 		return
 	}
@@ -217,7 +217,7 @@ func DeleteComponentCsm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	component, err := storage.LoadComponentByID(r.Context(), id)
+	component, err := plugins.Store.LoadComponentByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to component %s: %w", id, err))
 		return
@@ -225,7 +225,7 @@ func DeleteComponentCsm(w http.ResponseWriter, r *http.Request) {
 
 	if component != nil {
 		uid := component.GetUID()
-		if err := storage.DeleteComponent(r.Context(), uid); err != nil {
+		if err := plugins.Store.DeleteComponent(r.Context(), uid); err != nil {
 			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete Component: %w", err))
 			return
 		}

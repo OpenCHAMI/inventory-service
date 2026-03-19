@@ -11,7 +11,7 @@ import (
 	"time"
 
 	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
-	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 	"github.com/go-chi/chi/v5"
 	"github.com/openchami/fabrica/pkg/events"
 	"github.com/openchami/fabrica/pkg/resource"
@@ -21,7 +21,7 @@ import (
 
 // GetEthernetInterfacesCsm returns all EthernetInterface resources
 func GetEthernetInterfacesCsm(w http.ResponseWriter, r *http.Request) {
-	ethernetInterfaces, err := storage.LoadAllEthernetInterfaces(r.Context())
+	ethernetInterfaces, err := plugins.Store.LoadAllEthernetInterfaces(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load ethernetinterfaces: %w", err))
 		return
@@ -86,7 +86,7 @@ func CreateEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-	if err := storage.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
+	if err := plugins.Store.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save EthernetInterface: %w", err))
 		return
 	}
@@ -108,7 +108,7 @@ func GetEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ethernetInterface, err := storage.LoadEthernetInterfaceByID(r.Context(), id)
+	ethernetInterface, err := plugins.Store.LoadEthernetInterfaceByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load ethernetinterface %s: %w", id, err))
 		return
@@ -130,7 +130,7 @@ func UpdateEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ethernetInterface, err := storage.LoadEthernetInterfaceByID(r.Context(), id)
+	ethernetInterface, err := plugins.Store.LoadEthernetInterfaceByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load ethernetinterface %s: %w", id, err))
 		return
@@ -159,7 +159,7 @@ func UpdateEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 
 	ethernetInterface.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
+	if err := plugins.Store.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save EthernetInterface: %w", err))
 		return
 	}
@@ -183,7 +183,7 @@ func DeleteEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ethernetInterface, err := storage.LoadEthernetInterfaceByID(r.Context(), id)
+	ethernetInterface, err := plugins.Store.LoadEthernetInterfaceByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load ethernetinterface %s: %w", id, err))
 		return
@@ -191,7 +191,7 @@ func DeleteEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 
 	if ethernetInterface != nil {
 		uid := ethernetInterface.GetUID()
-		if err := storage.DeleteEthernetInterface(r.Context(), uid); err != nil {
+		if err := plugins.Store.DeleteEthernetInterface(r.Context(), uid); err != nil {
 			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete EthernetInterface: %w", err))
 			return
 		}

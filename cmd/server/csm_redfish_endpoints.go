@@ -16,6 +16,7 @@ import (
 
 	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
 	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 	"github.com/go-chi/chi/v5"
 	"github.com/openchami/fabrica/pkg/events"
 	"github.com/openchami/fabrica/pkg/resource"
@@ -28,7 +29,7 @@ func GetRedfishEndpointsCsm(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	redfishEndpoints, err := storage.LoadAllRedfishEndpoints(r.Context())
+	redfishEndpoints, err := plugins.Store.LoadAllRedfishEndpoints(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load redfishendpoints: %w", err))
 		return
@@ -53,12 +54,12 @@ func GetRedfishEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	// Version context available here for version-aware operations
 	// versionCtx := versioning.GetVersionContext(r.Context())
 	// Requested version: versionCtx.ServeVersion
-	// To enable: replace storage.LoadRedfishEndpoint() with version-aware function
+	// To enable: replace plugins.Store.LoadRedfishEndpoint() with version-aware function
 
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	redfishEndpoint, err := storage.LoadRedfishEndpointByID(r.Context(), id)
+	redfishEndpoint, err := plugins.Store.LoadRedfishEndpointByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load redfishEndpoint %s: %w", id, err))
 		return
@@ -156,7 +157,7 @@ func CreateRedfishEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-	if err := storage.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
+	if err := plugins.Store.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save RedfishEndpoint: %w", err))
 		return
 	}
@@ -188,7 +189,7 @@ func UpdateRedfishEndpointV2(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("RedfishEndpoint ID is required"))
 		return
 	}
-	redfishEndpoint, err := storage.LoadRedfishEndpointByID(r.Context(), id)
+	redfishEndpoint, err := plugins.Store.LoadRedfishEndpointByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load redfishEndpoint %s: %w", id, err))
 		return
@@ -224,7 +225,7 @@ func UpdateRedfishEndpointV2(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	redfishEndpoint.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
+	if err := plugins.Store.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save RedfishEndpoint: %w", err))
 		return
 	}
@@ -250,7 +251,7 @@ func DeleteRedfishEndpointV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redfishEndpoint, err := storage.LoadRedfishEndpointByID(r.Context(), id)
+	redfishEndpoint, err := plugins.Store.LoadRedfishEndpointByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load redfishEndpoint %s: %w", id, err))
 		return
@@ -258,7 +259,7 @@ func DeleteRedfishEndpointV2(w http.ResponseWriter, r *http.Request) {
 
 	if redfishEndpoint != nil {
 		uid := redfishEndpoint.GetUID()
-		if err := storage.DeleteRedfishEndpoint(r.Context(), uid); err != nil {
+		if err := plugins.Store.DeleteRedfishEndpoint(r.Context(), uid); err != nil {
 			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete RedfishEndpoint: %w", err))
 			return
 		}
@@ -373,7 +374,7 @@ func createV2SubResources(
 			ei.Metadata.UpdatedAt = now
 			ei.Metadata.Labels = make(map[string]string)
 			ei.Metadata.Annotations = make(map[string]string)
-			if err := storage.SaveEthernetInterface(ctx, ei); err != nil {
+			if err := plugins.Store.SaveEthernetInterface(ctx, ei); err != nil {
 				return fmt.Errorf("failed to save EthernetInterface %s: %w", macID, err)
 			}
 		}
@@ -405,7 +406,7 @@ func createV2SubResources(
 		comp.Metadata.UpdatedAt = now
 		comp.Metadata.Labels = make(map[string]string)
 		comp.Metadata.Annotations = make(map[string]string)
-		if err := storage.SaveComponent(ctx, comp); err != nil {
+		if err := plugins.Store.SaveComponent(ctx, comp); err != nil {
 			return fmt.Errorf("failed to save NodeBMC Component %s: %w", compID, err)
 		}
 
@@ -420,7 +421,7 @@ func createV2SubResources(
 		nodeID := fmt.Sprintf("%sn%d", endpoint.ID, i)
 
 		enabled := true
-		comp, err := storage.LoadComponentByID(ctx, nodeID)
+		comp, err := plugins.Store.LoadComponentByID(ctx, nodeID)
 		if err == storage.ErrNotFound {
 			// Component (Node)
 			compUID, err := resource.GenerateUIDForResource("Component")
@@ -457,7 +458,7 @@ func createV2SubResources(
 			comp.Metadata.UpdatedAt = now
 		}
 
-		if err := storage.SaveComponent(ctx, comp); err != nil {
+		if err := plugins.Store.SaveComponent(ctx, comp); err != nil {
 			return fmt.Errorf("failed to save Node Component %s: %w", nodeID, err)
 		}
 
@@ -505,7 +506,7 @@ func createV2SubResources(
 		cep.Metadata.UpdatedAt = now
 		cep.Metadata.Labels = make(map[string]string)
 		cep.Metadata.Annotations = make(map[string]string)
-		if err := storage.SaveComponentEndpoint(ctx, cep); err != nil {
+		if err := plugins.Store.SaveComponentEndpoint(ctx, cep); err != nil {
 			return fmt.Errorf("failed to save System ComponentEndpoint %s: %w", nodeID, err)
 		}
 

@@ -78,6 +78,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "resource_version", Type: field.TypeString, Default: "1"},
 		{Name: "namespace", Type: field.TypeString, Nullable: true},
+		{Name: "resource_id", Type: field.TypeString, Nullable: true},
 	}
 	// ResourcesTable holds the schema information for the "resources" table.
 	ResourcesTable = &schema.Table{
@@ -104,6 +105,11 @@ var (
 				Name:    "resource_kind",
 				Unique:  false,
 				Columns: []*schema.Column{ResourcesColumns[4]},
+			},
+			{
+				Name:    "resource_resource_type_resource_id",
+				Unique:  true,
+				Columns: []*schema.Column{ResourcesColumns[5], ResourcesColumns[12]},
 			},
 		},
 	}

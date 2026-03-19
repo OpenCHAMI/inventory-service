@@ -11,7 +11,7 @@ import (
 	"time"
 
 	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
-	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 	"github.com/go-chi/chi/v5"
 	"github.com/openchami/fabrica/pkg/events"
 	"github.com/openchami/fabrica/pkg/resource"
@@ -21,7 +21,7 @@ import (
 
 // GetGroupsCsm returns all Group resources
 func GetGroupsCsm(w http.ResponseWriter, r *http.Request) {
-	groups, err := storage.LoadAllGroups(r.Context())
+	groups, err := plugins.Store.LoadAllGroups(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load groups: %w", err))
 		return
@@ -78,7 +78,7 @@ func CreateGroupCsm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-	if err := storage.SaveGroup(r.Context(), group); err != nil {
+	if err := plugins.Store.SaveGroup(r.Context(), group); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Group: %w", err))
 		return
 	}
@@ -100,7 +100,7 @@ func GetGroupCsm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	group, err := storage.LoadGroupByLabel(r.Context(), label)
+	group, err := plugins.Store.LoadGroupByLabel(r.Context(), label)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load group %s: %w", label, err))
 		return
@@ -122,7 +122,7 @@ func UpdateGroupCsm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	group, err := storage.LoadGroupByLabel(r.Context(), label)
+	group, err := plugins.Store.LoadGroupByLabel(r.Context(), label)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load group %s: %w", label, err))
 		return
@@ -151,7 +151,7 @@ func UpdateGroupCsm(w http.ResponseWriter, r *http.Request) {
 
 	group.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveGroup(r.Context(), group); err != nil {
+	if err := plugins.Store.SaveGroup(r.Context(), group); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Group: %w", err))
 		return
 	}
@@ -175,7 +175,7 @@ func DeleteGroupCsm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	group, err := storage.LoadGroupByLabel(r.Context(), label)
+	group, err := plugins.Store.LoadGroupByLabel(r.Context(), label)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load group %s: %w", label, err))
 		return
@@ -183,7 +183,7 @@ func DeleteGroupCsm(w http.ResponseWriter, r *http.Request) {
 
 	if group != nil {
 		uid := group.GetUID()
-		if err := storage.DeleteGroup(r.Context(), uid); err != nil {
+		if err := plugins.Store.DeleteGroup(r.Context(), uid); err != nil {
 			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete Group: %w", err))
 			return
 		}

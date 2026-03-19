@@ -24,13 +24,13 @@
 //   - PATCH /ethernetinterfaces/{uid}/status (patch EthernetInterface status)
 //
 // Authorization: Add custom middleware for authentication/authorization
-// Storage: Uses storage.LoadEthernetInterface*/SaveEthernetInterface*/DeleteEthernetInterface*
+// Storage: Uses plugins.Store.LoadEthernetInterface*/SaveEthernetInterface*/DeleteEthernetInterface*
 // Version Support: Available (see version context in handlers)
 //
 // To enable full version conversion for this resource:
 //  1. Add new version: fabrica add version <group> <version>
 //  2. Implement converter: apis/<group>/<version>/converter.go
-//  3. Add version-aware storage: storage.LoadEthernetInterfaceWithVersion()
+//  3. Add version-aware storage: plugins.Store.LoadEthernetInterfaceWithVersion()
 //  4. Register versions in cmd/server/main.go
 package main
 
@@ -49,7 +49,7 @@ import (
 	"github.com/openchami/fabrica/pkg/validation"
 	"github.com/openchami/fabrica/pkg/versioning"
 
-	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 )
 
 // GetEthernetInterfaces returns all EthernetInterface resources
@@ -57,7 +57,7 @@ func GetEthernetInterfaces(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	ethernetinterfaces, err := storage.LoadAllEthernetInterfaces(r.Context())
+	ethernetinterfaces, err := plugins.Store.LoadAllEthernetInterfaces(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load ethernetinterfaces: %w", err))
 		return
@@ -76,12 +76,12 @@ func GetEthernetInterface(w http.ResponseWriter, r *http.Request) {
 	// Version context available here for version-aware operations
 	// versionCtx := versioning.GetVersionContext(r.Context())
 	// Requested version: versionCtx.ServeVersion
-	// To enable: replace storage.LoadEthernetInterface() with version-aware function
+	// To enable: replace plugins.Store.LoadEthernetInterface() with version-aware function
 
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	ethernetInterface, err := storage.LoadEthernetInterface(r.Context(), uid)
+	ethernetInterface, err := plugins.Store.LoadEthernetInterface(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("EthernetInterface not found: %w", err))
 		return
@@ -152,7 +152,7 @@ func CreateEthernetInterface(w http.ResponseWriter, r *http.Request) {
 	// to this template, and that the resource has a .Status.Phase field.
 
 	// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-	if err := storage.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
+	if err := plugins.Store.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save EthernetInterface: %w", err))
 		return
 	}
@@ -177,7 +177,7 @@ func UpdateEthernetInterface(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ethernetInterface, err := storage.LoadEthernetInterface(r.Context(), uid)
+	ethernetInterface, err := plugins.Store.LoadEthernetInterface(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("EthernetInterface not found: %w", err))
 		return
@@ -216,7 +216,7 @@ func UpdateEthernetInterface(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	ethernetInterface.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
+	if err := plugins.Store.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save EthernetInterface: %w", err))
 		return
 	}
@@ -244,7 +244,7 @@ func PatchEthernetInterface(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ethernetInterface, err := storage.LoadEthernetInterface(r.Context(), uid)
+	ethernetInterface, err := plugins.Store.LoadEthernetInterface(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("EthernetInterface not found: %w", err))
 		return
@@ -289,7 +289,7 @@ func PatchEthernetInterface(w http.ResponseWriter, r *http.Request) {
 	ethernetInterface.Metadata.UpdatedAt = time.Now()
 
 	// Save the patched resource
-	if err := storage.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
+	if err := plugins.Store.SaveEthernetInterface(r.Context(), ethernetInterface); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched EthernetInterface: %w", err))
 		return
 	}
@@ -325,7 +325,7 @@ func UpdateEthernetInterfaceStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status update authorization
 	// Status updates can have different permissions than spec updates
 
-	res, err := storage.LoadEthernetInterface(r.Context(), uid)
+	res, err := plugins.Store.LoadEthernetInterface(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("EthernetInterface not found: %w", err))
 		return
@@ -342,7 +342,7 @@ func UpdateEthernetInterfaceStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveEthernetInterface(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveEthernetInterface(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save EthernetInterface status: %w", err))
 		return
 	}
@@ -375,7 +375,7 @@ func PatchEthernetInterfaceStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status patch authorization
 	// Status patches can have different permissions than spec patches
 
-	res, err := storage.LoadEthernetInterface(r.Context(), uid)
+	res, err := plugins.Store.LoadEthernetInterface(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("EthernetInterface not found: %w", err))
 		return
@@ -414,7 +414,7 @@ func PatchEthernetInterfaceStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveEthernetInterface(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveEthernetInterface(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched EthernetInterface status: %w", err))
 		return
 	}
@@ -443,13 +443,13 @@ func DeleteEthernetInterface(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Load resource before deletion for event publishing
-	ethernetInterface, err := storage.LoadEthernetInterface(r.Context(), uid)
+	ethernetInterface, err := plugins.Store.LoadEthernetInterface(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("EthernetInterface not found: %w", err))
 		return
 	}
 
-	if err := storage.DeleteEthernetInterface(r.Context(), uid); err != nil {
+	if err := plugins.Store.DeleteEthernetInterface(r.Context(), uid); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete EthernetInterface: %w", err))
 		return
 	}

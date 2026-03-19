@@ -11,7 +11,7 @@ import (
 	"time"
 
 	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
-	"github.com/OpenCHAMI/smd2/internal/storage"
+	"github.com/OpenCHAMI/smd2/cmd/plugins"
 	"github.com/go-chi/chi/v5"
 	"github.com/openchami/fabrica/pkg/events"
 	"github.com/openchami/fabrica/pkg/resource"
@@ -24,7 +24,7 @@ func GetComponentEndpointsCsm(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	componentEndpoints, err := storage.LoadAllComponentEndpoints(r.Context())
+	componentEndpoints, err := plugins.Store.LoadAllComponentEndpoints(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load componentendpoints: %w", err))
 		return
@@ -49,12 +49,12 @@ func GetComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	// Version context available here for version-aware operations
 	// versionCtx := versioning.GetVersionContext(r.Context())
 	// Requested version: versionCtx.ServeVersion
-	// To enable: replace storage.LoadComponentEndpoint() with version-aware function
+	// To enable: replace plugins.Store.LoadComponentEndpoint() with version-aware function
 
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	componentEndpoint, err := storage.LoadComponentEndpointByID(r.Context(), id)
+	componentEndpoint, err := plugins.Store.LoadComponentEndpointByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load componentEndpoint %s: %w", id, err))
 		return
@@ -124,7 +124,7 @@ func CreateComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 		// to this template, and that the resource has a .Status.Phase field.
 
 		// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-		if err := storage.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
+		if err := plugins.Store.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
 			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save ComponentEndpoint: %w", err))
 			return
 		}
@@ -148,7 +148,7 @@ func UpdateComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("ComponentEndpoint ID is required"))
 		return
 	}
-	componentEndpoint, err := storage.LoadComponentEndpointByID(r.Context(), id)
+	componentEndpoint, err := plugins.Store.LoadComponentEndpointByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load componentEndpoint %s: %w", id, err))
 		return
@@ -184,7 +184,7 @@ func UpdateComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	componentEndpoint.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
+	if err := plugins.Store.SaveComponentEndpoint(r.Context(), componentEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save ComponentEndpoint: %w", err))
 		return
 	}
@@ -211,7 +211,7 @@ func DeleteComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	componentEndpoint, err := storage.LoadComponentEndpointByID(r.Context(), id)
+	componentEndpoint, err := plugins.Store.LoadComponentEndpointByID(r.Context(), id)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load componentEndpoint %s: %w", id, err))
 		return
@@ -219,7 +219,7 @@ func DeleteComponentEndpointCsm(w http.ResponseWriter, r *http.Request) {
 
 	if componentEndpoint != nil {
 		uid := componentEndpoint.GetUID()
-		if err := storage.DeleteComponentEndpoint(r.Context(), uid); err != nil {
+		if err := plugins.Store.DeleteComponentEndpoint(r.Context(), uid); err != nil {
 			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete ComponentEndpoint: %w", err))
 			return
 		}
