@@ -648,17 +648,26 @@ var componentendpointCreateCmd = &cobra.Command{
 
 Examples:
   # Create from stdin
-  echo '{"description": "Example description", "ID": "example-value", "Type": "example-value", "RedfishEndpointFQDN": "example-value", "URL": "https://example.com", "ComponentEndpointType": "example-value", "RedfishChassisInfo": "{}", "RedfishSystemInfo": "{}", "RedfishManagerInfo": "{}", "RedfishPDUInfo": "{}", "RedfishOutletInfo": {}}' | client componentendpoint create
+  echo '{"description": "Example description", "ID": "example-value", "Type": "example-value", "Domain": "example-value", "FQDN": "example-value", "RedfishType": "example-value", "RedfishSubtype": "example-value", "MACAddr": "example-value", "UUID": "example-value", "OdataID": "example-value", "RedfishEndpointID": "example-value", "Enabled": true, "RedfishEndpointFQDN": "example-value", "RedfishURL": "https://example.com", "ComponentEndpointType": "example-value", "RedfishChassisInfo": "{}", "RedfishSystemInfo": "{}", "RedfishManagerInfo": "{}", "RedfishPDUInfo": "{}", "RedfishOutletInfo": {}}' | client componentendpoint create
 
   # Create with --spec flag
-  client componentendpoint create --spec '{"description": "Example description", "ID": "example-value", "Type": "example-value", "RedfishEndpointFQDN": "example-value", "URL": "https://example.com", "ComponentEndpointType": "example-value", "RedfishChassisInfo": "{}", "RedfishSystemInfo": "{}", "RedfishManagerInfo": "{}", "RedfishPDUInfo": "{}", "RedfishOutletInfo": {}}'
+  client componentendpoint create --spec '{"description": "Example description", "ID": "example-value", "Type": "example-value", "Domain": "example-value", "FQDN": "example-value", "RedfishType": "example-value", "RedfishSubtype": "example-value", "MACAddr": "example-value", "UUID": "example-value", "OdataID": "example-value", "RedfishEndpointID": "example-value", "Enabled": true, "RedfishEndpointFQDN": "example-value", "RedfishURL": "https://example.com", "ComponentEndpointType": "example-value", "RedfishChassisInfo": "{}", "RedfishSystemInfo": "{}", "RedfishManagerInfo": "{}", "RedfishPDUInfo": "{}", "RedfishOutletInfo": {}}'
 
 Spec fields:
   description (string)
   ID (string)
   Type (string)
+  Domain (string)
+  FQDN (string)
+  RedfishType (string)
+  RedfishSubtype (string)
+  MACAddr (string)
+  UUID (string)
+  OdataID (string)
+  RedfishEndpointID (string)
+  Enabled (bool)
   RedfishEndpointFQDN (string)
-  URL (string)
+  RedfishURL (string)
   ComponentEndpointType (string)
   RedfishChassisInfo (*v1.ComponentChassisInfo)
   RedfishSystemInfo (*v1.ComponentSystemInfo)
@@ -708,17 +717,26 @@ var componentendpointUpdateCmd = &cobra.Command{
 
 Examples:
   # Update from stdin
-  echo '{"description": "Example description", "ID": "example-value", "Type": "example-value", "RedfishEndpointFQDN": "example-value", "URL": "https://example.com", "ComponentEndpointType": "example-value", "RedfishChassisInfo": "{}", "RedfishSystemInfo": "{}", "RedfishManagerInfo": "{}", "RedfishPDUInfo": "{}", "RedfishOutletInfo": {}}' | client componentendpoint update <uid>
+  echo '{"description": "Example description", "ID": "example-value", "Type": "example-value", "Domain": "example-value", "FQDN": "example-value", "RedfishType": "example-value", "RedfishSubtype": "example-value", "MACAddr": "example-value", "UUID": "example-value", "OdataID": "example-value", "RedfishEndpointID": "example-value", "Enabled": true, "RedfishEndpointFQDN": "example-value", "RedfishURL": "https://example.com", "ComponentEndpointType": "example-value", "RedfishChassisInfo": "{}", "RedfishSystemInfo": "{}", "RedfishManagerInfo": "{}", "RedfishPDUInfo": "{}", "RedfishOutletInfo": {}}' | client componentendpoint update <uid>
 
   # Update with --spec flag
-  client componentendpoint update <uid> --spec '{"description": "Example description", "ID": "example-value", "Type": "example-value", "RedfishEndpointFQDN": "example-value", "URL": "https://example.com", "ComponentEndpointType": "example-value", "RedfishChassisInfo": "{}", "RedfishSystemInfo": "{}", "RedfishManagerInfo": "{}", "RedfishPDUInfo": "{}", "RedfishOutletInfo": {}}'
+  client componentendpoint update <uid> --spec '{"description": "Example description", "ID": "example-value", "Type": "example-value", "Domain": "example-value", "FQDN": "example-value", "RedfishType": "example-value", "RedfishSubtype": "example-value", "MACAddr": "example-value", "UUID": "example-value", "OdataID": "example-value", "RedfishEndpointID": "example-value", "Enabled": true, "RedfishEndpointFQDN": "example-value", "RedfishURL": "https://example.com", "ComponentEndpointType": "example-value", "RedfishChassisInfo": "{}", "RedfishSystemInfo": "{}", "RedfishManagerInfo": "{}", "RedfishPDUInfo": "{}", "RedfishOutletInfo": {}}'
 
 Spec fields:
   description (string)
   ID (string)
   Type (string)
+  Domain (string)
+  FQDN (string)
+  RedfishType (string)
+  RedfishSubtype (string)
+  MACAddr (string)
+  UUID (string)
+  OdataID (string)
+  RedfishEndpointID (string)
+  Enabled (bool)
   RedfishEndpointFQDN (string)
-  URL (string)
+  RedfishURL (string)
   ComponentEndpointType (string)
   RedfishChassisInfo (*v1.ComponentChassisInfo)
   RedfishSystemInfo (*v1.ComponentSystemInfo)
@@ -1002,36 +1020,19 @@ var ethernetinterfaceCreateCmd = &cobra.Command{
 
 Examples:
   # Create from stdin
-  echo '{"description": "Example description", "@odata.context": "example-value", "@odata.id": "example-value", "@odata.type": "example-value", "AutoNeg": {}, "FQDN": "example-value", "FullDuplex": {}, "HostName": "example-name", "Id": "example-value", "IPv4Addresses": ["[]"], "IPv6Addresses": ["[]"], "IPv6StaticAddresses": ["[]"], "IPv6DefaultGateway": "192.168.1.1", "InterfaceEnabled": {}, "MACAddress": "192.168.1.1", "PermanentMACAddress": "192.168.1.1", "MTUSize": "example-value", "MaxIPv6StaticAddresses": "192.168.1.1", "Name": "example-name", "NameServers": ["["item1","item2"]"], "SpeedMbps": "example-value", "Status": "{}", "UefiDevicePath": "example-value", "VLAN": "{}"}' | client ethernetinterface create
+  echo '{"ID": "example-value", "Description": "Example description", "MACAddress": "example-value", "LastUpdate": "example-value", "ComponentID": "example-value", "Type": "example-value", "IPAddresses": ["[]"]}' | client ethernetinterface create
 
   # Create with --spec flag
-  client ethernetinterface create --spec '{"description": "Example description", "@odata.context": "example-value", "@odata.id": "example-value", "@odata.type": "example-value", "AutoNeg": {}, "FQDN": "example-value", "FullDuplex": {}, "HostName": "example-name", "Id": "example-value", "IPv4Addresses": ["[]"], "IPv6Addresses": ["[]"], "IPv6StaticAddresses": ["[]"], "IPv6DefaultGateway": "192.168.1.1", "InterfaceEnabled": {}, "MACAddress": "192.168.1.1", "PermanentMACAddress": "192.168.1.1", "MTUSize": "example-value", "MaxIPv6StaticAddresses": "192.168.1.1", "Name": "example-name", "NameServers": ["["item1","item2"]"], "SpeedMbps": "example-value", "Status": "{}", "UefiDevicePath": "example-value", "VLAN": "{}"}'
+  client ethernetinterface create --spec '{"ID": "example-value", "Description": "Example description", "MACAddress": "example-value", "LastUpdate": "example-value", "ComponentID": "example-value", "Type": "example-value", "IPAddresses": ["[]"]}'
 
 Spec fields:
-  description (string)
-  @odata.context (string)
-  @odata.id (string)
-  @odata.type (string)
-  AutoNeg (*bool)
-  FQDN (string)
-  FullDuplex (*bool)
-  HostName (string)
-  Id (string)
-  IPv4Addresses ([]v1.IPv4Address)
-  IPv6Addresses ([]v1.IPv6Address)
-  IPv6StaticAddresses ([]v1.IPv6StaticAddress)
-  IPv6DefaultGateway (string)
-  InterfaceEnabled (*bool)
+  ID (string)
+  Description (string)
   MACAddress (string)
-  PermanentMACAddress (string)
-  MTUSize (json.Number)
-  MaxIPv6StaticAddresses (json.Number)
-  Name (string)
-  NameServers ([]string)
-  SpeedMbps (json.Number)
-  Status (v1.StatusRF)
-  UefiDevicePath (string)
-  VLAN (v1.VLAN)
+  LastUpdate (string)
+  ComponentID (string)
+  Type (string)
+  IPAddresses ([]v1.IPAddress)
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := getClient()
@@ -1075,36 +1076,19 @@ var ethernetinterfaceUpdateCmd = &cobra.Command{
 
 Examples:
   # Update from stdin
-  echo '{"description": "Example description", "@odata.context": "example-value", "@odata.id": "example-value", "@odata.type": "example-value", "AutoNeg": {}, "FQDN": "example-value", "FullDuplex": {}, "HostName": "example-name", "Id": "example-value", "IPv4Addresses": ["[]"], "IPv6Addresses": ["[]"], "IPv6StaticAddresses": ["[]"], "IPv6DefaultGateway": "192.168.1.1", "InterfaceEnabled": {}, "MACAddress": "192.168.1.1", "PermanentMACAddress": "192.168.1.1", "MTUSize": "example-value", "MaxIPv6StaticAddresses": "192.168.1.1", "Name": "example-name", "NameServers": ["["item1","item2"]"], "SpeedMbps": "example-value", "Status": "{}", "UefiDevicePath": "example-value", "VLAN": "{}"}' | client ethernetinterface update <uid>
+  echo '{"ID": "example-value", "Description": "Example description", "MACAddress": "example-value", "LastUpdate": "example-value", "ComponentID": "example-value", "Type": "example-value", "IPAddresses": ["[]"]}' | client ethernetinterface update <uid>
 
   # Update with --spec flag
-  client ethernetinterface update <uid> --spec '{"description": "Example description", "@odata.context": "example-value", "@odata.id": "example-value", "@odata.type": "example-value", "AutoNeg": {}, "FQDN": "example-value", "FullDuplex": {}, "HostName": "example-name", "Id": "example-value", "IPv4Addresses": ["[]"], "IPv6Addresses": ["[]"], "IPv6StaticAddresses": ["[]"], "IPv6DefaultGateway": "192.168.1.1", "InterfaceEnabled": {}, "MACAddress": "192.168.1.1", "PermanentMACAddress": "192.168.1.1", "MTUSize": "example-value", "MaxIPv6StaticAddresses": "192.168.1.1", "Name": "example-name", "NameServers": ["["item1","item2"]"], "SpeedMbps": "example-value", "Status": "{}", "UefiDevicePath": "example-value", "VLAN": "{}"}'
+  client ethernetinterface update <uid> --spec '{"ID": "example-value", "Description": "Example description", "MACAddress": "example-value", "LastUpdate": "example-value", "ComponentID": "example-value", "Type": "example-value", "IPAddresses": ["[]"]}'
 
 Spec fields:
-  description (string)
-  @odata.context (string)
-  @odata.id (string)
-  @odata.type (string)
-  AutoNeg (*bool)
-  FQDN (string)
-  FullDuplex (*bool)
-  HostName (string)
-  Id (string)
-  IPv4Addresses ([]v1.IPv4Address)
-  IPv6Addresses ([]v1.IPv6Address)
-  IPv6StaticAddresses ([]v1.IPv6StaticAddress)
-  IPv6DefaultGateway (string)
-  InterfaceEnabled (*bool)
+  ID (string)
+  Description (string)
   MACAddress (string)
-  PermanentMACAddress (string)
-  MTUSize (json.Number)
-  MaxIPv6StaticAddresses (json.Number)
-  Name (string)
-  NameServers ([]string)
-  SpeedMbps (json.Number)
-  Status (v1.StatusRF)
-  UefiDevicePath (string)
-  VLAN (v1.VLAN)
+  LastUpdate (string)
+  ComponentID (string)
+  Type (string)
+  IPAddresses ([]v1.IPAddress)
 `,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {

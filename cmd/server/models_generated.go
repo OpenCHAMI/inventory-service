@@ -37,9 +37,8 @@ import (
 	"fmt"
 	"net/http"
 
+	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
 	"github.com/openchami/fabrica/pkg/fabrica"
-
-	"github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
 )
 
 // ComponentResponse represents the response for Component operations

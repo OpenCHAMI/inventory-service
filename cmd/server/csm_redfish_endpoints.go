@@ -15,8 +15,8 @@ import (
 	"time"
 
 	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
-	"github.com/OpenCHAMI/smd2/internal/storage"
 	"github.com/OpenCHAMI/smd2/cmd/plugins"
+	"github.com/OpenCHAMI/smd2/internal/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/openchami/fabrica/pkg/events"
 	"github.com/openchami/fabrica/pkg/resource"

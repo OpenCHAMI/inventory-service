@@ -61,7 +61,7 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
+	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
 )
 
 // Client provides access to the inventory API

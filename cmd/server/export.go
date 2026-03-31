@@ -8,10 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/OpenCHAMI/smd2/internal/storage"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
-
-	"github.com/OpenCHAMI/smd2/internal/storage"
 )
 
 func newExportCommand() *cobra.Command {

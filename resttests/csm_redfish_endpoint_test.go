@@ -35,16 +35,16 @@ const csmREBase = "/hsm/v2/Inventory/RedfishEndpoints"
 // ─── CSM request / response shapes ───────────────────────────────────────────
 
 type csmRedfishEndpointSpec struct {
-	ID                 string            `json:"ID"`
-	Type               string            `json:"Type,omitempty"`
-	Hostname           string            `json:"Hostname,omitempty"`
-	Domain             string            `json:"Domain,omitempty"`
-	FQDN               string            `json:"FQDN,omitempty"`
-	Enabled            bool              `json:"Enabled,omitempty"`
-	User               string            `json:"User,omitempty"`
-	Password           string            `json:"Password,omitempty"`
-	RediscoverOnUpdate bool              `json:"RediscoverOnUpdate,omitempty"`
-	DiscoveryInfo      csmDiscoveryInfo  `json:"DiscoveryInfo,omitempty"`
+	ID                 string           `json:"ID"`
+	Type               string           `json:"Type,omitempty"`
+	Hostname           string           `json:"Hostname,omitempty"`
+	Domain             string           `json:"Domain,omitempty"`
+	FQDN               string           `json:"FQDN,omitempty"`
+	Enabled            bool             `json:"Enabled,omitempty"`
+	User               string           `json:"User,omitempty"`
+	Password           string           `json:"Password,omitempty"`
+	RediscoverOnUpdate bool             `json:"RediscoverOnUpdate,omitempty"`
+	DiscoveryInfo      csmDiscoveryInfo `json:"DiscoveryInfo,omitempty"`
 }
 
 type csmDiscoveryInfo struct {

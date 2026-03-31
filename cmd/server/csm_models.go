@@ -70,6 +70,6 @@ type RedfishEndpointV2System struct {
 // Presence of non-empty Systems or Managers indicates a V2 request.
 type RedfishEndpointV2Request struct {
 	v1.RedfishEndpointSpec
-	Systems  []RedfishEndpointV2System   `json:"Systems,omitempty"`
-	Managers []RedfishEndpointV2Manager  `json:"Managers,omitempty"`
+	Systems  []RedfishEndpointV2System  `json:"Systems,omitempty"`
+	Managers []RedfishEndpointV2Manager `json:"Managers,omitempty"`
 }
