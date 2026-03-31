@@ -11,8 +11,8 @@ import (
 	"gopkg.in/yaml.v3"
 
 	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
-	"github.com/OpenCHAMI/smd2/internal/storage"
 	"github.com/OpenCHAMI/smd2/cmd/plugins"
+	"github.com/OpenCHAMI/smd2/internal/storage"
 )
 
 func newImportCommand() *cobra.Command {
@@ -26,7 +26,7 @@ func newImportCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "import",
 		Short: "Import resources from files",
-		Long: `Import resources from JSON or YAML files into storage.
+		Long: `Import resources from JSON or YAML files into plugins.Store.
 
 This is useful for:
   - Restoring from backups

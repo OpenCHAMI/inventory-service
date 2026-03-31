@@ -23,7 +23,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
+	v1 "github.com/OpenCHAMI/smd2/apis/smd2.openchami.org/v1"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3gen"
 )
