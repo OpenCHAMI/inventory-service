@@ -121,4 +121,11 @@ func RegisterProtectedCsmRoutes(r chi.Router) {
 			// DELETE /groups/{group_label}/members/{member_id}
 		})
 	})
+	// Membership routes
+	r.Route("/hsm/v2/memberships", func(r chi.Router) {
+		r.Get("/", GetMembershipsCsm)
+		r.Route("/{id}", func(r chi.Router) {
+			r.Get("/", GetMembershipCsm)
+		})
+	})
 }
