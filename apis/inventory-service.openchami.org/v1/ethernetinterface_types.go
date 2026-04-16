@@ -16,7 +16,12 @@ type EthernetInterface struct {
 }
 
 type EthernetInterfaceSpec struct {
+	// todo SMD uses Description and fabrica uses description
+	// One solution might be to maintain Description == description
+	// and zero out one of them depending on if the request is through the
+	// fabrica api or through the smd style api
 	Description string      `json:"Description,omitempty" validate:"max=200"`
+	description string      `json:"description,omitempty" validate:"max=200"`
 	ID          string      `json:"ID"`
 	MACAddr     string      `json:"MACAddress"`
 	LastUpdate  string      `json:"LastUpdate"`
