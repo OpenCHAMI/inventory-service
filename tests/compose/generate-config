@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2025 OpenCHAMI a Series of LF Projects, LLC
+# Copyright © 2025-2026 OpenCHAMI a Series of LF Projects, LLC
 #
 # SPDX-License-Identifier: MIT
 
@@ -23,11 +23,7 @@ POSTGRES_USER=ochami
 
 # Set DB passwords
 POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
-BSS_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
 SMD_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
-SMD2_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
-HYDRA_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
-HYDRA_SYSTEM_SECRET=$(generate_random_alphanumeric 32)
 EOF
 
 echo "Created ${SCRIPT_DIR}/.env"
