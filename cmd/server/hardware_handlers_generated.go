@@ -49,7 +49,7 @@ import (
 	"github.com/openchami/fabrica/pkg/validation"
 	"github.com/openchami/fabrica/pkg/versioning"
 
-	"github.com/OpenCHAMI/inventory-service/internal/storage"
+	"github.com/OpenCHAMI/inventory-service/cmd/plugins"
 )
 
 // GetHardwares returns all Hardware resources
@@ -57,7 +57,7 @@ func GetHardwares(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	hardwares, err := storage.LoadAllHardwares(r.Context())
+	hardwares, err := plugins.Store.LoadAllHardwares(r.Context())
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load hardwares: %w", err))
 		return
@@ -81,7 +81,7 @@ func GetHardware(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware in routes.go or implement checks here
 	// Example: if !authorized(r) { respondError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized")); return }
 
-	hardware, err := storage.LoadHardware(r.Context(), uid)
+	hardware, err := plugins.Store.LoadHardware(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Hardware not found: %w", err))
 		return
@@ -152,7 +152,7 @@ func CreateHardware(w http.ResponseWriter, r *http.Request) {
 	// to this template, and that the resource has a .Status.Phase field.
 
 	// Save (Layer 1: Ent validation happens automatically if using Ent storage)
-	if err := storage.SaveHardware(r.Context(), hardware); err != nil {
+	if err := plugins.Store.SaveHardware(r.Context(), hardware); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Hardware: %w", err))
 		return
 	}
@@ -177,7 +177,7 @@ func UpdateHardware(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hardware, err := storage.LoadHardware(r.Context(), uid)
+	hardware, err := plugins.Store.LoadHardware(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Hardware not found: %w", err))
 		return
@@ -216,7 +216,7 @@ func UpdateHardware(w http.ResponseWriter, r *http.Request) {
 	// Update timestamp
 	hardware.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveHardware(r.Context(), hardware); err != nil {
+	if err := plugins.Store.SaveHardware(r.Context(), hardware); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Hardware: %w", err))
 		return
 	}
@@ -244,7 +244,7 @@ func PatchHardware(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hardware, err := storage.LoadHardware(r.Context(), uid)
+	hardware, err := plugins.Store.LoadHardware(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Hardware not found: %w", err))
 		return
@@ -289,7 +289,7 @@ func PatchHardware(w http.ResponseWriter, r *http.Request) {
 	hardware.Metadata.UpdatedAt = time.Now()
 
 	// Save the patched resource
-	if err := storage.SaveHardware(r.Context(), hardware); err != nil {
+	if err := plugins.Store.SaveHardware(r.Context(), hardware); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched Hardware: %w", err))
 		return
 	}
@@ -325,7 +325,7 @@ func UpdateHardwareStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status update authorization
 	// Status updates can have different permissions than spec updates
 
-	res, err := storage.LoadHardware(r.Context(), uid)
+	res, err := plugins.Store.LoadHardware(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Hardware not found: %w", err))
 		return
@@ -342,7 +342,7 @@ func UpdateHardwareStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveHardware(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveHardware(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Hardware status: %w", err))
 		return
 	}
@@ -375,7 +375,7 @@ func PatchHardwareStatus(w http.ResponseWriter, r *http.Request) {
 	// Authorization: Add custom middleware for status patch authorization
 	// Status patches can have different permissions than spec patches
 
-	res, err := storage.LoadHardware(r.Context(), uid)
+	res, err := plugins.Store.LoadHardware(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Hardware not found: %w", err))
 		return
@@ -414,7 +414,7 @@ func PatchHardwareStatus(w http.ResponseWriter, r *http.Request) {
 
 	res.Metadata.UpdatedAt = time.Now()
 
-	if err := storage.SaveHardware(r.Context(), res); err != nil {
+	if err := plugins.Store.SaveHardware(r.Context(), res); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save patched Hardware status: %w", err))
 		return
 	}
@@ -443,13 +443,13 @@ func DeleteHardware(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Load resource before deletion for event publishing
-	hardware, err := storage.LoadHardware(r.Context(), uid)
+	hardware, err := plugins.Store.LoadHardware(r.Context(), uid)
 	if err != nil {
 		respondError(w, http.StatusNotFound, fmt.Errorf("Hardware not found: %w", err))
 		return
 	}
 
-	if err := storage.DeleteHardware(r.Context(), uid); err != nil {
+	if err := plugins.Store.DeleteHardware(r.Context(), uid); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to delete Hardware: %w", err))
 		return
 	}
