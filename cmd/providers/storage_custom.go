@@ -92,6 +92,7 @@ func (s *EntStorage) LoadHardware(ctx context.Context, uid string) (*v1.Hardware
 }
 
 func (s *EntStorage) SaveHardware(ctx context.Context, resource *v1.Hardware) error {
+	resource.ID = resource.Spec.ID
 	return storage.SaveHardware(ctx, resource)
 }
 
