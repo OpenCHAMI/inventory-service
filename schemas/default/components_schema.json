@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inventory-service.openchami.org/schemas/components_schema.json",
+  "title": "Component",
+  "type": "object",
+  "required": ["spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object",
+      "required": ["ID"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "ID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "Type": {
+          "type": "string"
+        },
+        "State": {
+          "type": "string"
+        },
+        "Flag": {
+          "type": "string"
+        },
+        "Enabled": {
+          "type": "boolean"
+        },
+        "SoftwareStatus": {
+          "type": "string"
+        },
+        "Role": {
+          "type": "string"
+        },
+        "SubRole": {
+          "type": "string"
+        },
+        "NID": {
+          "type": "number"
+        },
+        "Subtype": {
+          "type": "string"
+        },
+        "NetType": {
+          "type": "string"
+        },
+        "Arch": {
+          "type": "string"
+        },
+        "Class": {
+          "type": "string"
+        },
+        "ReservationDisabled": {
+          "type": "boolean"
+        },
+        "Locked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "status": {
+      "type": "object"
+    }
+  }
+}

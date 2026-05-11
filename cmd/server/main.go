@@ -101,6 +101,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("debug", false, "Enable debug logging")
 
 	// Server flags
+	serveCmd.Flags().StringP("schema", "s", "", "Directory containing custom schema JSON files")
 	serveCmd.Flags().IntP("port", "p", 8080, "Port to listen on")
 	serveCmd.Flags().String("host", "0.0.0.0", "Host to bind to")
 	serveCmd.Flags().Int("read-timeout", 15, "Read timeout in seconds")
@@ -194,6 +195,12 @@ func runServer(cmd *cobra.Command, args []string) error {
 	// This is required before any handlers can create resources
 	if err := registerResourcePrefixes(); err != nil {
 		return fmt.Errorf("failed to register resource prefixes: %w", err)
+	}
+
+	// Load any custom schema overrides before the router is configured
+	schemaDir, _ := cmd.Flags().GetString("schema")
+	if err := LoadCustomSchemas(schemaDir); err != nil {
+		return fmt.Errorf("failed to load custom schemas: %w", err)
 	}
 
 	// Setup router

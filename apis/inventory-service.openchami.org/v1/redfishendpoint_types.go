@@ -2,7 +2,11 @@ package v1
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
+	"github.com/OpenCHAMI/inventory-service/schemas"
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/openchami/fabrica/pkg/fabrica"
 )
 
@@ -47,8 +51,27 @@ type RedfishEndpointStatus struct {
 }
 
 func (r *RedfishEndpoint) Validate(ctx context.Context) error {
+	var schema jsonschema.Schema
+	if err := json.Unmarshal(schemas.RedfishEndpointSchema, &schema); err != nil {
+		return fmt.Errorf("loading redfish endpoint schema: %w", err)
+	}
 
-	return nil
+	resolved, err := schema.Resolve(nil)
+	if err != nil {
+		return fmt.Errorf("resolving redfish endpoint schema: %w", err)
+	}
+
+	resourceJSON, err := json.Marshal(r)
+	if err != nil {
+		return fmt.Errorf("marshaling resource for validation: %w", err)
+	}
+
+	var instance any
+	if err := json.Unmarshal(resourceJSON, &instance); err != nil {
+		return fmt.Errorf("unmarshaling resource for validation: %w", err)
+	}
+
+	return resolved.Validate(instance)
 }
 
 func (r *RedfishEndpoint) GetKind() string {

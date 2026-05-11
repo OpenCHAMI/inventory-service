@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inventory-service.openchami.org/schemas/service_endpoint_schema.json",
+  "title": "ServiceEndpoint",
+  "type": "object",
+  "required": ["spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object",
+      "required": ["RedfishEndpointID", "RedfishType"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "RedfishEndpointID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "RedfishType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "RedfishSubtype": {
+          "type": "string"
+        },
+        "UUID": {
+          "type": "string"
+        },
+        "OdataID": {
+          "type": "string"
+        },
+        "RedfishEndpointFQDN": {
+          "type": "string"
+        },
+        "RedfishURL": {
+          "type": "string"
+        },
+        "ServiceInfo": {
+          "type": "object"
+        }
+      }
+    },
+    "status": {
+      "type": "object"
+    }
+  }
+}

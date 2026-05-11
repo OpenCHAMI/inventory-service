@@ -7,7 +7,10 @@ package v1
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
+	"github.com/OpenCHAMI/inventory-service/schemas"
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/openchami/fabrica/pkg/fabrica"
 )
 
@@ -291,13 +294,27 @@ type OutletLocationInfo struct {
 
 // Validate implements custom validation logic for Hardware
 func (r *Hardware) Validate(ctx context.Context) error {
-	// Add custom validation logic here
-	// Example:
-	// if r.Spec.Description == "forbidden" {
-	//     return errors.New("description 'forbidden' is not allowed")
-	// }
+	var schema jsonschema.Schema
+	if err := json.Unmarshal(schemas.HardwareSchema, &schema); err != nil {
+		return fmt.Errorf("loading hardware schema: %w", err)
+	}
 
-	return nil
+	resolved, err := schema.Resolve(nil)
+	if err != nil {
+		return fmt.Errorf("resolving hardware schema: %w", err)
+	}
+
+	resourceJSON, err := json.Marshal(r)
+	if err != nil {
+		return fmt.Errorf("marshaling resource for validation: %w", err)
+	}
+
+	var instance any
+	if err := json.Unmarshal(resourceJSON, &instance); err != nil {
+		return fmt.Errorf("unmarshaling resource for validation: %w", err)
+	}
+
+	return resolved.Validate(instance)
 }
 
 // Durable Redfish properties to be stored in hardware inventory as

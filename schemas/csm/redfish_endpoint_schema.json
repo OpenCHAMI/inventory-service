@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inventory-service.openchami.org/schemas/csm/redfish_endpoint_schema.json",
+  "title": "RedfishEndpoint",
+  "type": "object",
+  "required": ["spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object",
+      "required": ["ID"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "ID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "Type": {
+          "description": "HMS component type category (HMSType).",
+          "type": "string",
+          "enum": [
+            "CDU",
+            "CabinetCDU",
+            "CabinetPDU",
+            "CabinetPDUOutlet",
+            "CabinetPDUPowerConnector",
+            "CabinetPDUController",
+            "Cabinet",
+            "Chassis",
+            "ChassisBMC",
+            "CMMRectifier",
+            "CMMFpga",
+            "CEC",
+            "ComputeModule",
+            "RouterModule",
+            "NodeBMC",
+            "NodeEnclosure",
+            "NodeEnclosurePowerSupply",
+            "HSNBoard",
+            "MgmtSwitch",
+            "MgmtHLSwitch",
+            "CDUMgmtSwitch",
+            "Node",
+            "VirtualNode",
+            "Processor",
+            "Drive",
+            "StorageGroup",
+            "NodeNIC",
+            "Memory",
+            "NodeAccel",
+            "NodeAccelRiser",
+            "NodeFpga",
+            "HSNAsic",
+            "RouterFpga",
+            "RouterBMC",
+            "HSNLink",
+            "HSNConnector",
+            "INVALID"
+          ]
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Hostname": {
+          "type": "string"
+        },
+        "Domain": {
+          "type": "string"
+        },
+        "FQDN": {
+          "type": "string"
+        },
+        "Enabled": {
+          "type": "boolean"
+        },
+        "UUID": {
+          "description": "UUID of the Redfish service root.",
+          "type": "string",
+          "format": "uuid"
+        },
+        "User": {
+          "type": "string"
+        },
+        "Password": {
+          "type": "string"
+        },
+        "UseSSDP": {
+          "type": "boolean"
+        },
+        "MacRequired": {
+          "type": "boolean"
+        },
+        "MACAddr": {
+          "description": "MAC address of the Redfish endpoint on the management network. Standard colon- or hyphen-separated 12-byte hex format.",
+          "type": "string",
+          "pattern": "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
+        },
+        "IPAddress": {
+          "description": "IP address (IPv4 or IPv6) of the Redfish endpoint on the management network.",
+          "type": "string",
+          "oneOf": [
+            {"format": "ipv4"},
+            {"format": "ipv6"}
+          ]
+        },
+        "RediscoverOnUpdate": {
+          "type": "boolean"
+        },
+        "TemplateID": {
+          "type": "string"
+        },
+        "DiscoveryInfo": {
+          "type": "object",
+          "properties": {
+            "LastDiscoveryAttempt": {
+              "description": "Time of the last discovery attempt.",
+              "type": "string",
+              "format": "date-time"
+            },
+            "LastDiscoveryStatus": {
+              "description": "Outcome of the last discovery attempt.",
+              "type": "string",
+              "enum": [
+                "EndpointInvalid",
+                "EPResponseFailedDecode",
+                "HTTPsGetFailed",
+                "NotYetQueried",
+                "VerificationFailed",
+                "ChildVerificationFailed",
+                "DiscoverOK"
+              ]
+            },
+            "RedfishVersion": {
+              "description": "Redfish version as reported by the RF service root.",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "object"
+    }
+  }
+}
