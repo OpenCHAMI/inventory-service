@@ -2,7 +2,11 @@ package v1
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
+	"github.com/OpenCHAMI/inventory-service/schemas"
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/openchami/fabrica/pkg/fabrica"
 )
 
@@ -31,8 +35,27 @@ type GroupStatus struct {
 }
 
 func (r *Group) Validate(ctx context.Context) error {
+	var schema jsonschema.Schema
+	if err := json.Unmarshal(schemas.GroupSchema, &schema); err != nil {
+		return fmt.Errorf("loading group schema: %w", err)
+	}
 
-	return nil
+	resolved, err := schema.Resolve(nil)
+	if err != nil {
+		return fmt.Errorf("resolving group schema: %w", err)
+	}
+
+	resourceJSON, err := json.Marshal(r)
+	if err != nil {
+		return fmt.Errorf("marshaling resource for validation: %w", err)
+	}
+
+	var instance any
+	if err := json.Unmarshal(resourceJSON, &instance); err != nil {
+		return fmt.Errorf("unmarshaling resource for validation: %w", err)
+	}
+
+	return resolved.Validate(instance)
 }
 
 func (r *Group) GetKind() string {

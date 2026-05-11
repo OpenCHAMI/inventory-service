@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inventory-service.openchami.org/schemas/hardware_schema.json",
+  "title": "Hardware",
+  "type": "object",
+  "required": ["spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object",
+      "required": ["ID"],
+      "properties": {
+    "description": {
+      "type": "string"
+    },
+    "ID": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Type": {
+      "type": "string"
+    },
+    "Ordinal": {
+      "type": "integer"
+    },
+    "Status": {
+      "type": "string"
+    },
+    "HWInventoryByLocationType": {
+      "type": "string"
+    },
+    "CabinetLocationInfo": {
+      "type": "object"
+    },
+    "ChassisLocationInfo": {
+      "type": "object"
+    },
+    "ComputeModuleLocationInfo": {
+      "type": "object"
+    },
+    "RouterModuleLocationInfo": {
+      "type": "object"
+    },
+    "NodeEnclosureLocationInfo": {
+      "type": "object"
+    },
+    "HSNBoardLocationInfo": {
+      "type": "object"
+    },
+    "MgmtSwitchLocationInfo": {
+      "type": "object"
+    },
+    "MgmtHLSwitchLocationInfo": {
+      "type": "object"
+    },
+    "CDUMgmtSwitchLocationInfo": {
+      "type": "object"
+    },
+    "NodeLocationInfo": {
+      "type": "object"
+    },
+    "ProcessorLocationInfo": {
+      "type": "object"
+    },
+    "NodeAccelLocationInfo": {
+      "type": "object"
+    },
+    "MemoryLocationInfo": {
+      "type": "object"
+    },
+    "DriveLocationInfo": {
+      "type": "object"
+    },
+    "NodeHsnNicLocationInfo": {
+      "type": "object"
+    },
+    "PDULocationInfo": {
+      "type": "object"
+    },
+    "OutletLocationInfo": {
+      "type": "object"
+    },
+    "CMMRectifierLocationInfo": {
+      "type": "object"
+    },
+    "NodeEnclosurePowerSupplyLocationInfo": {
+      "type": "object"
+    },
+    "NodeBMCLocationInfo": {
+      "type": "object"
+    },
+    "RouterBMCLocationInfo": {
+      "type": "object"
+    },
+    "NodeAccelRiserLocationInfo": {
+      "type": "object"
+    },
+    "PopulatedFRU": {
+      "type": "object"
+    },
+    "Nodes": {
+      "type": "array"
+    },
+    "Cabinets": {
+      "type": "array"
+    },
+    "Chassis": {
+      "type": "array"
+    },
+    "ComputeModules": {
+      "type": "array"
+    },
+    "RouterModules": {
+      "type": "array"
+    },
+    "NodeEnclosures": {
+      "type": "array"
+    },
+    "HSNBoards": {
+      "type": "array"
+    },
+    "Processors": {
+      "type": "array"
+    },
+    "Memory": {
+      "type": "array"
+    },
+    "Drives": {
+      "type": "array"
+    },
+    "CabinetPDUs": {
+      "type": "array"
+    },
+    "CabinetPDUPowerConnectors": {
+      "type": "array"
+    },
+    "CMMRectifiers": {
+      "type": "array"
+    },
+    "NodeAccels": {
+      "type": "array"
+    },
+    "NodeAccelRisers": {
+      "type": "array"
+    },
+    "NodeEnclosurePowerSupplies": {
+      "type": "array"
+    },
+    "NodeHsnNics": {
+      "type": "array"
+    },
+    "CECs": {
+      "type": "array"
+    },
+    "CDUs": {
+      "type": "array"
+    },
+    "CabinetCDUs": {
+      "type": "array"
+    },
+    "CMMFpgas": {
+      "type": "array"
+    },
+    "NodeFpgas": {
+      "type": "array"
+    },
+    "RouterFpgas": {
+      "type": "array"
+    },
+    "RouterTORFpgas": {
+      "type": "array"
+    },
+    "HSNAsics": {
+      "type": "array"
+    },
+    "CabinetBMCs": {
+      "type": "array"
+    },
+    "CabinetPDUControllers": {
+      "type": "array"
+    },
+    "ChassisBMCs": {
+      "type": "array"
+    },
+    "NodeBMCs": {
+      "type": "array"
+    },
+    "RouterBMCs": {
+      "type": "array"
+    },
+    "CabinetPDUNics": {
+      "type": "array"
+    },
+    "NodePowerConnectors": {
+      "type": "array"
+    },
+    "NodeBMCNics": {
+      "type": "array"
+    },
+    "NodeNICs": {
+      "type": "array"
+    },
+    "RouterBMCNics": {
+      "type": "array"
+    },
+    "MgmtSwitches": {
+      "type": "array"
+    },
+    "MgmtHLSwitches": {
+      "type": "array"
+    },
+    "CDUMgmtSwitches": {
+      "type": "array"
+    }
+      }
+    },
+    "status": {
+      "type": "object"
+    }
+  }
+}
