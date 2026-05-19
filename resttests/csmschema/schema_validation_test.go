@@ -328,13 +328,16 @@ func TestCsmHardware_ValidCreate(t *testing.T) {
 }
 
 // TestCsmHardware_ValidStatus_Empty verifies that Status "Empty" is accepted.
+// HWInventoryByLocationType must be set to a valid enum value because the
+// struct always serialises the field (no omitempty).
 func TestCsmHardware_ValidStatus_Empty(t *testing.T) {
 	resp := doRequest(t, http.MethodPost, "/hardwares", map[string]interface{}{
 		"metadata": map[string]interface{}{"name": "x5000c0s5b0n1"},
 		"spec": map[string]interface{}{
-			"ID":     "x5000c0s5b0n1",
-			"Type":   "Node",
-			"Status": "Empty",
+			"ID":                        "x5000c0s5b0n1",
+			"Type":                      "Node",
+			"Status":                    "Empty",
+			"HWInventoryByLocationType": "HWInvByLocNode",
 		},
 	})
 	requireStatus(t, resp, http.StatusCreated)
@@ -378,6 +381,8 @@ func TestCsmRedfishEndpoint_InvalidType(t *testing.T) {
 
 // TestCsmRedfishEndpoint_ValidCreate verifies that a redfish endpoint body with
 // a valid HMSType and all required fields is accepted (HTTP 201).
+// DiscoveryInfo.LastDiscoveryStatus must be set to a value from its enum
+// because the struct always serialises the field (no omitempty).
 func TestCsmRedfishEndpoint_ValidCreate(t *testing.T) {
 	resp := doRequest(t, http.MethodPost, "/redfishendpoints", map[string]interface{}{
 		"metadata": map[string]interface{}{"name": "x5000c0s0b0"},
@@ -385,6 +390,9 @@ func TestCsmRedfishEndpoint_ValidCreate(t *testing.T) {
 			"ID":       "x5000c0s0b0",
 			"Type":     "NodeBMC",
 			"Hostname": "bmc5000.example.com",
+			"DiscoveryInfo": map[string]interface{}{
+				"LastDiscoveryStatus": "NotYetQueried",
+			},
 		},
 	})
 	requireStatus(t, resp, http.StatusCreated)
