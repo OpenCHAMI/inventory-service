@@ -19,6 +19,9 @@ builds:
       - linux
     goarch:
       - amd64
+      - arm64
+    goamd64:
+      - v3
     ldflags:
       - -s -w
       - -X main.version={{.Version}}
@@ -68,14 +71,18 @@ dockers:
     ids: [inventory-service]
     goos: linux
     goarch: amd64
+    goamd64: v3
     image_templates:
-      - "ghcr.io/openchami/inventory-service:{{ .Version }}-amd64"
+      - &amd64_linux_image "ghcr.io/openchami/inventory-service:{{ .Tag }}-amd64"
+      - "ghcr.io/openchami/inventory-service:{{ .Major }}-amd64"
+      - "ghcr.io/openchami/inventory-service:{{ .Major }}.{{ .Minor }}-amd64"
       - "ghcr.io/openchami/inventory-service:latest-amd64"
     dockerfile: Dockerfile
     use: buildx
     extra_files:
       - schemas
     build_flag_templates:
+      - "--pull"
       - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
@@ -84,19 +91,55 @@ dockers:
       - "--label=org.opencontainers.image.source={{.GitURL}}"
       - "--label=org.opencontainers.image.licenses=MIT"
 
-docker_manifests:
-  - name_template: "ghcr.io/openchami/inventory-service:{{ .Version }}"
+  - id: inventory-service-arm64
+    ids: [inventory-service]
+    goos: linux
+    goarch: arm64
     image_templates:
-      - "ghcr.io/openchami/inventory-service:{{ .Version }}-amd64"
+      - &arm64v8_linux_image "ghcr.io/openchami/inventory-service:{{ .Tag }}-arm64"
+      - "ghcr.io/openchami/inventory-service:{{ .Major }}-arm64"
+      - "ghcr.io/openchami/inventory-service:{{ .Major }}.{{ .Minor }}-arm64"
+      - "ghcr.io/openchami/inventory-service:latest-arm64"
+    dockerfile: Dockerfile
+    use: buildx
+    extra_files:
+      - schemas
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--label=org.opencontainers.image.licenses=MIT"
 
+docker_manifests:
   - name_template: "ghcr.io/openchami/inventory-service:latest"
     image_templates:
-      - "ghcr.io/openchami/inventory-service:latest-amd64"
+      - *amd64_linux_image
+      - *arm64v8_linux_image
+
+  - name_template: "ghcr.io/openchami/inventory-service:{{ .Tag }}"
+    image_templates:
+      - *amd64_linux_image
+      - *arm64v8_linux_image
+
+  - name_template: "ghcr.io/openchami/inventory-service:{{ .Major }}"
+    image_templates:
+      - *amd64_linux_image
+      - *arm64v8_linux_image
+
+  - name_template: "ghcr.io/openchami/inventory-service:{{ .Major }}.{{ .Minor }}"
+    image_templates:
+      - *amd64_linux_image
+      - *arm64v8_linux_image
 
 release:
   github:
     owner: openchami
     name: inventory-service
+  name_template: 'v{{ .Version }}'
   draft: false
   prerelease: auto
   mode: append

@@ -42,3 +42,6 @@ data-resttests/
 
 # go releaser
 dist/
+
+# Directory to put external resources in, which will be used by AI during development.
+r/
