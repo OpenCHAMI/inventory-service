@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inventory-service.openchami.org/schemas/ethernet_interface_schema.json",
+  "title": "EthernetInterface",
+  "type": "object",
+  "required": ["spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object",
+      "required": ["ID"],
+      "properties": {
+        "Description": {
+          "type": "string"
+        },
+        "ID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "MACAddress": {
+          "type": "string"
+        },
+        "LastUpdate": {
+          "type": "string"
+        },
+        "ComponentID": {
+          "type": "string"
+        },
+        "Type": {
+          "type": "string"
+        },
+        "IPAddresses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "IPAddress": {
+                "type": "string"
+              },
+              "Network": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "object"
+    }
+  }
+}

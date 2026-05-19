@@ -5,6 +5,7 @@ services:
   inventory-service:
     image: ${INVENTORY_SERVICE_IMAGE}
     container_name: inventory-service
+    command: serve --port 8080 --database-url file:/data/inventory.db?_fk=1 --schema /schemas/csm
     hostname: inventory
     networks:
       - internal

@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inventory-service.openchami.org/schemas/csm/ethernet_interface_schema.json",
+  "title": "EthernetInterface",
+  "type": "object",
+  "required": ["spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object",
+      "required": ["ID"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "ID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "Description": {
+          "type": "string"
+        },
+        "MACAddress": {
+          "description": "MAC address in standard colon- or hyphen-separated 12-byte hex format and allows no separators.",
+          "type": "string",
+          "pattern": "^([0-9A-Fa-f]{2}[:-]?){5}([0-9A-Fa-f]{2})$"
+        },
+        "IPAddresses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["IPAddress"],
+            "properties": {
+              "IPAddress": {
+                "description": "IPv4 or IPv6 address.",
+                "type": "string",
+                "oneOf": [
+                  {"format": "ipv4"},
+                  {"format": "ipv6"}
+                ]
+              },
+              "Network": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "LastUpdate": {
+          "description": "Timestamp of last modification.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "ComponentID": {
+          "type": "string"
+        },
+        "Type": {
+          "description": "HMS component type category (HMSType).",
+          "type": "string",
+          "enum": [
+            "CDU",
+            "CabinetCDU",
+            "CabinetPDU",
+            "CabinetPDUOutlet",
+            "CabinetPDUPowerConnector",
+            "CabinetPDUController",
+            "Cabinet",
+            "Chassis",
+            "ChassisBMC",
+            "CMMRectifier",
+            "CMMFpga",
+            "CEC",
+            "ComputeModule",
+            "RouterModule",
+            "NodeBMC",
+            "NodeEnclosure",
+            "NodeEnclosurePowerSupply",
+            "HSNBoard",
+            "MgmtSwitch",
+            "MgmtHLSwitch",
+            "CDUMgmtSwitch",
+            "Node",
+            "VirtualNode",
+            "Processor",
+            "Drive",
+            "StorageGroup",
+            "NodeNIC",
+            "Memory",
+            "NodeAccel",
+            "NodeAccelRiser",
+            "NodeFpga",
+            "HSNAsic",
+            "RouterFpga",
+            "RouterBMC",
+            "HSNLink",
+            "HSNConnector",
+            "INVALID"
+          ]
+        }
+      }
+    },
+    "status": {
+      "type": "object"
+    }
+  }
+}

@@ -41,6 +41,9 @@ archives:
       {{- else }}{{ .Arch }}{{ end }}
     files:
       - README.md
+      - src: schemas/**/*.json
+        dst: schemas
+        strip_parent: false
 
 checksum:
   name_template: 'checksums_{{ .Version }}.txt'
@@ -70,6 +73,8 @@ dockers:
       - "ghcr.io/openchami/inventory-service:latest-amd64"
     dockerfile: Dockerfile
     use: buildx
+    extra_files:
+      - schemas
     build_flag_templates:
       - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.created={{.Date}}"

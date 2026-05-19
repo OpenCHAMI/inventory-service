@@ -62,6 +62,8 @@ clean:
 .PHONY: image
 image: build
 	@echo "Building container image..."
+	cp -r schemas bin
+	rm bin/schemas/*.go
 	$(CONTAINER_CMD) build -f Dockerfile -t $(BINARY_NAME)-service:latest bin
 
 .PHONY: unittest
