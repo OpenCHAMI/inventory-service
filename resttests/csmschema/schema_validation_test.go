@@ -215,10 +215,10 @@ func TestCsmEthernetInterface_ValidMAC_Colon(t *testing.T) {
 	resp := doRequest(t, http.MethodPost, "/ethernetinterfaces", map[string]interface{}{
 		"metadata": map[string]interface{}{"name": "a1:00:00:00:00:02"},
 		"spec": map[string]interface{}{
-			"ID":           "a1:00:00:00:00:02",
-			"MACAddress":   "a1:00:00:00:00:02",
-			"Type":         "Node",
-			"IPAddresses":  []interface{}{},
+			"ID":          "a1:00:00:00:00:02",
+			"MACAddress":  "a1:00:00:00:00:02",
+			"Type":        "Node",
+			"IPAddresses": []interface{}{},
 		},
 	})
 	requireStatus(t, resp, http.StatusCreated)
