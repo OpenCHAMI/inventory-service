@@ -49,6 +49,7 @@
             "NodeBMC",
             "NodeEnclosure",
             "NodeEnclosurePowerSupply",
+            "NodeHsnNic",
             "HSNBoard",
             "MgmtSwitch",
             "MgmtHLSwitch",
@@ -106,6 +107,7 @@
             "HWInvByLocCMMRectifier",
             "HWInvByLocNodeEnclosurePowerSupply",
             "HWInvByLocNodeBMC",
+            "HWInvByLocNodeHsnNic",
             "HWInvByLocRouterBMC",
             "HWInvByLocHSNNIC"
           ]

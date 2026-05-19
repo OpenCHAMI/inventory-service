@@ -20,7 +20,7 @@ def discover_hardware():
 
     response = requests.get(f"{smd_base_url}/v2/Inventory/RedfishEndpoints")
     if not response.ok:
-        print_response("GET", response)
+        response_failure("GET", response)
         pytest.fail(f"Failed to get {response.url}")
 
     discovered_nodes = [ endpoint.get("ID")
@@ -46,7 +46,7 @@ def discover_hardware():
                 }
         response = requests.post(f"{smd_base_url}/v2/Inventory/RedfishEndpoints", json=request_body)
         if not response.ok:
-            print_response("POST", response)
+            response_failure("POST", response)
 
     if undiscovered_nodes:
         for i in range(0, 10):
@@ -83,79 +83,83 @@ def discover_hardware():
 def replicate_components():
     response = requests.get(f"{smd_base_url}/v2/State/Components")
     if not response.ok:
-        print_response("GET", response)
+        response_failure("GET", response)
     smd_components = json.loads(response.text)
 
     print("POST Components to the inventory service")
     response = requests.post(f"{inventory_base_url}/v2/State/Components", json=smd_components)
     if not response.ok:
-        print_response("POST", response)
+        response_failure("POST", response)
 
 
 def replicate_component_endpoints():
     response = requests.get(f"{smd_base_url}/v2/Inventory/ComponentEndpoints")
     if not response.ok:
-        print_response("GET", response)
+        response_failure("GET", response)
     smd_components = json.loads(response.text)
 
     print("POST ComponentEndpoints to the inventory service")
     response = requests.post(f"{inventory_base_url}/v2/Inventory/ComponentEndpoints", json=smd_components)
     if not response.ok:
-        print_response("POST", response)
+        response_failure("POST", response)
 
 
 def replicate_ethernet_interfaces():
     response = requests.get(f"{smd_base_url}/v2/Inventory/EthernetInterfaces")
     if not response.ok:
-        print_response("GET", response)
+        response_failure("GET", response)
     ethernet_interfaces = json.loads(response.text)
 
     print("POST EthernetInterfaces to the inventory service")
     for eth in ethernet_interfaces:
         response = requests.post(f"{inventory_base_url}/v2/Inventory/EthernetInterfaces", json=eth)
         if not response.ok:
-            print_response("POST", response)
+            response_failure("POST", response)
 
 
 def replicate_redfish_endpoints():
     response = requests.get(f"{smd_base_url}/v2/Inventory/RedfishEndpoints")
     if not response.ok:
-        print_response("GET", response)
+        response_failure("GET", response)
     redfish_endpoints  = json.loads(response.text)
 
     print("POST RedfishEndpoints to the inventory service")
     for redfish_endpoint in redfish_endpoints.get("RedfishEndpoints"):
         response = requests.post(f"{inventory_base_url}/v2/Inventory/RedfishEndpoints", json=redfish_endpoint)
         if not response.ok:
-            print_response("POST", response)
+            response_failure("POST", response)
 
 
 def replicate_service_endpoints():
     response = requests.get(f"{smd_base_url}/v2/Inventory/ServiceEndpoints")
     if not response.ok:
-        print_response("GET", response)
+        response_failure("GET", response)
     smd_service_endpoints = json.loads(response.text)
 
     print("POST ServiceEndpoints to the inventory service")
     response = requests.post(f"{inventory_base_url}/v2/Inventory/ServiceEndpoints", json=smd_service_endpoints)
     if not response.ok:
-        print_response("POST", response)
+        response_failure("POST", response)
 
 
 def replicate_hardware():
     response = requests.get(f"{smd_base_url}/v2/Inventory/Hardware")
     if not response.ok:
-        print_response("GET", response)
+        response_failure("GET", response)
     smd_hardware = json.loads(response.text)
 
     print("POST Hardware to the inventory service")
     smd_hardware_post_obj = { "Hardware" : smd_hardware }
     response = requests.post(f"{inventory_base_url}/v2/Inventory/Hardware", json=smd_hardware_post_obj)
     if not response.ok:
-        print_response("POST", response)
+        response_failure("POST", response)
 
 
 def print_response(method, response):
-        print(f"{method} URL: {response.url}, Code: {response.status_code}, Body:")
-        print(response.text)
-        print(json.dumps(response.text, indent=4))
+    print(f"{method} URL: {response.url}, Code: {response.status_code}, Body:")
+    print(response.text)
+    print(json.dumps(response.text, indent=4))
+
+def response_failure(method, response):
+    print_response(method, response)
+    pytest.fail(f"get {response.url}, code: {response.status_code} Body:\nresponse.text")

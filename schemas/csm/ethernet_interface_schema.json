@@ -34,7 +34,7 @@
         "MACAddress": {
           "description": "MAC address in standard colon- or hyphen-separated 12-byte hex format.",
           "type": "string",
-          "pattern": "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
+          "pattern": "^([0-9A-Fa-f]{2}[:-]?){5}([0-9A-Fa-f]{2})$"
         },
         "IPAddresses": {
           "type": "array",
