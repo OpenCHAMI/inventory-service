@@ -41,12 +41,17 @@ goreleaser: GIT_STATE := $(shell if git diff-index --quiet HEAD --; then echo 'c
 goreleaser: BUILD_HOST := $(shell hostname)
 goreleaser: GO_VERSION := $(shell go version | awk '{print $$3}')
 goreleaser: BUILD_USER := $(shell whoami)
+goreleaser: LOCAL_GOOS := $(shell go env GOOS)
+goreleaser: LOCAL_GOARCH := $(shell go env GOARCH)
 goreleaser:
 	@echo "GIT_STATE: $(GIT_STATE)"
 	@echo "BUILD_HOST: $(BUILD_HOST)"
 	@echo "GO_VERSION: $(GO_VERSION)"
 	@echo "BUILD_USER: $(BUILD_USER)"
-	goreleaser release --snapshot --clean
+	@echo "Building for $(LOCAL_GOOS)/$(LOCAL_GOARCH)"
+	@python3 -c "import yaml; c = yaml.safe_load(open('.goreleaser.yaml')); arch = '$(LOCAL_GOARCH)'; goos = '$(LOCAL_GOOS)'; [b.update({'goarch': [arch], 'goos': [goos]}) for b in c['builds']]; [b.pop('goamd64', None) for b in c['builds'] if arch != 'amd64']; c['dockers'] = [d for d in c.get('dockers', []) if d.get('goarch') == arch]; c.pop('docker_manifests', None); yaml.dump(c, open('/tmp/.goreleaser-local.yaml', 'w'))"
+	goreleaser release --snapshot --clean --config /tmp/.goreleaser-local.yaml
+	@rm -f /tmp/.goreleaser-local.yaml
 
 # Clean build artifacts
 .PHONY: clean
