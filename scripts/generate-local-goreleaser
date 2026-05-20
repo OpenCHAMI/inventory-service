@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright © 2026 OpenCHAMI a Series of LF Projects, LLC
+#
+# SPDX-License-Identifier: MIT
+#
+# Generates a goreleaser config restricted to the current OS and architecture.
+# Usage: generate-local-goreleaser <input-config> <output-config>
+
+import sys
+import os
+import yaml
+
+
+def main():
+    if len(sys.argv) != 3:
+        print(f"Usage: {sys.argv[0]} <input-config> <output-config>", file=sys.stderr)
+        sys.exit(1)
+
+    input_path = sys.argv[1]
+    output_path = sys.argv[2]
+
+    arch = os.popen("go env GOARCH").read().strip()
+    goos = os.popen("go env GOOS").read().strip()
+
+    with open(input_path) as f:
+        config = yaml.safe_load(f)
+
+    for build in config.get("builds", []):
+        build["goarch"] = [arch]
+        build["goos"] = [goos]
+        if arch != "amd64":
+            build.pop("goamd64", None)
+
+    config["dockers"] = [
+        d for d in config.get("dockers", []) if d.get("goarch") == arch
+    ]
+    config.pop("docker_manifests", None)
+
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    with open(output_path, "w") as f:
+        yaml.dump(config, f)
+
+
+if __name__ == "__main__":
+    main()
