@@ -42,3 +42,4 @@ data-resttests/
 
 # go releaser
 dist/
+build/

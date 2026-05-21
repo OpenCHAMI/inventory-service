@@ -46,13 +46,17 @@ goreleaser:
 	@echo "BUILD_HOST: $(BUILD_HOST)"
 	@echo "GO_VERSION: $(GO_VERSION)"
 	@echo "BUILD_USER: $(BUILD_USER)"
-	goreleaser release --snapshot --clean
+	@mkdir -p build
+	@./scripts/generate-local-goreleaser .goreleaser.yaml build/.goreleaser-local.yaml
+	goreleaser release --snapshot --clean --config build/.goreleaser-local.yaml
+	@rm -f build/.goreleaser-local.yaml
 
 # Clean build artifacts
 .PHONY: clean
 clean:
 	@echo "Cleaning build artifacts..."
 	rm -rf $(BINARY_DIR)
+	rm -rf build
 	rm -rf data
 	rm -rf dist
 	rm -rf data-resttests
