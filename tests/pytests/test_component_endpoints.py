@@ -11,19 +11,26 @@ from conftest import inventory_base_url, print_response
 
 def test_component_endpoints(discover_hardware):
     # Step 1: GET existing component endpoints to use as a template
+    new_id = "x9999c0s0b0n0"
     response = requests.get(f"{inventory_base_url}/v2/Inventory/ComponentEndpoints")
     if not response.ok:
         print_response("GET", response)
         pytest.fail(f"Failed to GET component endpoints: {response.url}")
 
     component_endpoints = json.loads(response.text).get("ComponentEndpoints", [])
-    if not component_endpoints:
-        pytest.fail("No existing component endpoints found to use as a template")
-
-    # Step 2: Copy the first spec and change the ID to create a new unique resource
-    new_spec = component_endpoints[0].copy()
-    new_id = "x9999c0s0b0n0"
-    new_spec["ID"] = new_id
+    if component_endpoints:
+        # Copy the first spec and change the ID to create a new unique resource
+        new_spec = component_endpoints[0].copy()
+        new_spec["ID"] = new_id
+    else:
+        # No existing component endpoints; use a simple basic object
+        new_spec = {
+            "ID": new_id,
+            "Type": "Node",
+            "Domain": "test.local",
+            "RedfishType": "ComputerSystem",
+            "RedfishEndpointID": "x9999c0s0b0",
+        }
 
     # Step 3: POST the new component endpoint
     post_body = {"ComponentEndpoints": [new_spec]}

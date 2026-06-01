@@ -1,0 +1,50 @@
+{
+    "SchemaVersion": 1,
+    "ID": "x1000c0s0b4",
+    "Type": "NodeBMC",
+    "Name": "compute5",
+    "Hostname": "",
+    "Domain": "",
+    "FQDN": "",
+    "Enabled": false,
+    "UUID": "cb84e1a9-19c3-4cc0-983f-5ac9f75bc745",
+    "User": "",
+    "Password": "",
+    "MACAddr": "de:ca:fc:0f:fe:e5",
+    "IPAddress": "172.16.0.105",
+    "RediscoverOnUpdate": false,
+    "DiscoveryInfo": {
+        "LastDiscoveryStatus": ""
+    },
+    "Systems": [
+        {
+            "uri": "https://foobar.openchami.cluster:8443/redfish/v1/Systems/x1000c0s0b4n0",
+            "uuid": "b2a760d0-0770-45af-b85d-7b43848c3380",
+            "name": "compute5",
+            "ethernet_interfaces": [
+                {
+                    "mac": "52:54:00:be:ef:05",
+                    "ip": "172.16.0.5",
+                    "name": "x1000c0s0b4n0",
+                    "description": "Interface 0 for compute5"
+                }
+            ]
+        }
+    ],
+    "Managers": [
+        {
+            "uri": "https://foobar.openchami.cluster:8443/redfish/v1/Managers/x1000c0s0b4",
+            "uuid": "cb84e1a9-19c3-4cc0-983f-5ac9f75bc745",
+            "name": "x1000c0s0b4",
+            "type": "NodeBMC",
+            "ethernet_interfaces": [
+                {
+                    "mac": "de:ca:fc:0f:fe:e5",
+                    "ip": "172.16.0.105",
+                    "name": "x1000c0s0b4",
+                    "description": "Interface for BMC x1000c0s0b4"
+                }
+            ]
+        }
+    ]
+}

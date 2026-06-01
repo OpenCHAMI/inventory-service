@@ -11,19 +11,25 @@ from conftest import inventory_base_url, print_response
 
 def test_components(discover_hardware):
     # Step 1: GET an existing component to use as a template
+    new_id = "x9999c0s0b0n0"
     response = requests.get(f"{inventory_base_url}/v2/State/Components")
     if not response.ok:
         print_response("GET", response)
         pytest.fail(f"Failed to GET components: {response.url}")
 
     components = json.loads(response.text).get("Components", [])
-    if not components:
-        pytest.fail("No existing components found to use as a template")
-
-    # Step 2: Copy the first component and modify the ID to create a new resource
-    new_spec = components[0].copy()
-    new_id = "x9999c0s0b0n0"
-    new_spec["ID"] = new_id
+    if components:
+        # Copy the first component and modify the ID to create a new resource
+        new_spec = components[0].copy()
+        new_spec["ID"] = new_id
+    else:
+        # No existing components; use a simple basic object
+        new_spec = {
+            "ID": new_id,
+            "Type": "Node",
+            "State": "Ready",
+            "Flag": "OK",
+        }
 
     # Step 3: POST the new component
     post_body = {"Components": [new_spec]}

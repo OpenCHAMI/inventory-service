@@ -20,4 +20,4 @@ WORKDIR /app
 
 COPY . .
 
-CMD [ "/usr/local/bin/pytest", "/app" ]
+CMD [ "/usr/local/bin/pytest", "--enable-redfish-discovery", "/app" ]

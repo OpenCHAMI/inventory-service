@@ -23,7 +23,7 @@ all: clean build image test-image
 
 # Run all tests
 .PHONY: all-tests
-all-tests: unittest resttest test-compare-to-smd
+all-tests: unittest resttest test-compare-to-smd-redfish test-compare-to-smd
 
 # Build the binary
 .PHONY: build
@@ -88,12 +88,19 @@ test-image:
 	$(CONTAINER_CMD) build -t $(BINARY_NAME)-test:latest tests/pytests
 
 
+# Start compose environment running the inventory-service and smd with smd redfish based discovery enabled
+.PHONY: start-inventory-and-smd-redfish
+start-inventory-and-smd-redfish:
+	@echo "Starting docker compose environment for testing...";
+	tests/compose/generate-config --enable-discovery;
+	cd tests/compose && $(CONTAINER_CMD) compose -p inventory -f networks.yml -f postgres.yml -f smd.yml -f inventory-service.yml -f computes.yml up -d;
+
 # Start compose environment running the inventory-service and smd
 .PHONY: start-inventory-and-smd
 start-inventory-and-smd:
 	@echo "Starting docker compose environment for testing...";
 	tests/compose/generate-config;
-	cd tests/compose && $(CONTAINER_CMD) compose -p inventory -f networks.yml -f postgres.yml -f smd.yml -f inventory-service.yml -f computes.yml up -d;
+	cd tests/compose && $(CONTAINER_CMD) compose -p inventory -f networks.yml -f postgres.yml -f smd.yml -f inventory-service.yml up -d;
 
 
 # Stop compose environment running the inventory-service and smd
@@ -104,9 +111,18 @@ stop-inventory-and-smd:
 
 
 # Run the inventory-test image which will compare the behavior of the inventory-service to smd
+# Runs the tests doing classic SMD discovery of the redfish endpoints
+.PHONY: test-compare-to-smd-redfish
+test-compare-to-smd-redfish:
+	$(MAKE) stop-inventory-and-smd
+	$(MAKE) start-inventory-and-smd-redfish
+	docker run --rm -it --network inventory_internal inventory-test:latest
+	$(MAKE) stop-inventory-and-smd
+
+# Runs the tests doing bulk OpenCHAMI style POSTs of the redfish endpoints to SMD
 .PHONY: test-compare-to-smd
 test-compare-to-smd:
 	$(MAKE) stop-inventory-and-smd
 	$(MAKE) start-inventory-and-smd
-	docker run --rm -it --network inventory_internal inventory-test:latest
+	docker run --rm -it --network inventory_internal inventory-test:latest pytest --discovery-json /app/request-data /app
 	$(MAKE) stop-inventory-and-smd

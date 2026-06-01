@@ -34,7 +34,7 @@ services:
       - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
       - SMD_DBOPTS=sslmode=disable
       - SMD_JWKS_URL=
-      - ENABLE_DISCOVERY=true
+      - ENABLE_DISCOVERY=${ENABLE_DISCOVERY:-false} # set in .env file
     depends_on:
       postgres:
         condition: service_healthy
