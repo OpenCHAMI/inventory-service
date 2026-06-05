@@ -312,7 +312,7 @@ func importFile(ctx context.Context, path string, mode string, dryRun bool) (imp
 		}
 
 		if !dryRun {
-			if err := storage.SaveHardware(ctx, res); err != nil {
+			if err := plugins.Store.SaveHardware(ctx, res); err != nil {
 				return 0, 0, fmt.Errorf("failed to save Hardware: %w", err)
 			}
 		}
@@ -431,7 +431,7 @@ func deleteAllResources(ctx context.Context) error {
 		return fmt.Errorf("failed to query hardwares: %w", err)
 	}
 	for _, item := range hardwareItems {
-		if err := storage.DeleteHardware(ctx, item.UID); err != nil {
+		if err := plugins.Store.DeleteHardware(ctx, item.UID); err != nil {
 			return fmt.Errorf("failed to delete Hardware: %w", err)
 		}
 	}
