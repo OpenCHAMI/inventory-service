@@ -9,7 +9,7 @@ go 1.26.3
 require (
 	entgo.io/ent v0.14.6
 	github.com/getkin/kin-openapi v0.140.0
-	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/openchami/fabrica v0.4.7
 	github.com/rs/zerolog v1.35.1
