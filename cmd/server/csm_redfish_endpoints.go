@@ -105,9 +105,6 @@ func CreateRedfishEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	if req.FQDN == "" {
 		req.FQDN = req.ID
 	}
-	if !req.Enabled {
-		req.Enabled = true
-	}
 	if req.DiscoveryInfo.LastStatus == "" {
 		req.DiscoveryInfo.LastStatus = "NotYetQueried"
 	}

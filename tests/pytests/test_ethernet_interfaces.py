@@ -12,20 +12,26 @@ from conftest import inventory_base_url, print_response
 def test_ethernet_interfaces(discover_hardware):
     # Step 1: GET existing ethernet interfaces to use as a template
     # GET /hsm/v2/Inventory/EthernetInterfaces returns a raw JSON array of specs
+    new_id = "b42e999abe9f"
     response = requests.get(f"{inventory_base_url}/v2/Inventory/EthernetInterfaces")
     if not response.ok:
         print_response("GET", response)
         pytest.fail(f"Failed to GET ethernet interfaces: {response.url}")
 
     ethernet_interfaces = json.loads(response.text)
-    if not ethernet_interfaces:
-        pytest.fail("No existing ethernet interfaces found to use as a template")
-
-    # Step 2: Copy the first spec and change the ID to create a new unique resource
-    new_spec = ethernet_interfaces[0].copy()
-    new_id = "b42e999abe9f"
-    new_spec["ID"] = new_id
-    new_spec["MACAddress"] = new_id
+    if ethernet_interfaces:
+        # Copy the first spec and change the ID to create a new unique resource
+        new_spec = ethernet_interfaces[0].copy()
+        new_spec["ID"] = new_id
+        new_spec["MACAddress"] = new_id
+    else:
+        # No existing ethernet interfaces; use a simple basic object
+        new_spec = {
+            "ID": new_id,
+            "MACAddress": new_id,
+            "ComponentID": "x9999c0s0b0n0",
+            "Description": "Ethernet Interface",
+        }
 
     # Step 3: POST the new ethernet interface
     # POST accepts a single spec (no array wrapper)

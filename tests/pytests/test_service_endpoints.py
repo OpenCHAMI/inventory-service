@@ -12,21 +12,26 @@ from conftest import inventory_base_url, print_response
 def test_service_endpoints(discover_hardware):
     # Step 1: GET existing service endpoints to use as a template
     # GET /hsm/v2/Inventory/ServiceEndpoints returns {"ServiceEndpoints": [specs]}
+    new_redfish_id = "x9999c0s0b0"
     response = requests.get(f"{inventory_base_url}/v2/Inventory/ServiceEndpoints")
     if not response.ok:
         print_response("GET", response)
         pytest.fail(f"Failed to GET service endpoints: {response.url}")
 
     service_endpoints = json.loads(response.text).get("ServiceEndpoints", [])
-    if not service_endpoints:
-        pytest.fail("No existing service endpoints found to use as a template")
-
-    # Step 2: Copy the first spec and set unique identifiers.
-    # Service endpoints are addressed by RedfishType + RedfishEndpointID in the URL.
-    new_spec = service_endpoints[0].copy()
-    new_redfish_type = new_spec.get("RedfishType", "AccountService")
-    new_redfish_id = "x9999c0s0b0"
-    new_spec["RedfishEndpointID"] = new_redfish_id
+    if service_endpoints:
+        # Copy the first spec and set unique identifiers.
+        new_spec = service_endpoints[0].copy()
+        new_redfish_type = new_spec.get("RedfishType", "AccountService")
+        new_spec["RedfishEndpointID"] = new_redfish_id
+    else:
+        # No existing service endpoints; use a simple basic object
+        new_redfish_type = "AccountService"
+        new_spec = {
+            "RedfishEndpointID": new_redfish_id,
+            "RedfishType": new_redfish_type,
+            "ServiceURL": "https://x9999c0s0b0/redfish/v1/AccountService",
+        }
 
     # Step 3: POST the new service endpoint
     # POST expects {"ServiceEndpoints": [spec]}

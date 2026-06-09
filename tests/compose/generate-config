@@ -9,15 +9,61 @@ generate_random_alphanumeric() {
     openssl rand -base64 "${num_chars}" | openssl dgst | cut -d' ' -f2 | fold -w "${num_chars}" | head -n 1
 }
 
+usage() {
+    cat << EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Generates a .env file for docker compose.
+
+Options:
+  --smd-image IMAGE         Set the SMD container image (default: ${SMD_IMAGE})
+  --inventory-image IMAGE   Set the inventory service container image (default: ${INVENTORY_SERVICE_IMAGE})
+  --enable-discovery        Enable hardware discovery (sets ENABLE_DISCOVERY=true)
+  -h, -?, --help            Show this help message and exit
+EOF
+}
+
 
 SCRIPT_DIR=$( dirname "$0" )
 
-export SMD_IMAGE=ghcr.io/openchami/smd:v2.19.0
-export INVENTORY_SERVICE_IMAGE=inventory-service:latest
+SMD_IMAGE=ghcr.io/openchami/smd:v2.20.3
+INVENTORY_SERVICE_IMAGE=inventory-service:latest
+ENABLE_DISCOVERY=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --smd-image)
+            SMD_IMAGE="$2"
+            shift 2
+            ;;
+        --inventory-image)
+            INVENTORY_SERVICE_IMAGE="$2"
+            shift 2
+            ;;
+        --enable-discovery)
+            ENABLE_DISCOVERY=true
+            shift
+            ;;
+        -h|-\?|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+export SMD_IMAGE
+export INVENTORY_SERVICE_IMAGE
+export ENABLE_DISCOVERY
 
 cat > ${SCRIPT_DIR}/.env << EOF
 SMD_IMAGE=${SMD_IMAGE}
 INVENTORY_SERVICE_IMAGE=${INVENTORY_SERVICE_IMAGE}
+ENABLE_DISCOVERY=${ENABLE_DISCOVERY}
 
 POSTGRES_USER=ochami
 

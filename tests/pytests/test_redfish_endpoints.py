@@ -12,20 +12,26 @@ from conftest import inventory_base_url, print_response
 def test_redfish_endpoints(discover_hardware):
     # Step 1: GET existing redfish endpoints to use as a template
     # GET /hsm/v2/Inventory/RedfishEndpoints returns {"RedfishEndpoints": [specs]}
+    new_id = "x9999c0s0b0"
     response = requests.get(f"{inventory_base_url}/v2/Inventory/RedfishEndpoints")
     if not response.ok:
         print_response("GET", response)
         pytest.fail(f"Failed to GET redfish endpoints: {response.url}")
 
     redfish_endpoints = json.loads(response.text).get("RedfishEndpoints", [])
-    if not redfish_endpoints:
-        pytest.fail("No existing redfish endpoints found to use as a template")
-
-    # Step 2: Copy the first spec and change the ID to create a new unique resource
-    new_spec = redfish_endpoints[0].copy()
-    new_id = "x9999c0s0b0"
-    new_spec["ID"] = new_id
-    new_spec["FQDN"] = new_id
+    if redfish_endpoints:
+        # Copy the first spec and change the ID to create a new unique resource
+        new_spec = redfish_endpoints[0].copy()
+        new_spec["ID"] = new_id
+        new_spec["FQDN"] = new_id
+    else:
+        # No existing redfish endpoints; use a simple basic object
+        new_spec = {
+            "ID": new_id,
+            "FQDN": new_id,
+            "Type": "NodeBMC",
+            "Enabled": True,
+        }
 
     # Step 3: POST the new redfish endpoint
     # POST accepts a single spec (no array wrapper)
