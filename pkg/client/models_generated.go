@@ -43,114 +43,114 @@ import (
 
 // CreateComponentRequest represents a request to create a Component
 type CreateComponentRequest struct {
-	Metadata    fabrica.Metadata  `json:"metadata" validate:"required"`
-	Spec        v1.ComponentSpec  `json:"spec" validate:"required"`
-	Labels      map[string]string `json:"labels,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata  `json:"metadata" yaml:"metadata" validate:"required"`
+	Spec        v1.ComponentSpec  `json:"spec" yaml:"spec" validate:"required"`
+	Labels      map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // UpdateComponentRequest represents a request to update a Component
 type UpdateComponentRequest struct {
-	Metadata    fabrica.Metadata  `json:"metadata,omitempty"`
-	Spec        v1.ComponentSpec  `json:"spec,omitempty" validate:"omitempty"`
-	Labels      map[string]string `json:"labels,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata  `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec        v1.ComponentSpec  `json:"spec,omitempty" yaml:"spec,omitempty" validate:"omitempty"`
+	Labels      map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // CreateComponentEndpointRequest represents a request to create a ComponentEndpoint
 type CreateComponentEndpointRequest struct {
-	Metadata    fabrica.Metadata         `json:"metadata" validate:"required"`
-	Spec        v1.ComponentEndpointSpec `json:"spec" validate:"required"`
-	Labels      map[string]string        `json:"labels,omitempty"`
-	Annotations map[string]string        `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata         `json:"metadata" yaml:"metadata" validate:"required"`
+	Spec        v1.ComponentEndpointSpec `json:"spec" yaml:"spec" validate:"required"`
+	Labels      map[string]string        `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string        `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // UpdateComponentEndpointRequest represents a request to update a ComponentEndpoint
 type UpdateComponentEndpointRequest struct {
-	Metadata    fabrica.Metadata         `json:"metadata,omitempty"`
-	Spec        v1.ComponentEndpointSpec `json:"spec,omitempty" validate:"omitempty"`
-	Labels      map[string]string        `json:"labels,omitempty"`
-	Annotations map[string]string        `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata         `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec        v1.ComponentEndpointSpec `json:"spec,omitempty" yaml:"spec,omitempty" validate:"omitempty"`
+	Labels      map[string]string        `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string        `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // CreateEthernetInterfaceRequest represents a request to create a EthernetInterface
 type CreateEthernetInterfaceRequest struct {
-	Metadata    fabrica.Metadata         `json:"metadata" validate:"required"`
-	Spec        v1.EthernetInterfaceSpec `json:"spec" validate:"required"`
-	Labels      map[string]string        `json:"labels,omitempty"`
-	Annotations map[string]string        `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata         `json:"metadata" yaml:"metadata" validate:"required"`
+	Spec        v1.EthernetInterfaceSpec `json:"spec" yaml:"spec" validate:"required"`
+	Labels      map[string]string        `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string        `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // UpdateEthernetInterfaceRequest represents a request to update a EthernetInterface
 type UpdateEthernetInterfaceRequest struct {
-	Metadata    fabrica.Metadata         `json:"metadata,omitempty"`
-	Spec        v1.EthernetInterfaceSpec `json:"spec,omitempty" validate:"omitempty"`
-	Labels      map[string]string        `json:"labels,omitempty"`
-	Annotations map[string]string        `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata         `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec        v1.EthernetInterfaceSpec `json:"spec,omitempty" yaml:"spec,omitempty" validate:"omitempty"`
+	Labels      map[string]string        `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string        `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // CreateGroupRequest represents a request to create a Group
 type CreateGroupRequest struct {
-	Metadata    fabrica.Metadata  `json:"metadata" validate:"required"`
-	Spec        v1.GroupSpec      `json:"spec" validate:"required"`
-	Labels      map[string]string `json:"labels,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata  `json:"metadata" yaml:"metadata" validate:"required"`
+	Spec        v1.GroupSpec      `json:"spec" yaml:"spec" validate:"required"`
+	Labels      map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // UpdateGroupRequest represents a request to update a Group
 type UpdateGroupRequest struct {
-	Metadata    fabrica.Metadata  `json:"metadata,omitempty"`
-	Spec        v1.GroupSpec      `json:"spec,omitempty" validate:"omitempty"`
-	Labels      map[string]string `json:"labels,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata  `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec        v1.GroupSpec      `json:"spec,omitempty" yaml:"spec,omitempty" validate:"omitempty"`
+	Labels      map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // CreateHardwareRequest represents a request to create a Hardware
 type CreateHardwareRequest struct {
-	Metadata    fabrica.Metadata  `json:"metadata" validate:"required"`
-	Spec        v1.HardwareSpec   `json:"spec" validate:"required"`
-	Labels      map[string]string `json:"labels,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata  `json:"metadata" yaml:"metadata" validate:"required"`
+	Spec        v1.HardwareSpec   `json:"spec" yaml:"spec" validate:"required"`
+	Labels      map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // UpdateHardwareRequest represents a request to update a Hardware
 type UpdateHardwareRequest struct {
-	Metadata    fabrica.Metadata  `json:"metadata,omitempty"`
-	Spec        v1.HardwareSpec   `json:"spec,omitempty" validate:"omitempty"`
-	Labels      map[string]string `json:"labels,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata  `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec        v1.HardwareSpec   `json:"spec,omitempty" yaml:"spec,omitempty" validate:"omitempty"`
+	Labels      map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // CreateRedfishEndpointRequest represents a request to create a RedfishEndpoint
 type CreateRedfishEndpointRequest struct {
-	Metadata    fabrica.Metadata       `json:"metadata" validate:"required"`
-	Spec        v1.RedfishEndpointSpec `json:"spec" validate:"required"`
-	Labels      map[string]string      `json:"labels,omitempty"`
-	Annotations map[string]string      `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata       `json:"metadata" yaml:"metadata" validate:"required"`
+	Spec        v1.RedfishEndpointSpec `json:"spec" yaml:"spec" validate:"required"`
+	Labels      map[string]string      `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string      `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // UpdateRedfishEndpointRequest represents a request to update a RedfishEndpoint
 type UpdateRedfishEndpointRequest struct {
-	Metadata    fabrica.Metadata       `json:"metadata,omitempty"`
-	Spec        v1.RedfishEndpointSpec `json:"spec,omitempty" validate:"omitempty"`
-	Labels      map[string]string      `json:"labels,omitempty"`
-	Annotations map[string]string      `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata       `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec        v1.RedfishEndpointSpec `json:"spec,omitempty" yaml:"spec,omitempty" validate:"omitempty"`
+	Labels      map[string]string      `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string      `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // CreateServiceEndpointRequest represents a request to create a ServiceEndpoint
 type CreateServiceEndpointRequest struct {
-	Metadata    fabrica.Metadata       `json:"metadata" validate:"required"`
-	Spec        v1.ServiceEndpointSpec `json:"spec" validate:"required"`
-	Labels      map[string]string      `json:"labels,omitempty"`
-	Annotations map[string]string      `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata       `json:"metadata" yaml:"metadata" validate:"required"`
+	Spec        v1.ServiceEndpointSpec `json:"spec" yaml:"spec" validate:"required"`
+	Labels      map[string]string      `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string      `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // UpdateServiceEndpointRequest represents a request to update a ServiceEndpoint
 type UpdateServiceEndpointRequest struct {
-	Metadata    fabrica.Metadata       `json:"metadata,omitempty"`
-	Spec        v1.ServiceEndpointSpec `json:"spec,omitempty" validate:"omitempty"`
-	Labels      map[string]string      `json:"labels,omitempty"`
-	Annotations map[string]string      `json:"annotations,omitempty"`
+	Metadata    fabrica.Metadata       `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec        v1.ServiceEndpointSpec `json:"spec,omitempty" yaml:"spec,omitempty" validate:"omitempty"`
+	Labels      map[string]string      `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string      `json:"annotations,omitempty" yaml:"annotations,omitempty"`
 }
 
 // DeleteResponse represents a successful deletion response
