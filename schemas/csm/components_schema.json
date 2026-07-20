@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inventory-service.openchami.org/schemas/csm/components_schema.json",
+  "title": "Component",
+  "type": "object",
+  "required": ["spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object",
+      "required": ["ID"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "ID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "Type": {
+          "description": "HMS component type category (HMSType).",
+          "type": "string",
+          "enum": [
+            "CDU",
+            "CabinetCDU",
+            "CabinetPDU",
+            "CabinetPDUOutlet",
+            "CabinetPDUPowerConnector",
+            "CabinetPDUController",
+            "Cabinet",
+            "Chassis",
+            "ChassisBMC",
+            "CMMRectifier",
+            "CMMFpga",
+            "CEC",
+            "ComputeModule",
+            "RouterModule",
+            "NodeBMC",
+            "NodeEnclosure",
+            "NodeEnclosurePowerSupply",
+            "HSNBoard",
+            "MgmtSwitch",
+            "MgmtHLSwitch",
+            "CDUMgmtSwitch",
+            "Node",
+            "VirtualNode",
+            "Processor",
+            "Drive",
+            "StorageGroup",
+            "NodeNIC",
+            "Memory",
+            "NodeAccel",
+            "NodeAccelRiser",
+            "NodeFpga",
+            "HSNAsic",
+            "RouterFpga",
+            "RouterBMC",
+            "HSNLink",
+            "HSNConnector",
+            "INVALID"
+          ]
+        },
+        "State": {
+          "description": "Logical component state.",
+          "type": "string",
+          "enum": [
+            "Unknown",
+            "Empty",
+            "Populated",
+            "Off",
+            "On",
+            "Standby",
+            "Halt",
+            "Ready"
+          ]
+        },
+        "Flag": {
+          "description": "Logical component state flag.",
+          "type": "string",
+          "enum": [
+            "OK",
+            "Warning",
+            "Alert",
+            "Locked"
+          ]
+        },
+        "Enabled": {
+          "type": "boolean"
+        },
+        "SoftwareStatus": {
+          "type": "string"
+        },
+        "Role": {
+          "description": "Component role. Known values: Compute, Service, System, Application, Storage, Management. Additional values may be configured.",
+          "type": "string"
+        },
+        "SubRole": {
+          "description": "Component subrole. Known values: Master, Worker, Storage. Additional values may be configured.",
+          "type": "string"
+        },
+        "NID": {
+          "type": "number"
+        },
+        "Subtype": {
+          "type": "string"
+        },
+        "NetType": {
+          "description": "High speed network type.",
+          "type": "string",
+          "enum": [
+            "Sling",
+            "Infiniband",
+            "Ethernet",
+            "OEM",
+            "None"
+          ]
+        },
+        "Arch": {
+          "description": "Component architecture.",
+          "type": "string",
+          "enum": [
+            "X86",
+            "ARM",
+            "Other"
+          ]
+        },
+        "Class": {
+          "description": "HSM hardware class.",
+          "type": "string",
+          "enum": [
+            "River",
+            "Mountain",
+            "Hill"
+          ]
+        },
+        "ReservationDisabled": {
+          "type": "boolean"
+        },
+        "Locked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "status": {
+      "type": "object"
+    }
+  }
+}

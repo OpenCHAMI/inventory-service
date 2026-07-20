@@ -27,8 +27,9 @@ def test_hardware(discover_hardware):
         # No existing hardware; use a simple basic hardware object
         new_spec = {
             "ID": new_id,
-            "Type": "Node",
+            "Type": "ComputeModule",
             "Status": "Populated",
+            "HWInventoryByLocationType": "HWInvByLocComputeModule",
         }
 
     # Step 2: POST the new hardware entry

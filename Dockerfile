@@ -21,8 +21,10 @@ RUN groupadd -g 1000 smd && \
 WORKDIR /home/smd
 
 COPY inventory-service /usr/local/bin/inventory-service
+COPY schemas /schemas
 
 RUN chown -R smd:smd /home/smd
+RUN chown -R smd:smd /schemas
 
 USER smd
 
