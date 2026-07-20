@@ -164,7 +164,7 @@ type PowerDistributionLocationInfo struct {
 	Description string    `json:"Description"`
 	Name        string    `json:"Name"`
 	UUID        string    `json:"UUID"`
-	Location    *Location `json:Location,omitempty"`
+	Location    *Location `json:"Location,omitempty"`
 }
 type Location struct {
 	ContactInfo   *ContactInfo   `json:"ContactInfo,omitempty"`

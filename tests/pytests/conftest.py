@@ -194,4 +194,4 @@ def print_response(method, response):
 
 def response_failure(method, response):
     print_response(method, response)
-    pytest.fail(f"get {response.url}, code: {response.status_code} Body:\nresponse.text")
+    pytest.fail(f"get {response.url}, code: {response.status_code} Body:\n{response.text}")

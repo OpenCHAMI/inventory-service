@@ -10,6 +10,7 @@ require (
 	entgo.io/ent v0.14.6
 	github.com/getkin/kin-openapi v0.140.0
 	github.com/go-chi/chi/v5 v5.2.4
+	github.com/google/jsonschema-go v0.4.3
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/openchami/fabrica v0.4.7
 	github.com/rs/zerolog v1.35.1
@@ -34,7 +35,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.30.2 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/jsonschema-go v0.4.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.18.1 // indirect
