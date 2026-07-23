@@ -105,7 +105,16 @@ def test_compare_service_endpoints(discover_hardware):
 
     inventory_service_endpoints = json.loads(response.text)
 
-    diff = compare(smd_service_endpoints.get("ServiceEndpoints"), inventory_service_endpoints.get("ServiceEndpoints"))
+    # ServiceEndpoints have no "ID" field (they're keyed by RedfishEndpointID +
+    # RedfishType), so DeepDiff's group_by="ID" can't match items up and falls
+    # back to positional comparison. SMD and the inventory service can return
+    # the list in different orders, so sort both lists on the composite key
+    # before comparing to avoid false-positive diffs from ordering alone.
+    sort_key = lambda endpoint: (endpoint.get("RedfishEndpointID"), endpoint.get("RedfishType"))
+    diff = compare(
+        sorted(smd_service_endpoints.get("ServiceEndpoints") or [], key=sort_key),
+        sorted(inventory_service_endpoints.get("ServiceEndpoints") or [], key=sort_key),
+    )
     if diff:
         pytest.fail(f"The ServiceEndpoint list from SMD does not match the list from the inventory service. diff: {diff}")
 
