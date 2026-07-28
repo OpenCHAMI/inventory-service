@@ -8,32 +8,32 @@ import (
 )
 
 type ComponentEndpoint struct {
-	APIVersion string                  `json:"apiVersion"`
-	Kind       string                  `json:"kind"`
-	Metadata   fabrica.Metadata        `json:"metadata"`
+	APIVersion string                  `json:"apiVersion" yaml:"apiVersion"`
+	Kind       string                  `json:"kind" yaml:"kind"`
+	Metadata   fabrica.Metadata        `json:"metadata" yaml:"metadata"`
 	ID         string                  `json:"id,omitempty"`
-	Spec       ComponentEndpointSpec   `json:"spec" validate:"required"`
-	Status     ComponentEndpointStatus `json:"status,omitempty"`
+	Spec       ComponentEndpointSpec   `json:"spec" yaml:"spec" validate:"required"`
+	Status     ComponentEndpointStatus `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
 type ComponentEndpointSpec struct {
-	Description string `json:"description,omitempty" validate:"max=200"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" validate:"max=200"`
 	ID          string `json:"ID"`
 
 	Type   string `json:"Type"`
 	Domain string `json:"Domain,omitempty"`
 
-	FQDN           string `json:"FQDN,omitempty"`
-	RedfishType    string `json:"RedfishType"`
-	RedfishSubtype string `json:"RedfishSubtype"`
-	MACAddr        string `json:"MACAddr,omitempty"`
-	UUID           string `json:"UUID,omitempty"`
-	OdataID        string `json:"OdataID"`
-	RfEndpointID   string `json:"RedfishEndpointID"`
-	Enabled        bool   `json:"Enabled"`
+	FQDN                string `json:"FQDN,omitempty"`
+	RedfishType         string `json:"RedfishType"`
+	RedfishSubtype      string `json:"RedfishSubtype"`
+	MACAddr             string `json:"MACAddr,omitempty"`
+	UUID                string `json:"UUID,omitempty"`
+	OdataID             string `json:"OdataID"`
+	RfEndpointID        string `json:"RedfishEndpointID"`
+	Enabled             bool   `json:"Enabled"`
+	RedfishEndpointFQDN string `json:"RedfishEndpointFQDN,omitempty"`
+	URL                 string `json:"RedfishURL,omitempty"`
 
-	RedfishEndpointFQDN   string `json:"RedfishEndpointFQDN,omitempty"`
-	URL                   string `json:"RedfishURL,omitempty"`
 	ComponentEndpointType string `json:"ComponentEndpointType"`
 
 	RedfishChassisInfo *ComponentChassisInfo `json:"RedfishChassisInfo,omitempty"`
@@ -45,9 +45,9 @@ type ComponentEndpointSpec struct {
 }
 
 type ComponentEndpointStatus struct {
-	Phase   string `json:"phase,omitempty"`
-	Message string `json:"message,omitempty"`
-	Ready   bool   `json:"ready"`
+	Phase   string `json:"phase,omitempty" yaml:"phase,omitempty"`
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
+	Ready   bool   `json:"ready" yaml:"ready"`
 }
 
 func (r *ComponentEndpoint) Validate(ctx context.Context) error {
@@ -77,11 +77,10 @@ type ComponentChassisInfo struct {
 	Actions *ChassisActions `json:"Actions,omitempty"`
 }
 type ComponentSystemInfo struct {
-	Name string `json:"Name,omitempty"`
+	Name    string                 `json:"Name,omitempty"`
+	Actions *ComputerSystemActions `json:"Actions,omitempty"`
 
-	Actions    *ComputerSystemActions `json:"Actions,omitempty"`
-	EthNICInfo []*EthernetNICInfo     `json:"EthernetNICInfo,omitempty"`
-
+	EthNICInfo []*EthernetNICInfo `json:"EthernetNICInfo,omitempty"`
 	PowerCtlInfo
 	Controls      []*Control     `json:"Controls,omitempty"`
 	SerialConsole *SerialConsole `json:"SerialConsole,omitempty"`

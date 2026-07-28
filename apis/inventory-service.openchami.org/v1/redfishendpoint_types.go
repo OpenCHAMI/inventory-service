@@ -11,16 +11,16 @@ import (
 )
 
 type RedfishEndpoint struct {
-	APIVersion string                `json:"apiVersion"`
-	Kind       string                `json:"kind"`
-	Metadata   fabrica.Metadata      `json:"metadata"`
-	ID         string                `json:"id,omitempty"`
-	Spec       RedfishEndpointSpec   `json:"spec" validate:"required"`
-	Status     RedfishEndpointStatus `json:"status,omitempty"`
+	APIVersion string                `json:"apiVersion" yaml:"apiVersion"`
+	Kind       string                `json:"kind" yaml:"kind"`
+	Metadata   fabrica.Metadata      `json:"metadata" yaml:"metadata"`
+	ID         string                `json:"id,omitempty" yaml:"id,omitempty"`
+	Spec       RedfishEndpointSpec   `json:"spec" yaml:"spec" validate:"required"`
+	Status     RedfishEndpointStatus `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
 type RedfishEndpointSpec struct {
-	Description string `json:"description,omitempty" validate:"max=200"`
+	Description string `json:"description,omitempty" validate:"max=200" yaml:"description,omitempty" validate:"max=200"`
 	ID          string `json:"ID"`
 
 	Type     string `json:"Type"`
@@ -45,9 +45,9 @@ type RedfishEndpointSpec struct {
 }
 
 type RedfishEndpointStatus struct {
-	Phase   string `json:"phase,omitempty"`
-	Message string `json:"message,omitempty"`
-	Ready   bool   `json:"ready"`
+	Phase   string `json:"phase,omitempty" yaml:"phase,omitempty"`
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
+	Ready   bool   `json:"ready" yaml:"ready"`
 }
 
 func (r *RedfishEndpoint) Validate(ctx context.Context) error {

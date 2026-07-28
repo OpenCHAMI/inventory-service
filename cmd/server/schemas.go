@@ -11,12 +11,12 @@ import (
 // schemaOverrides maps each schema filename to a pointer to the package-level
 // []byte variable it should overwrite when a custom file is found.
 var schemaOverrides = map[string]*[]byte{
-	"components_schema.json":        &schemas.ComponentsSchema,
+	"components_schema.json":         &schemas.ComponentsSchema,
 	"ethernet_interface_schema.json": &schemas.EthernetInterfaceSchema,
-	"group_schema.json":             &schemas.GroupSchema,
-	"hardware_schema.json":          &schemas.HardwareSchema,
-	"redfish_endpoint_schema.json":  &schemas.RedfishEndpointSchema,
-	"service_endpoint_schema.json":  &schemas.ServiceEndpointSchema,
+	"group_schema.json":              &schemas.GroupSchema,
+	"hardware_schema.json":           &schemas.HardwareSchema,
+	"redfish_endpoint_schema.json":   &schemas.RedfishEndpointSchema,
+	"service_endpoint_schema.json":   &schemas.ServiceEndpointSchema,
 }
 
 // LoadCustomSchemas reads any schema JSON files found in dir and replaces the

@@ -95,6 +95,7 @@ func TestMain(m *testing.M) {
 		"--host", "127.0.0.1",
 		"--database-url", dbURL,
 		"--schema", absCsmSchemaDir,
+		"--auth-enabled=false",
 	)
 	serverCmd.Dir = absProjectRoot
 	serverCmd.Stdout = os.Stdout
