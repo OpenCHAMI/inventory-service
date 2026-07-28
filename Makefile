@@ -76,6 +76,7 @@ clean: ## Clean local build artifacts
 	rm -rf data
 	rm -rf dist
 	rm -rf data-resttests
+	rm -rf data-csmschema-resttests
 	rm -f coverage.out coverage.html
 
 .PHONY: clean-all
