@@ -1,7 +1,3 @@
-// Copyright © 2026 OpenCHAMI a Series of LF Projects, LLC
-//
-// SPDX-License-Identifier: MIT
-
 package v1
 
 import (
@@ -15,16 +11,16 @@ import (
 )
 
 type Hardware struct {
-	APIVersion string           `json:"apiVersion"`
-	Kind       string           `json:"kind"`
-	Metadata   fabrica.Metadata `json:"metadata"`
-	ID         string           `json:"id,omitempty"`
-	Spec       HardwareSpec     `json:"spec" validate:"required"`
-	Status     HardwareStatus   `json:"status,omitempty"`
+	APIVersion string           `json:"apiVersion" yaml:"apiVersion"`
+	Kind       string           `json:"kind" yaml:"kind"`
+	Metadata   fabrica.Metadata `json:"metadata" yaml:"metadata"`
+	ID         string           `json:"id,omitempty" yaml:"id,omitempty"`
+	Spec       HardwareSpec     `json:"spec" yaml:"spec" validate:"required"`
+	Status     HardwareStatus   `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
 type HardwareSpec struct {
-	Description string `json:"description,omitempty" validate:"max=200"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" validate:"max=200"`
 	ID          string `json:"ID"`
 	Type        string `json:"Type"`
 	Ordinal     int    `json:"Ordinal"`
@@ -32,17 +28,21 @@ type HardwareSpec struct {
 
 	HWInventoryByLocationType string `json:"HWInventoryByLocationType"`
 
-	HMSCabinetLocationInfo       *ChassisLocationInfoRF `json:"CabinetLocationInfo,omitempty"`
-	HMSChassisLocationInfo       *ChassisLocationInfoRF `json:"ChassisLocationInfo,omitempty"`
+	HMSCabinetLocationInfo *ChassisLocationInfoRF `json:"CabinetLocationInfo,omitempty"`
+	HMSChassisLocationInfo *ChassisLocationInfoRF `json:"ChassisLocationInfo,omitempty"`
+
 	HMSComputeModuleLocationInfo *ChassisLocationInfoRF `json:"ComputeModuleLocationInfo,omitempty"`
 	HMSRouterModuleLocationInfo  *ChassisLocationInfoRF `json:"RouterModuleLocationInfo,omitempty"`
 	HMSNodeEnclosureLocationInfo *ChassisLocationInfoRF `json:"NodeEnclosureLocationInfo,omitempty"`
-	HMSHSNBoardLocationInfo      *ChassisLocationInfoRF `json:"HSNBoardLocationInfo,omitempty"`
-	HMSMgmtSwitchLocationInfo    *ChassisLocationInfoRF `json:"MgmtSwitchLocationInfo,omitempty"`
-	HMSMgmtHLSwitchLocationInfo  *ChassisLocationInfoRF `json:"MgmtHLSwitchLocationInfo,omitempty"`
+
+	HMSHSNBoardLocationInfo     *ChassisLocationInfoRF `json:"HSNBoardLocationInfo,omitempty"`
+	HMSMgmtSwitchLocationInfo   *ChassisLocationInfoRF `json:"MgmtSwitchLocationInfo,omitempty"`
+	HMSMgmtHLSwitchLocationInfo *ChassisLocationInfoRF `json:"MgmtHLSwitchLocationInfo,omitempty"`
+
 	HMSCDUMgmtSwitchLocationInfo *ChassisLocationInfoRF `json:"CDUMgmtSwitchLocationInfo,omitempty"`
 
-	HMSNodeLocationInfo                     *SystemLocationInfoRF          `json:"NodeLocationInfo,omitempty"`
+	HMSNodeLocationInfo *SystemLocationInfoRF `json:"NodeLocationInfo,omitempty"`
+
 	HMSProcessorLocationInfo                *ProcessorLocationInfoRF       `json:"ProcessorLocationInfo,omitempty"`
 	HMSNodeAccelLocationInfo                *ProcessorLocationInfoRF       `json:"NodeAccelLocationInfo,omitempty"`
 	HMSMemoryLocationInfo                   *MemoryLocationInfoRF          `json:"MemoryLocationInfo,omitempty"`
@@ -55,16 +55,53 @@ type HardwareSpec struct {
 	HMSNodeBMCLocationInfo                  *ManagerLocationInfoRF         `json:"NodeBMCLocationInfo,omitempty"`
 	HMSRouterBMCLocationInfo                *ManagerLocationInfoRF         `json:"RouterBMCLocationInfo,omitempty"`
 	HMSNodeAccelRiserLocationInfo           *NodeAccelRiserLocationInfoRF  `json:"NodeAccelRiserLocationInfo,omitempty"`
-	// TODO: Remaining types in hmsTypeArrays
-	PopulatedFRU *HWInvByFRU `json:"PopulatedFRU,omitempty"`
+	PopulatedFRU                            *HWInvByFRU                    `json:"PopulatedFRU,omitempty"`
 	hmsTypeArrays
 }
 
 type HardwareStatus struct {
-	Phase   string `json:"phase,omitempty"`
-	Message string `json:"message,omitempty"`
-	Ready   bool   `json:"ready"`
+	Phase   string `json:"phase,omitempty" yaml:"phase,omitempty"`
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
+	Ready   bool   `json:"ready" yaml:"ready"`
 }
+
+func (r *Hardware) Validate(ctx context.Context) error {
+	var schema jsonschema.Schema
+	if err := json.Unmarshal(schemas.HardwareSchema, &schema); err != nil {
+		return fmt.Errorf("loading hardware schema: %w", err)
+	}
+
+	resolved, err := schema.Resolve(nil)
+	if err != nil {
+		return fmt.Errorf("resolving hardware schema: %w", err)
+	}
+
+	resourceJSON, err := json.Marshal(r)
+	if err != nil {
+		return fmt.Errorf("marshaling resource for validation: %w", err)
+	}
+
+	var instance any
+	if err := json.Unmarshal(resourceJSON, &instance); err != nil {
+		return fmt.Errorf("unmarshaling resource for validation: %w", err)
+	}
+
+	return resolved.Validate(instance)
+}
+
+func (r *Hardware) GetKind() string {
+	return "Hardware"
+}
+
+func (r *Hardware) GetName() string {
+	return r.Metadata.Name
+}
+
+func (r *Hardware) GetUID() string {
+	return r.Metadata.UID
+}
+
+func (r *Hardware) IsHub() {}
 
 type HWInvByFRU struct {
 	FRUID                              string                    `json:"FRUID"`
@@ -413,42 +450,3 @@ type NodeAccelRiserFRUInfoRF struct {
 type NodeAccelRiserOEM struct {
 	PCBSerialNumber string `json:"PCBSerialNumber"`
 }
-
-// Validate implements custom validation logic for Hardware
-func (r *Hardware) Validate(ctx context.Context) error {
-	var schema jsonschema.Schema
-	if err := json.Unmarshal(schemas.HardwareSchema, &schema); err != nil {
-		return fmt.Errorf("loading hardware schema: %w", err)
-	}
-
-	resolved, err := schema.Resolve(nil)
-	if err != nil {
-		return fmt.Errorf("resolving hardware schema: %w", err)
-	}
-
-	resourceJSON, err := json.Marshal(r)
-	if err != nil {
-		return fmt.Errorf("marshaling resource for validation: %w", err)
-	}
-
-	var instance any
-	if err := json.Unmarshal(resourceJSON, &instance); err != nil {
-		return fmt.Errorf("unmarshaling resource for validation: %w", err)
-	}
-
-	return resolved.Validate(instance)
-}
-
-func (r *Hardware) GetKind() string {
-	return "Hardware"
-}
-
-func (r *Hardware) GetName() string {
-	return r.Metadata.Name
-}
-
-func (r *Hardware) GetUID() string {
-	return r.Metadata.UID
-}
-
-func (r *Hardware) IsHub() {}

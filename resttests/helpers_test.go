@@ -96,6 +96,7 @@ func TestMain(m *testing.M) {
 		"--port", fmt.Sprintf("%d", port),
 		"--host", "127.0.0.1",
 		"--database-url", dbURL,
+		"--auth-enabled=false",
 	)
 	serverCmd.Dir, _ = filepath.Abs(projectRoot)
 	serverCmd.Stdout = os.Stdout

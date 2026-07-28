@@ -11,16 +11,16 @@ import (
 )
 
 type ServiceEndpoint struct {
-	APIVersion string                `json:"apiVersion"`
-	Kind       string                `json:"kind"`
-	Metadata   fabrica.Metadata      `json:"metadata"`
-	ID         string                `json:"id,omitempty"`
-	Spec       ServiceEndpointSpec   `json:"spec" validate:"required"`
-	Status     ServiceEndpointStatus `json:"status,omitempty"`
+	APIVersion string                `json:"apiVersion" yaml:"apiVersion"`
+	Kind       string                `json:"kind" yaml:"kind"`
+	ID         string                `json:"id,omitempty" yaml:"metadata"`
+	Metadata   fabrica.Metadata      `json:"metadata" yaml:"metadata"`
+	Spec       ServiceEndpointSpec   `json:"spec" yaml:"spec" validate:"required"`
+	Status     ServiceEndpointStatus `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
 type ServiceEndpointSpec struct {
-	Description string `json:"description,omitempty" validate:"max=200"`
+	Description string `json:"description,omitempty" validate:"max=200" yaml:"description,omitempty" validate:"max=200"`
 	ServiceDescription
 
 	RfEndpointFQDN string `json:"RedfishEndpointFQDN"`
@@ -30,9 +30,9 @@ type ServiceEndpointSpec struct {
 }
 
 type ServiceEndpointStatus struct {
-	Phase   string `json:"phase,omitempty"`
-	Message string `json:"message,omitempty"`
-	Ready   bool   `json:"ready"`
+	Phase   string `json:"phase,omitempty" yaml:"phase,omitempty"`
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
+	Ready   bool   `json:"ready" yaml:"ready"`
 }
 
 func (r *ServiceEndpoint) Validate(ctx context.Context) error {

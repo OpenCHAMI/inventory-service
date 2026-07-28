@@ -29,4 +29,4 @@ RUN chown -R smd:smd /schemas
 USER smd
 
 ENTRYPOINT ["/usr/local/bin/inventory-service"]
-CMD ["serve", "--port", "8080", "--database-url", "file:/data/inventory.db?_fk=1"]
+CMD ["serve", "--port", "8080", "--database-url", "file:/data/inventory.db?_fk=1", "--auth-enabled=false"]

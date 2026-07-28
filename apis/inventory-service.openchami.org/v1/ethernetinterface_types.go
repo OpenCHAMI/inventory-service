@@ -11,21 +11,17 @@ import (
 )
 
 type EthernetInterface struct {
-	APIVersion string                  `json:"apiVersion"`
-	Kind       string                  `json:"kind"`
-	Metadata   fabrica.Metadata        `json:"metadata"`
-	ID         string                  `json:"id,omitempty"`
-	Spec       EthernetInterfaceSpec   `json:"spec" validate:"required"`
-	Status     EthernetInterfaceStatus `json:"status,omitempty"`
+	APIVersion string                  `json:"apiVersion" yaml:"apiVersion"`
+	Kind       string                  `json:"kind" yaml:"kind"`
+	Metadata   fabrica.Metadata        `json:"metadata" yaml:"metadata"`
+	ID         string                  `json:"id,omitempty" yaml:"id,omitempty"`
+	Spec       EthernetInterfaceSpec   `json:"spec" yaml:"spec" validate:"required"`
+	Status     EthernetInterfaceStatus `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
 type EthernetInterfaceSpec struct {
-	// todo SMD uses Description and fabrica uses description
-	// One solution might be to maintain Description == description
-	// and zero out one of them depending on if the request is through the
-	// fabrica api or through the smd style api
-	Description string      `json:"Description,omitempty" validate:"max=200"`
-	description string      `json:"description,omitempty" validate:"max=200"`
+	Description string      `json:"Description,omitempty" yaml:"Description,omitempty" validate:"max=200"`
+	description string      `json:"description,omitempty" yaml:"description,omitempty" validate:"max=200"`
 	ID          string      `json:"ID"`
 	MACAddr     string      `json:"MACAddress"`
 	LastUpdate  string      `json:"LastUpdate"`
@@ -35,9 +31,9 @@ type EthernetInterfaceSpec struct {
 }
 
 type EthernetInterfaceStatus struct {
-	Phase   string `json:"phase,omitempty"`
-	Message string `json:"message,omitempty"`
-	Ready   bool   `json:"ready"`
+	Phase   string `json:"phase,omitempty" yaml:"phase,omitempty"`
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
+	Ready   bool   `json:"ready" yaml:"ready"`
 }
 
 func (r *EthernetInterface) Validate(ctx context.Context) error {

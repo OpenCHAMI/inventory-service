@@ -11,16 +11,16 @@ import (
 )
 
 type Group struct {
-	APIVersion string           `json:"apiVersion"`
-	Kind       string           `json:"kind"`
-	Metadata   fabrica.Metadata `json:"metadata"`
-	ID         string           `json:"id,omitempty"`
-	Spec       GroupSpec        `json:"spec" validate:"required"`
-	Status     GroupStatus      `json:"status,omitempty"`
+	APIVersion string           `json:"apiVersion" yaml:"apiVersion"`
+	Kind       string           `json:"kind" yaml:"kind"`
+	Metadata   fabrica.Metadata `json:"metadata" yaml:"metadata"`
+	ID         string           `json:"id,omitempty" yaml:"id,omitempty"`
+	Spec       GroupSpec        `json:"spec" yaml:"spec" validate:"required"`
+	Status     GroupStatus      `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
 type GroupSpec struct {
-	Description    string `json:"description,omitempty" validate:"max=200"`
+	Description    string `json:"description,omitempty" yaml:"description,omitempty" validate:"max=200"`
 	Label          string `json:"label"`
 	ExclusiveGroup string `json:"exclusiveGroup,omitempty"`
 
@@ -29,9 +29,9 @@ type GroupSpec struct {
 }
 
 type GroupStatus struct {
-	Phase   string `json:"phase,omitempty"`
-	Message string `json:"message,omitempty"`
-	Ready   bool   `json:"ready"`
+	Phase   string `json:"phase,omitempty" yaml:"phase,omitempty"`
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
+	Ready   bool   `json:"ready" yaml:"ready"`
 }
 
 func (r *Group) Validate(ctx context.Context) error {

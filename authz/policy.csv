@@ -1,0 +1,155 @@
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2025-2026 OpenCHAMI a Series of LF Projects, LLC
+# Starter policy for Fabrica-generated services.
+#
+# TokenSmith evaluates the caller's normalized roles using Casbin subjects in the
+# form role:<name>. Start simple, then tailor these tuples for your deployment.
+
+# Component
+p, role:viewer, /components, GET
+p, role:viewer, /components/{uid}, GET
+
+p, role:editor, /components, GET
+p, role:editor, /components/{uid}, GET
+p, role:editor, /components, POST
+p, role:editor, /components/{uid}, PUT
+p, role:editor, /components/{uid}, PATCH
+p, role:editor, /components/{uid}/status, PUT
+p, role:editor, /components/{uid}/status, PATCH
+
+p, role:admin, /components, GET
+p, role:admin, /components/{uid}, GET
+p, role:admin, /components, POST
+p, role:admin, /components/{uid}, PUT
+p, role:admin, /components/{uid}, PATCH
+p, role:admin, /components/{uid}, DELETE
+p, role:admin, /components/{uid}/status, PUT
+p, role:admin, /components/{uid}/status, PATCH
+
+# ComponentEndpoint
+p, role:viewer, /componentendpoints, GET
+p, role:viewer, /componentendpoints/{uid}, GET
+
+p, role:editor, /componentendpoints, GET
+p, role:editor, /componentendpoints/{uid}, GET
+p, role:editor, /componentendpoints, POST
+p, role:editor, /componentendpoints/{uid}, PUT
+p, role:editor, /componentendpoints/{uid}, PATCH
+p, role:editor, /componentendpoints/{uid}/status, PUT
+p, role:editor, /componentendpoints/{uid}/status, PATCH
+
+p, role:admin, /componentendpoints, GET
+p, role:admin, /componentendpoints/{uid}, GET
+p, role:admin, /componentendpoints, POST
+p, role:admin, /componentendpoints/{uid}, PUT
+p, role:admin, /componentendpoints/{uid}, PATCH
+p, role:admin, /componentendpoints/{uid}, DELETE
+p, role:admin, /componentendpoints/{uid}/status, PUT
+p, role:admin, /componentendpoints/{uid}/status, PATCH
+
+# EthernetInterface
+p, role:viewer, /ethernetinterfaces, GET
+p, role:viewer, /ethernetinterfaces/{uid}, GET
+
+p, role:editor, /ethernetinterfaces, GET
+p, role:editor, /ethernetinterfaces/{uid}, GET
+p, role:editor, /ethernetinterfaces, POST
+p, role:editor, /ethernetinterfaces/{uid}, PUT
+p, role:editor, /ethernetinterfaces/{uid}, PATCH
+p, role:editor, /ethernetinterfaces/{uid}/status, PUT
+p, role:editor, /ethernetinterfaces/{uid}/status, PATCH
+
+p, role:admin, /ethernetinterfaces, GET
+p, role:admin, /ethernetinterfaces/{uid}, GET
+p, role:admin, /ethernetinterfaces, POST
+p, role:admin, /ethernetinterfaces/{uid}, PUT
+p, role:admin, /ethernetinterfaces/{uid}, PATCH
+p, role:admin, /ethernetinterfaces/{uid}, DELETE
+p, role:admin, /ethernetinterfaces/{uid}/status, PUT
+p, role:admin, /ethernetinterfaces/{uid}/status, PATCH
+
+# Group
+p, role:viewer, /groups, GET
+p, role:viewer, /groups/{uid}, GET
+
+p, role:editor, /groups, GET
+p, role:editor, /groups/{uid}, GET
+p, role:editor, /groups, POST
+p, role:editor, /groups/{uid}, PUT
+p, role:editor, /groups/{uid}, PATCH
+p, role:editor, /groups/{uid}/status, PUT
+p, role:editor, /groups/{uid}/status, PATCH
+
+p, role:admin, /groups, GET
+p, role:admin, /groups/{uid}, GET
+p, role:admin, /groups, POST
+p, role:admin, /groups/{uid}, PUT
+p, role:admin, /groups/{uid}, PATCH
+p, role:admin, /groups/{uid}, DELETE
+p, role:admin, /groups/{uid}/status, PUT
+p, role:admin, /groups/{uid}/status, PATCH
+
+# Hardware
+p, role:viewer, /hardwares, GET
+p, role:viewer, /hardwares/{uid}, GET
+
+p, role:editor, /hardwares, GET
+p, role:editor, /hardwares/{uid}, GET
+p, role:editor, /hardwares, POST
+p, role:editor, /hardwares/{uid}, PUT
+p, role:editor, /hardwares/{uid}, PATCH
+p, role:editor, /hardwares/{uid}/status, PUT
+p, role:editor, /hardwares/{uid}/status, PATCH
+
+p, role:admin, /hardwares, GET
+p, role:admin, /hardwares/{uid}, GET
+p, role:admin, /hardwares, POST
+p, role:admin, /hardwares/{uid}, PUT
+p, role:admin, /hardwares/{uid}, PATCH
+p, role:admin, /hardwares/{uid}, DELETE
+p, role:admin, /hardwares/{uid}/status, PUT
+p, role:admin, /hardwares/{uid}/status, PATCH
+
+# RedfishEndpoint
+p, role:viewer, /redfishendpoints, GET
+p, role:viewer, /redfishendpoints/{uid}, GET
+
+p, role:editor, /redfishendpoints, GET
+p, role:editor, /redfishendpoints/{uid}, GET
+p, role:editor, /redfishendpoints, POST
+p, role:editor, /redfishendpoints/{uid}, PUT
+p, role:editor, /redfishendpoints/{uid}, PATCH
+p, role:editor, /redfishendpoints/{uid}/status, PUT
+p, role:editor, /redfishendpoints/{uid}/status, PATCH
+
+p, role:admin, /redfishendpoints, GET
+p, role:admin, /redfishendpoints/{uid}, GET
+p, role:admin, /redfishendpoints, POST
+p, role:admin, /redfishendpoints/{uid}, PUT
+p, role:admin, /redfishendpoints/{uid}, PATCH
+p, role:admin, /redfishendpoints/{uid}, DELETE
+p, role:admin, /redfishendpoints/{uid}/status, PUT
+p, role:admin, /redfishendpoints/{uid}/status, PATCH
+
+# ServiceEndpoint
+p, role:viewer, /serviceendpoints, GET
+p, role:viewer, /serviceendpoints/{uid}, GET
+
+p, role:editor, /serviceendpoints, GET
+p, role:editor, /serviceendpoints/{uid}, GET
+p, role:editor, /serviceendpoints, POST
+p, role:editor, /serviceendpoints/{uid}, PUT
+p, role:editor, /serviceendpoints/{uid}, PATCH
+p, role:editor, /serviceendpoints/{uid}/status, PUT
+p, role:editor, /serviceendpoints/{uid}/status, PATCH
+
+p, role:admin, /serviceendpoints, GET
+p, role:admin, /serviceendpoints/{uid}, GET
+p, role:admin, /serviceendpoints, POST
+p, role:admin, /serviceendpoints/{uid}, PUT
+p, role:admin, /serviceendpoints/{uid}, PATCH
+p, role:admin, /serviceendpoints/{uid}, DELETE
+p, role:admin, /serviceendpoints/{uid}/status, PUT
+p, role:admin, /serviceendpoints/{uid}/status, PATCH
+
+# Add deployment-specific tuples below.
