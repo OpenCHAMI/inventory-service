@@ -21,27 +21,27 @@ type RedfishEndpoint struct {
 
 type RedfishEndpointSpec struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty" validate:"max=200"`
-	ID          string `json:"ID"`
+	ID          string `json:"ID" yaml:"ID"`
 
-	Type     string `json:"Type"`
-	Name     string `json:"Name,omitempty"`
-	Hostname string `json:"Hostname"`
-	Domain   string `json:"Domain"`
-	FQDN     string `json:"FQDN"`
-	Enabled  bool   `json:"Enabled"`
-	UUID     string `json:"UUID,omitempty"`
-	User     string `json:"User"`
-	Password string `json:"Password"`
+	Type     string `json:"Type" yaml:"Type"`
+	Name     string `json:"Name,omitempty" yaml:"Name,omitempty"`
+	Hostname string `json:"Hostname" yaml:"Hostname"`
+	Domain   string `json:"Domain" yaml:"Domain"`
+	FQDN     string `json:"FQDN" yaml:"FQDN"`
+	Enabled  bool   `json:"Enabled" yaml:"Enabled"`
+	UUID     string `json:"UUID,omitempty" yaml:"UUID,omitempty"`
+	User     string `json:"User" yaml:"User"`
+	Password string `json:"Password" yaml:"Password"`
 
-	UseSSDP     bool `json:"UseSSDP,omitempty"`
-	MACRequired bool `json:"MACRequired,omitempty"`
+	UseSSDP     bool `json:"UseSSDP,omitempty" yaml:"UseSSDP,omitempty"`
+	MACRequired bool `json:"MACRequired,omitempty" yaml:"MACRequired,omitempty"`
 
-	MACAddr            string `json:"MACAddr,omitempty"`
-	IPAddress          string `json:"IPAddress,omitempty"`
-	RedsicoverOnUpdate bool   `json:"RediscoverOnUpdate"`
-	TemplateID         string `json:"TemplateID,omitempty"`
+	MACAddr            string `json:"MACAddr,omitempty" yaml:"MACAddr,omitempty"`
+	IPAddress          string `json:"IPAddress,omitempty" yaml:"IPAddress,omitempty"`
+	RedsicoverOnUpdate bool   `json:"RediscoverOnUpdate" yaml:"RediscoverOnUpdate"`
+	TemplateID         string `json:"TemplateID,omitempty" yaml:"TemplateID,omitempty"`
 
-	DiscoveryInfo DiscoveryInfo `json:"DiscoveryInfo"`
+	DiscoveryInfo DiscoveryInfo `json:"DiscoveryInfo" yaml:"DiscoveryInfo"`
 }
 
 type RedfishEndpointStatus struct {
@@ -89,7 +89,7 @@ func (r *RedfishEndpoint) GetUID() string {
 func (r *RedfishEndpoint) IsHub() {}
 
 type DiscoveryInfo struct {
-	LastAttempt    string `json:"LastDiscoveryAttempt,omitempty"`
-	LastStatus     string `json:"LastDiscoveryStatus"`
-	RedfishVersion string `json:"RedfishVersion,omitempty"`
+	LastAttempt    string `json:"LastDiscoveryAttempt,omitempty" yaml:"LastDiscoveryAttempt,omitempty"`
+	LastStatus     string `json:"LastDiscoveryStatus" yaml:"LastDiscoveryStatus"`
+	RedfishVersion string `json:"RedfishVersion,omitempty" yaml:"RedfishVersion,omitempty"`
 }
