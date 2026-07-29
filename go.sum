@@ -244,6 +244,8 @@ github.com/openchami/fabrica v0.4.9 h1:OGKiID0tmA2lGpNTp0u0q5cjOMDaOhXhTO7DCWWp+
 github.com/openchami/fabrica v0.4.9/go.mod h1:C96/BWI20XG81scQWCoKwSvJOP+5DmAjThbojlh1AJo=
 github.com/openchami/tokensmith v0.3.0 h1:OdP1sQo4dXfGzWC4NEtUvfOcRxLdqR91P2yy0gRyAXQ=
 github.com/openchami/tokensmith v0.3.0/go.mod h1:L4ZCMX/vPGwXUUn9otw+UdfFTbarv+ZVO/FjhZmoOAE=
+github.com/openchami/tokensmith v0.4.1 h1:+IOmMywod4uzMFLVK/R92pfwoIBtcpq62MQ7HaDpW28=
+github.com/openchami/tokensmith v0.4.1/go.mod h1:L4ZCMX/vPGwXUUn9otw+UdfFTbarv+ZVO/FjhZmoOAE=
 github.com/pelletier/go-toml/v2 v2.0.8 h1:0ctb6s9mE31h0/lhu+J6OPmVeDxJn+kYnJc2jZR9tGQ=
 github.com/pelletier/go-toml/v2 v2.0.8/go.mod h1:vuYfssBdrU2XDZ9bYydBu6t+6a6PYNcZljzZR9VXg+4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

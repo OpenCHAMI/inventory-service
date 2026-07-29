@@ -13,7 +13,7 @@ require (
 	github.com/google/jsonschema-go v0.4.3
 	github.com/mattn/go-sqlite3 v1.14.49
 	github.com/openchami/fabrica v0.4.9
-	github.com/openchami/tokensmith v0.3.0
+	github.com/openchami/tokensmith v0.4.1
 	github.com/rs/zerolog v1.34.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
