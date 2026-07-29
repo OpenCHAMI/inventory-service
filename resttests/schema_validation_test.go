@@ -16,6 +16,7 @@
  *   POST /hardwares           — schemas/default/hardware_schema.json
  *   POST /redfishendpoints    — schemas/default/redfish_endpoint_schema.json
  *   POST /serviceendpoints    — schemas/default/service_endpoint_schema.json
+ *   POST /componentendpoints  — schemas/default/component_endpoint_schema.json
  */
 
 package resttests
@@ -270,6 +271,43 @@ func TestCreateServiceEndpoint_SchemaViolation_EmptyRedfishType(t *testing.T) {
 		"spec": map[string]interface{}{
 			"RedfishEndpointID": "x3000c0b0",
 			"RedfishType":       "",
+		},
+	})
+}
+
+// ─── ComponentEndpoint (/componentendpoints) ─────────────────────────────────
+// Schema: schemas/default/component_endpoint_schema.json
+// Constraints: "spec" required; spec.ID required, minLength 1.
+
+// TestCreateComponentEndpoint_SchemaViolation_MissingSpec verifies that omitting
+// "spec" is rejected.
+func TestCreateComponentEndpoint_SchemaViolation_MissingSpec(t *testing.T) {
+	assertSchemaError(t, "/componentendpoints", map[string]interface{}{
+		"metadata": map[string]interface{}{"name": "x3000c0s0b0n0"},
+	})
+}
+
+// TestCreateComponentEndpoint_SchemaViolation_MissingID verifies that omitting
+// spec.ID is rejected.
+func TestCreateComponentEndpoint_SchemaViolation_MissingID(t *testing.T) {
+	assertSchemaError(t, "/componentendpoints", map[string]interface{}{
+		"metadata": map[string]interface{}{"name": "x3000c0s0b0n0"},
+		"spec": map[string]interface{}{
+			"Type":              "Node",
+			"RedfishType":       "ComputerSystem",
+			"RedfishEndpointID": "x3000c0s0b0",
+		},
+	})
+}
+
+// TestCreateComponentEndpoint_SchemaViolation_EmptyID verifies that an empty
+// spec.ID is rejected (minLength: 1).
+func TestCreateComponentEndpoint_SchemaViolation_EmptyID(t *testing.T) {
+	assertSchemaError(t, "/componentendpoints", map[string]interface{}{
+		"metadata": map[string]interface{}{"name": ""},
+		"spec": map[string]interface{}{
+			"ID":   "",
+			"Type": "Node",
 		},
 	})
 }

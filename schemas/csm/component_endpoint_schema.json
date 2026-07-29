@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inventory-service.openchami.org/schemas/csm/component_endpoint_schema.json",
+  "title": "ComponentEndpoint",
+  "type": "object",
+  "required": ["spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object",
+      "required": ["ID"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "ID": {
+          "description": "Key, HMS ID (xname).",
+          "type": "string",
+          "minLength": 1
+        },
+        "Type": {
+          "description": "Key, HMS component type.",
+          "type": "string"
+        },
+        "Domain": {
+          "type": "string"
+        },
+        "FQDN": {
+          "type": "string"
+        },
+        "RedfishType": {
+          "description": "Redfish resource type for this component endpoint.",
+          "type": "string"
+        },
+        "RedfishSubtype": {
+          "type": "string"
+        },
+        "MACAddr": {
+          "type": "string"
+        },
+        "UUID": {
+          "type": "string"
+        },
+        "OdataID": {
+          "description": "Redfish @odata.id path for the component.",
+          "type": "string"
+        },
+        "RedfishEndpointID": {
+          "description": "ID of the parent RedfishEndpoint (xname of the BMC).",
+          "type": "string"
+        },
+        "RedfishEndpointFQDN": {
+          "type": "string"
+        },
+        "RedfishURL": {
+          "type": "string"
+        },
+        "Enabled": {
+          "type": "boolean"
+        },
+        "ComponentEndpointType": {
+          "description": "Discriminator that determines which Redfish*Info object is populated.",
+          "type": "string",
+          "enum": [
+            "ComponentEndpointChassis",
+            "ComponentEndpointComputerSystem",
+            "ComponentEndpointManager",
+            "ComponentEndpointPowerDistribution",
+            "ComponentEndpointOutlet"
+          ]
+        },
+        "RedfishChassisInfo": {
+          "description": "Type-specific info present when RedfishType is Chassis.",
+          "type": "object"
+        },
+        "RedfishSystemInfo": {
+          "description": "Type-specific info present when RedfishType is ComputerSystem.",
+          "type": "object"
+        },
+        "RedfishManagerInfo": {
+          "description": "Type-specific info present when RedfishType is Manager.",
+          "type": "object"
+        },
+        "RedfishPDUInfo": {
+          "description": "Type-specific info present when RedfishType is PowerDistribution.",
+          "type": "object"
+        },
+        "RedfishOutletInfo": {
+          "description": "Type-specific info present when RedfishType is Outlet."
+        }
+      }
+    },
+    "status": {
+      "type": "object"
+    }
+  }
+}

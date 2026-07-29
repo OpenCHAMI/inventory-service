@@ -20,7 +20,7 @@ type RedfishEndpoint struct {
 }
 
 type RedfishEndpointSpec struct {
-	Description string `json:"description,omitempty" validate:"max=200" yaml:"description,omitempty" validate:"max=200"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" validate:"max=200"`
 	ID          string `json:"ID"`
 
 	Type     string `json:"Type"`
