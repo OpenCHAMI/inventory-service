@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inventory-service.openchami.org/schemas/component_endpoint_schema.json",
+  "title": "ComponentEndpoint",
+  "type": "object",
+  "required": ["spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object",
+      "required": ["ID"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "ID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "Type": {
+          "type": "string"
+        },
+        "RedfishType": {
+          "type": "string"
+        },
+        "RedfishSubtype": {
+          "type": "string"
+        },
+        "OdataID": {
+          "type": "string"
+        },
+        "RedfishEndpointID": {
+          "type": "string"
+        },
+        "RedfishEndpointFQDN": {
+          "type": "string"
+        },
+        "RedfishURL": {
+          "type": "string"
+        },
+        "ComponentEndpointType": {
+          "type": "string"
+        },
+        "Enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "status": {
+      "type": "object"
+    }
+  }
+}

@@ -20,7 +20,7 @@ type ServiceEndpoint struct {
 }
 
 type ServiceEndpointSpec struct {
-	Description string `json:"description,omitempty" validate:"max=200" yaml:"description,omitempty" validate:"max=200"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" validate:"max=200"`
 	ServiceDescription
 
 	RfEndpointFQDN string `json:"RedfishEndpointFQDN"`

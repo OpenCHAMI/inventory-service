@@ -7,6 +7,11 @@ import _ "embed"
 //go:embed default/components_schema.json
 var ComponentsSchema []byte
 
+// ComponentEndpointSchema holds the JSON Schema for ComponentEndpoint.
+//
+//go:embed default/component_endpoint_schema.json
+var ComponentEndpointSchema []byte
+
 // EthernetInterfaceSchema holds the JSON Schema for EthernetInterface.
 //
 //go:embed default/ethernet_interface_schema.json
