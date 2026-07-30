@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"net/http"
 
-	v1 "github.com/OpenCHAMI/inventory-service/apis/inventory-service.openchami.org/v1"
-	"github.com/OpenCHAMI/inventory-service/cmd/plugins"
 	"github.com/go-chi/chi/v5"
+	v1 "github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
+	"github.com/openchami/inventory-service/cmd/plugins"
 )
 
 func GetMembershipsCsm(w http.ResponseWriter, r *http.Request) {

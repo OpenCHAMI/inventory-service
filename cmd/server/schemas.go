@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/OpenCHAMI/inventory-service/schemas"
+	"github.com/openchami/inventory-service/schemas"
 )
 
 // schemaOverrides maps each schema filename to a pointer to the package-level

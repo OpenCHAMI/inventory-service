@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/label"
-	entresource "github.com/OpenCHAMI/inventory-service/internal/storage/ent/resource"
+	"github.com/openchami/inventory-service/internal/storage/ent"
+	"github.com/openchami/inventory-service/internal/storage/ent/label"
+	entresource "github.com/openchami/inventory-service/internal/storage/ent/resource"
 
-	v1 "github.com/OpenCHAMI/inventory-service/apis/inventory-service.openchami.org/v1"
+	v1 "github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
 )
 
 // ensureEntClient verifies the ent client has been initialized

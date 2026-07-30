@@ -11,9 +11,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/annotation"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/label"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/resource"
+	"github.com/openchami/inventory-service/internal/storage/ent/annotation"
+	"github.com/openchami/inventory-service/internal/storage/ent/label"
+	"github.com/openchami/inventory-service/internal/storage/ent/resource"
 )
 
 // ResourceCreate is the builder for creating a Resource entity.

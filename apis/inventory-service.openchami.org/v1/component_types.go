@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/OpenCHAMI/inventory-service/schemas"
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/openchami/fabrica/pkg/fabrica"
+	"github.com/openchami/inventory-service/schemas"
 )
 
 type Component struct {

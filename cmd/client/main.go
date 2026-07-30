@@ -81,7 +81,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/OpenCHAMI/inventory-service/pkg/client"
+	"github.com/openchami/inventory-service/pkg/client"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
