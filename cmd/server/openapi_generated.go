@@ -23,9 +23,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	v1 "github.com/OpenCHAMI/inventory-service/apis/inventory-service.openchami.org/v1"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3gen"
+	v1 "github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
 )
 
 // ServeOpenAPISpec returns the OpenAPI 3.0 specification

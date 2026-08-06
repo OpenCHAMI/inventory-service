@@ -2,7 +2,7 @@
 // Template: init/go.mod.tmpl
 // Generated: 2026-07-27T17:23:50Z
 
-module github.com/OpenCHAMI/inventory-service
+module github.com/openchami/inventory-service
 
 go 1.26.5
 

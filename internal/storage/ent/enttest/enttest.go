@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent"
+	"github.com/openchami/inventory-service/internal/storage/ent"
 	// required by schema hooks.
-	_ "github.com/OpenCHAMI/inventory-service/internal/storage/ent/runtime"
+	_ "github.com/openchami/inventory-service/internal/storage/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/migrate"
+	"github.com/openchami/inventory-service/internal/storage/ent/migrate"
 )
 
 type (

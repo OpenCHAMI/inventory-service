@@ -67,7 +67,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 
-	v1 "github.com/OpenCHAMI/inventory-service/apis/inventory-service.openchami.org/v1"
+	v1 "github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
 )
 
 // Client provides access to the inventory API

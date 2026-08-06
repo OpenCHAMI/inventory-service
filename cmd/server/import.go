@@ -10,9 +10,9 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	v1 "github.com/OpenCHAMI/inventory-service/apis/inventory-service.openchami.org/v1"
-	"github.com/OpenCHAMI/inventory-service/cmd/plugins"
-	"github.com/OpenCHAMI/inventory-service/internal/storage"
+	v1 "github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
+	"github.com/openchami/inventory-service/cmd/plugins"
+	"github.com/openchami/inventory-service/internal/storage"
 )
 
 func newImportCommand() *cobra.Command {

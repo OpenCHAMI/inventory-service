@@ -10,13 +10,13 @@ import (
 	"net/http"
 	"time"
 
-	v1 "github.com/OpenCHAMI/inventory-service/apis/inventory-service.openchami.org/v1"
-	"github.com/OpenCHAMI/inventory-service/cmd/plugins"
 	"github.com/go-chi/chi/v5"
 	"github.com/openchami/fabrica/pkg/events"
 	"github.com/openchami/fabrica/pkg/resource"
 	"github.com/openchami/fabrica/pkg/validation"
 	"github.com/openchami/fabrica/pkg/versioning"
+	v1 "github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
+	"github.com/openchami/inventory-service/cmd/plugins"
 )
 
 func GetReadinessCsm(w http.ResponseWriter, r *http.Request) {

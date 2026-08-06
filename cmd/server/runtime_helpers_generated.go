@@ -15,10 +15,10 @@ import (
 
 	"log"
 
-	"github.com/OpenCHAMI/inventory-service/internal/storage"
+	"github.com/openchami/inventory-service/internal/storage"
 
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/migrate"
+	"github.com/openchami/inventory-service/internal/storage/ent"
+	"github.com/openchami/inventory-service/internal/storage/ent/migrate"
 
 	_ "github.com/mattn/go-sqlite3"
 )
