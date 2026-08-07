@@ -5,8 +5,6 @@
 
 FROM debian:bookworm-slim
 
-ENV SMD_PORT=8080
-
 RUN apt-get update && \
     apt-get install -y \
     ca-certificates \
@@ -15,20 +13,20 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -g 1000 smd && \
-    useradd -r -u 1000 -g smd smd && \
+RUN groupadd -g 1000 inventory && \
+    useradd -r -u 1000 -g inventory inventory && \
     mkdir -p /data && \
     chown 1000:1000 /data
 
-WORKDIR /home/smd
+WORKDIR /home/inventory
 
 COPY inventory-service /usr/local/bin/inventory-service
 COPY schemas /schemas
 
-RUN chown -R smd:smd /home/smd
-RUN chown -R smd:smd /schemas
+RUN chown -R inventory:inventory /home/inventory
+RUN chown -R inventory:inventory /schemas
 
-USER smd
+USER inventory
 
 ENTRYPOINT ["/usr/local/bin/inventory-service"]
 CMD ["serve", "--port", "8080", "--database-url", "file:/data/inventory.db?_fk=1", "--auth-enabled=false"]
