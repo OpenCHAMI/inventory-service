@@ -9,4 +9,9 @@ services:
     hostname: inventory
     networks:
       - internal
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/hsm/v2/service/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
 

@@ -7,11 +7,13 @@ FROM debian:bookworm-slim
 
 ENV SMD_PORT=8080
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y \
     ca-certificates \
     git \
-    bash \
-    && rm -rf /var/lib/apt/lists/*
+    bash && \
+    apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1000 smd && \
     useradd -r -u 1000 -g smd smd && \
