@@ -11,9 +11,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/openchami/inventory-service/internal/storage/ent/annotation"
-	"github.com/openchami/inventory-service/internal/storage/ent/label"
-	"github.com/openchami/inventory-service/internal/storage/ent/resource"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/annotation"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/label"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/resource"
 )
 
 // ResourceCreate is the builder for creating a Resource entity.
@@ -125,20 +125,6 @@ func (_c *ResourceCreate) SetNamespace(v string) *ResourceCreate {
 func (_c *ResourceCreate) SetNillableNamespace(v *string) *ResourceCreate {
 	if v != nil {
 		_c.SetNamespace(*v)
-	}
-	return _c
-}
-
-// SetResourceID sets the "resource_id" field.
-func (_c *ResourceCreate) SetResourceID(v string) *ResourceCreate {
-	_c.mutation.SetResourceID(v)
-	return _c
-}
-
-// SetNillableResourceID sets the "resource_id" field if the given value is not nil.
-func (_c *ResourceCreate) SetNillableResourceID(v *string) *ResourceCreate {
-	if v != nil {
-		_c.SetResourceID(*v)
 	}
 	return _c
 }
@@ -344,10 +330,6 @@ func (_c *ResourceCreate) createSpec() (*Resource, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Namespace(); ok {
 		_spec.SetField(resource.FieldNamespace, field.TypeString, value)
 		_node.Namespace = value
-	}
-	if value, ok := _c.mutation.ResourceID(); ok {
-		_spec.SetField(resource.FieldResourceID, field.TypeString, value)
-		_node.ResourceID = value
 	}
 	if nodes := _c.mutation.LabelsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

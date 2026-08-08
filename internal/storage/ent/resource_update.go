@@ -13,10 +13,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/openchami/inventory-service/internal/storage/ent/annotation"
-	"github.com/openchami/inventory-service/internal/storage/ent/label"
-	"github.com/openchami/inventory-service/internal/storage/ent/predicate"
-	"github.com/openchami/inventory-service/internal/storage/ent/resource"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/annotation"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/label"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/predicate"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/resource"
 )
 
 // ResourceUpdate is the builder for updating Resource entities.
@@ -155,26 +155,6 @@ func (_u *ResourceUpdate) SetNillableNamespace(v *string) *ResourceUpdate {
 // ClearNamespace clears the value of the "namespace" field.
 func (_u *ResourceUpdate) ClearNamespace() *ResourceUpdate {
 	_u.mutation.ClearNamespace()
-	return _u
-}
-
-// SetResourceID sets the "resource_id" field.
-func (_u *ResourceUpdate) SetResourceID(v string) *ResourceUpdate {
-	_u.mutation.SetResourceID(v)
-	return _u
-}
-
-// SetNillableResourceID sets the "resource_id" field if the given value is not nil.
-func (_u *ResourceUpdate) SetNillableResourceID(v *string) *ResourceUpdate {
-	if v != nil {
-		_u.SetResourceID(*v)
-	}
-	return _u
-}
-
-// ClearResourceID clears the value of the "resource_id" field.
-func (_u *ResourceUpdate) ClearResourceID() *ResourceUpdate {
-	_u.mutation.ClearResourceID()
 	return _u
 }
 
@@ -365,12 +345,6 @@ func (_u *ResourceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.NamespaceCleared() {
 		_spec.ClearField(resource.FieldNamespace, field.TypeString)
-	}
-	if value, ok := _u.mutation.ResourceID(); ok {
-		_spec.SetField(resource.FieldResourceID, field.TypeString, value)
-	}
-	if _u.mutation.ResourceIDCleared() {
-		_spec.ClearField(resource.FieldResourceID, field.TypeString)
 	}
 	if _u.mutation.LabelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -608,26 +582,6 @@ func (_u *ResourceUpdateOne) ClearNamespace() *ResourceUpdateOne {
 	return _u
 }
 
-// SetResourceID sets the "resource_id" field.
-func (_u *ResourceUpdateOne) SetResourceID(v string) *ResourceUpdateOne {
-	_u.mutation.SetResourceID(v)
-	return _u
-}
-
-// SetNillableResourceID sets the "resource_id" field if the given value is not nil.
-func (_u *ResourceUpdateOne) SetNillableResourceID(v *string) *ResourceUpdateOne {
-	if v != nil {
-		_u.SetResourceID(*v)
-	}
-	return _u
-}
-
-// ClearResourceID clears the value of the "resource_id" field.
-func (_u *ResourceUpdateOne) ClearResourceID() *ResourceUpdateOne {
-	_u.mutation.ClearResourceID()
-	return _u
-}
-
 // AddLabelIDs adds the "labels" edge to the Label entity by IDs.
 func (_u *ResourceUpdateOne) AddLabelIDs(ids ...int) *ResourceUpdateOne {
 	_u.mutation.AddLabelIDs(ids...)
@@ -845,12 +799,6 @@ func (_u *ResourceUpdateOne) sqlSave(ctx context.Context) (_node *Resource, err 
 	}
 	if _u.mutation.NamespaceCleared() {
 		_spec.ClearField(resource.FieldNamespace, field.TypeString)
-	}
-	if value, ok := _u.mutation.ResourceID(); ok {
-		_spec.SetField(resource.FieldResourceID, field.TypeString, value)
-	}
-	if _u.mutation.ResourceIDCleared() {
-		_spec.ClearField(resource.FieldResourceID, field.TypeString)
 	}
 	if _u.mutation.LabelsCleared() {
 		edge := &sqlgraph.EdgeSpec{

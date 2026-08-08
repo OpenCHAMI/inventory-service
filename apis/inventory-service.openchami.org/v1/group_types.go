@@ -2,60 +2,36 @@ package v1
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
-	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/openchami/fabrica/pkg/fabrica"
-	"github.com/openchami/inventory-service/schemas"
 )
 
 type Group struct {
-	APIVersion string           `json:"apiVersion" yaml:"apiVersion"`
-	Kind       string           `json:"kind" yaml:"kind"`
-	Metadata   fabrica.Metadata `json:"metadata" yaml:"metadata"`
-	ID         string           `json:"id,omitempty" yaml:"id,omitempty"`
-	Spec       GroupSpec        `json:"spec" yaml:"spec" validate:"required"`
-	Status     GroupStatus      `json:"status,omitempty" yaml:"status,omitempty"`
+	APIVersion string           `json:"apiVersion"`
+	Kind       string           `json:"kind"`
+	Metadata   fabrica.Metadata `json:"metadata"`
+	Spec       GroupSpec        `json:"spec" validate:"required"`
+	Status     GroupStatus      `json:"status,omitempty"`
 }
 
 type GroupSpec struct {
-	Description    string `json:"description,omitempty" yaml:"description,omitempty" validate:"max=200"`
-	Label          string `json:"label" yaml:"label"`
-	ExclusiveGroup string `json:"exclusiveGroup,omitempty" yaml:"exclusiveGroup,omitempty"`
+	Description    string `json:"description,omitempty" validate:"max=200"`
+	Label          string `json:"label"`
+	ExclusiveGroup string `json:"exclusiveGroup,omitempty"`
 
-	Tags    []string `json:"tags,omitempty" yaml:"tags,omitempty"`
-	Members Members  `json:"members" yaml:"members"`
+	Tags    []string `json:"tags,omitempty"`
+	Members Members  `json:"members"`
 }
 
 type GroupStatus struct {
-	Phase   string `json:"phase,omitempty" yaml:"phase,omitempty"`
-	Message string `json:"message,omitempty" yaml:"message,omitempty"`
-	Ready   bool   `json:"ready" yaml:"ready"`
+	Phase   string `json:"phase,omitempty"`
+	Message string `json:"message,omitempty"`
+	Ready   bool   `json:"ready"`
 }
 
 func (r *Group) Validate(ctx context.Context) error {
-	var schema jsonschema.Schema
-	if err := json.Unmarshal(schemas.GroupSchema, &schema); err != nil {
-		return fmt.Errorf("loading group schema: %w", err)
-	}
 
-	resolved, err := schema.Resolve(nil)
-	if err != nil {
-		return fmt.Errorf("resolving group schema: %w", err)
-	}
-
-	resourceJSON, err := json.Marshal(r)
-	if err != nil {
-		return fmt.Errorf("marshaling resource for validation: %w", err)
-	}
-
-	var instance any
-	if err := json.Unmarshal(resourceJSON, &instance); err != nil {
-		return fmt.Errorf("unmarshaling resource for validation: %w", err)
-	}
-
-	return resolved.Validate(instance)
+	return nil
 }
 
 func (r *Group) GetKind() string {
@@ -73,10 +49,10 @@ func (r *Group) GetUID() string {
 func (r *Group) IsHub() {}
 
 type Members struct {
-	IDs []string `json:"ids" yaml:"ids"`
+	IDs []string `json:"ids"`
 }
 type Membership struct {
-	ID            string   `json:"id" yaml:"id"`
-	GroupLabels   []string `json:"groupLabels" yaml:"groupLabels"`
-	PartitionName string   `json:"partitionName" yaml:"partitionName"`
+	ID            string   `json:"id"`
+	GroupLabels   []string `json:"groupLabels"`
+	PartitionName string   `json:"partitionName"`
 }

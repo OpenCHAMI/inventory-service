@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/openchami/inventory-service/internal/storage/ent/annotation"
-	"github.com/openchami/inventory-service/internal/storage/ent/resource"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/annotation"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/resource"
 )
 
 // AnnotationCreate is the builder for creating a Annotation entity.

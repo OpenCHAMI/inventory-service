@@ -8,8 +8,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/openchami/inventory-service/internal/storage/ent/annotation"
-	"github.com/openchami/inventory-service/internal/storage/ent/resource"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/annotation"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/resource"
 )
 
 // Annotation is the model entity for the Annotation schema.
