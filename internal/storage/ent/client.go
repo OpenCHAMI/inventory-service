@@ -9,15 +9,15 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/openchami/inventory-service/internal/storage/ent/migrate"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/openchami/inventory-service/internal/storage/ent/annotation"
-	"github.com/openchami/inventory-service/internal/storage/ent/label"
-	"github.com/openchami/inventory-service/internal/storage/ent/resource"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/annotation"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/label"
+	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/resource"
 )
 
 // Client is the client that holds all ent builders.

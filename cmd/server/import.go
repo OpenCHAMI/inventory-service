@@ -10,9 +10,8 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	v1 "github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
-	"github.com/openchami/inventory-service/cmd/plugins"
-	"github.com/openchami/inventory-service/internal/storage"
+	v1 "github.com/OpenCHAMI/inventory-service/apis/inventory-service.openchami.org/v1"
+	"github.com/OpenCHAMI/inventory-service/internal/storage"
 )
 
 func newImportCommand() *cobra.Command {
@@ -188,7 +187,7 @@ func importFile(ctx context.Context, path string, mode string, dryRun bool) (imp
 		}
 
 		if !dryRun {
-			if err := plugins.Store.SaveComponent(ctx, res); err != nil {
+			if err := storage.SaveComponent(ctx, res); err != nil {
 				return 0, 0, fmt.Errorf("failed to save Component: %w", err)
 			}
 		}
@@ -219,7 +218,7 @@ func importFile(ctx context.Context, path string, mode string, dryRun bool) (imp
 		}
 
 		if !dryRun {
-			if err := plugins.Store.SaveComponentEndpoint(ctx, res); err != nil {
+			if err := storage.SaveComponentEndpoint(ctx, res); err != nil {
 				return 0, 0, fmt.Errorf("failed to save ComponentEndpoint: %w", err)
 			}
 		}
@@ -250,7 +249,7 @@ func importFile(ctx context.Context, path string, mode string, dryRun bool) (imp
 		}
 
 		if !dryRun {
-			if err := plugins.Store.SaveEthernetInterface(ctx, res); err != nil {
+			if err := storage.SaveEthernetInterface(ctx, res); err != nil {
 				return 0, 0, fmt.Errorf("failed to save EthernetInterface: %w", err)
 			}
 		}
@@ -281,7 +280,7 @@ func importFile(ctx context.Context, path string, mode string, dryRun bool) (imp
 		}
 
 		if !dryRun {
-			if err := plugins.Store.SaveGroup(ctx, res); err != nil {
+			if err := storage.SaveGroup(ctx, res); err != nil {
 				return 0, 0, fmt.Errorf("failed to save Group: %w", err)
 			}
 		}
@@ -312,7 +311,7 @@ func importFile(ctx context.Context, path string, mode string, dryRun bool) (imp
 		}
 
 		if !dryRun {
-			if err := plugins.Store.SaveHardware(ctx, res); err != nil {
+			if err := storage.SaveHardware(ctx, res); err != nil {
 				return 0, 0, fmt.Errorf("failed to save Hardware: %w", err)
 			}
 		}
@@ -343,7 +342,7 @@ func importFile(ctx context.Context, path string, mode string, dryRun bool) (imp
 		}
 
 		if !dryRun {
-			if err := plugins.Store.SaveRedfishEndpoint(ctx, res); err != nil {
+			if err := storage.SaveRedfishEndpoint(ctx, res); err != nil {
 				return 0, 0, fmt.Errorf("failed to save RedfishEndpoint: %w", err)
 			}
 		}
@@ -374,7 +373,7 @@ func importFile(ctx context.Context, path string, mode string, dryRun bool) (imp
 		}
 
 		if !dryRun {
-			if err := plugins.Store.SaveServiceEndpoint(ctx, res); err != nil {
+			if err := storage.SaveServiceEndpoint(ctx, res); err != nil {
 				return 0, 0, fmt.Errorf("failed to save ServiceEndpoint: %w", err)
 			}
 		}
@@ -391,7 +390,7 @@ func deleteAllResources(ctx context.Context) error {
 		return fmt.Errorf("failed to query components: %w", err)
 	}
 	for _, item := range componentItems {
-		if err := plugins.Store.DeleteComponent(ctx, item.UID); err != nil {
+		if err := storage.DeleteComponent(ctx, item.UID); err != nil {
 			return fmt.Errorf("failed to delete Component: %w", err)
 		}
 	}
@@ -401,7 +400,7 @@ func deleteAllResources(ctx context.Context) error {
 		return fmt.Errorf("failed to query componentendpoints: %w", err)
 	}
 	for _, item := range componentendpointItems {
-		if err := plugins.Store.DeleteComponentEndpoint(ctx, item.UID); err != nil {
+		if err := storage.DeleteComponentEndpoint(ctx, item.UID); err != nil {
 			return fmt.Errorf("failed to delete ComponentEndpoint: %w", err)
 		}
 	}
@@ -411,7 +410,7 @@ func deleteAllResources(ctx context.Context) error {
 		return fmt.Errorf("failed to query ethernetinterfaces: %w", err)
 	}
 	for _, item := range ethernetinterfaceItems {
-		if err := plugins.Store.DeleteEthernetInterface(ctx, item.UID); err != nil {
+		if err := storage.DeleteEthernetInterface(ctx, item.UID); err != nil {
 			return fmt.Errorf("failed to delete EthernetInterface: %w", err)
 		}
 	}
@@ -421,7 +420,7 @@ func deleteAllResources(ctx context.Context) error {
 		return fmt.Errorf("failed to query groups: %w", err)
 	}
 	for _, item := range groupItems {
-		if err := plugins.Store.DeleteGroup(ctx, item.UID); err != nil {
+		if err := storage.DeleteGroup(ctx, item.UID); err != nil {
 			return fmt.Errorf("failed to delete Group: %w", err)
 		}
 	}
@@ -431,7 +430,7 @@ func deleteAllResources(ctx context.Context) error {
 		return fmt.Errorf("failed to query hardwares: %w", err)
 	}
 	for _, item := range hardwareItems {
-		if err := plugins.Store.DeleteHardware(ctx, item.UID); err != nil {
+		if err := storage.DeleteHardware(ctx, item.UID); err != nil {
 			return fmt.Errorf("failed to delete Hardware: %w", err)
 		}
 	}
@@ -441,7 +440,7 @@ func deleteAllResources(ctx context.Context) error {
 		return fmt.Errorf("failed to query redfishendpoints: %w", err)
 	}
 	for _, item := range redfishendpointItems {
-		if err := plugins.Store.DeleteRedfishEndpoint(ctx, item.UID); err != nil {
+		if err := storage.DeleteRedfishEndpoint(ctx, item.UID); err != nil {
 			return fmt.Errorf("failed to delete RedfishEndpoint: %w", err)
 		}
 	}
@@ -451,7 +450,7 @@ func deleteAllResources(ctx context.Context) error {
 		return fmt.Errorf("failed to query serviceendpoints: %w", err)
 	}
 	for _, item := range serviceendpointItems {
-		if err := plugins.Store.DeleteServiceEndpoint(ctx, item.UID); err != nil {
+		if err := storage.DeleteServiceEndpoint(ctx, item.UID); err != nil {
 			return fmt.Errorf("failed to delete ServiceEndpoint: %w", err)
 		}
 	}
