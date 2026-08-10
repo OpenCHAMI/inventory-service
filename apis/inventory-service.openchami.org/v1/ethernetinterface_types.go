@@ -15,13 +15,14 @@ type EthernetInterface struct {
 }
 
 type EthernetInterfaceSpec struct {
-	Description string      `json:"description,omitempty" validate:"max=200"`
-	ID          string      `json:"ID"`
-	MACAddr     string      `json:"MACAddress"`
-	LastUpdate  string      `json:"LastUpdate"`
-	CompID      string      `json:"ComponentID"`
-	Type        string      `json:"Type"`
-	IPAddresses []IPAddress `json:"IPAddresses"`
+	Description string `json:"description,omitempty" validate:"max=200"`
+	ID          string `json:"ID" yaml:"ID"`
+
+	MACAddr     string      `json:"MACAddress" yaml:"MACAddress"`
+	LastUpdate  string      `json:"LastUpdate" yaml:"LastUpdate"`
+	CompID      string      `json:"ComponentID" yaml:"ComponentID"`
+	Type        string      `json:"Type" yaml:"Type"`
+	IPAddresses []IPAddress `json:"IPAddresses" yaml:"IPAddresses"`
 }
 
 type EthernetInterfaceStatus struct {
@@ -50,6 +51,6 @@ func (r *EthernetInterface) GetUID() string {
 func (r *EthernetInterface) IsHub() {}
 
 type IPAddress struct {
-	IPAddress string `json:"IPAddress"`
-	Network   string `json:"Network,omitempty"`
+	IPAddress string `json:"IPAddress" yaml:"IPAddress"`
+	Network   string `json:"Network,omitempty" yaml:"Network,omitempty"`
 }

@@ -19,10 +19,10 @@ type ServiceEndpointSpec struct {
 	Description string `json:"description,omitempty" validate:"max=200"`
 	ServiceDescription
 
-	RfEndpointFQDN string `json:"RedfishEndpointFQDN"`
-	URL            string `json:"RedfishURL"`
+	RfEndpointFQDN string `json:"RedfishEndpointFQDN" yaml:"RedfishEndpointFQDN"`
+	URL            string `json:"RedfishURL" yaml:"RedfishURL"`
 
-	ServiceInfo json.RawMessage `json:"ServiceInfo,omitempty"`
+	ServiceInfo json.RawMessage `json:"ServiceInfo,omitempty" yaml:"ServiceInfo,omitempty"`
 }
 
 type ServiceEndpointStatus struct {
@@ -51,10 +51,11 @@ func (r *ServiceEndpoint) GetUID() string {
 func (r *ServiceEndpoint) IsHub() {}
 
 type ServiceDescription struct {
-	RfEndpointID   string `json:"RedfishEndpointID"`
-	RedfishType    string `json:"RedfishType"`
-	RedfishSubtype string `json:"RedfishSubtype,omitempty"`
-	UUID           string `json:"UUID"`
+	RfEndpointID string `json:"RedfishEndpointID" yaml:"RedfishEndpointID"`
+	RedfishType  string `json:"RedfishType" yaml:"RedfishType"`
 
-	OdataID string `json:"OdataID"`
+	RedfishSubtype string `json:"RedfishSubtype,omitempty" yaml:"RedfishSubtype,omitempty"`
+
+	UUID    string `json:"UUID" yaml:"UUID"`
+	OdataID string `json:"OdataID" yaml:"OdataID"`
 }

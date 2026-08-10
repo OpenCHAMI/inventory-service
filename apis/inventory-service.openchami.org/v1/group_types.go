@@ -16,11 +16,11 @@ type Group struct {
 
 type GroupSpec struct {
 	Description    string `json:"description,omitempty" validate:"max=200"`
-	Label          string `json:"label"`
-	ExclusiveGroup string `json:"exclusiveGroup,omitempty"`
+	Label          string `json:"label" yaml:"label"`
+	ExclusiveGroup string `json:"exclusiveGroup,omitempty" yaml:"exclusiveGroup,omitempty"`
 
-	Tags    []string `json:"tags,omitempty"`
-	Members Members  `json:"members"`
+	Tags    []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Members Members  `json:"members" yaml:"members"`
 }
 
 type GroupStatus struct {
@@ -49,10 +49,12 @@ func (r *Group) GetUID() string {
 func (r *Group) IsHub() {}
 
 type Members struct {
-	IDs []string `json:"ids"`
+	IDs []string `json:"ids" yaml:"ids"`
 }
 type Membership struct {
-	ID            string   `json:"id"`
-	GroupLabels   []string `json:"groupLabels"`
-	PartitionName string   `json:"partitionName"`
+	ID string `json:"id" yaml:"id"`
+
+	GroupLabels []string `json:"groupLabels" yaml:"groupLabels"`
+
+	PartitionName string `json:"partitionName" yaml:"partitionName"`
 }
