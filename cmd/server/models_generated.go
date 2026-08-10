@@ -39,7 +39,7 @@ import (
 
 	"github.com/openchami/fabrica/pkg/fabrica"
 
-	"github.com/OpenCHAMI/inventory-service/apis/inventory-service.openchami.org/v1"
+	"github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
 )
 
 // ComponentResponse represents the response for Component operations

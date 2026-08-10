@@ -38,7 +38,7 @@ package client
 import (
 	"github.com/openchami/fabrica/pkg/fabrica"
 
-	"github.com/OpenCHAMI/inventory-service/apis/inventory-service.openchami.org/v1"
+	"github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
 )
 
 // CreateComponentRequest represents a request to create a Component (Advanced API)

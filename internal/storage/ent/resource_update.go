@@ -13,10 +13,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/annotation"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/label"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/predicate"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/resource"
+	"github.com/openchami/inventory-service/internal/storage/ent/annotation"
+	"github.com/openchami/inventory-service/internal/storage/ent/label"
+	"github.com/openchami/inventory-service/internal/storage/ent/predicate"
+	"github.com/openchami/inventory-service/internal/storage/ent/resource"
 )
 
 // ResourceUpdate is the builder for updating Resource entities.

@@ -12,10 +12,10 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/annotation"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/label"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/predicate"
-	"github.com/OpenCHAMI/inventory-service/internal/storage/ent/resource"
+	"github.com/openchami/inventory-service/internal/storage/ent/annotation"
+	"github.com/openchami/inventory-service/internal/storage/ent/label"
+	"github.com/openchami/inventory-service/internal/storage/ent/predicate"
+	"github.com/openchami/inventory-service/internal/storage/ent/resource"
 )
 
 const (
