@@ -9,6 +9,8 @@ services:
     hostname: inventory
     networks:
       - internal
+    ports:
+      - 8080:8080
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8080/hsm/v2/service/ready"]
       interval: 5s
