@@ -17,3 +17,17 @@ services:
       timeout: 3s
       retries: 60
 
+  inventory-service2:
+    image: ${INVENTORY_SERVICE_IMAGE}
+    container_name: inventory-service2
+    command: serve --port 8080 --database-url file:/data/inventory.db?_fk=1 --schema /schemas/csm --read-timeout 60 --write-timeout 60 --auth-enabled=false
+    hostname: inventory2
+    networks:
+      - internal
+    ports:
+      - 8081:8080
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/hsm/v2/service/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
