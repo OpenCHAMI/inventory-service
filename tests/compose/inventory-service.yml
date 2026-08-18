@@ -18,9 +18,10 @@ services:
       retries: 60
 
   inventory-service2:
-    image: ${INVENTORY_SERVICE_IMAGE}
+    image: inventory-service:newfab
     container_name: inventory-service2
-    command: serve --port 8080 --database-url file:/data/inventory.db?_fk=1 --schema /schemas/csm --read-timeout 60 --write-timeout 60 --auth-enabled=false
+    # command: serve --port 8080 --database-url file:/data/inventory.db?_fk=1 --schema /schemas/csm --read-timeout 60 --write-timeout 60 --auth-enabled=false
+    command: serve --port 8080 --database-url file:/data/inventory.db?_fk=1 --read-timeout 60 --write-timeout 60 --auth-enabled=false
     hostname: inventory2
     networks:
       - internal
