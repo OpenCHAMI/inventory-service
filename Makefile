@@ -18,7 +18,7 @@ LDFLAGS=-ldflags "-X main.serviceVersion=$(VERSION) -X main.serviceCommit=$(COMM
 GO_FILES=$(shell find . -name "*.go" -type f)
 BINARY_DIR=bin
 CONTAINER_CMD=docker
-LOCAL_IMAGE_TAG=newfab
+LOCAL_IMAGE_TAG=latest
 
 # Default target
 # Run all build targets
