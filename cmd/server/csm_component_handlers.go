@@ -17,6 +17,7 @@ import (
 	"github.com/openchami/fabrica/pkg/versioning"
 	v1 "github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
 	"github.com/openchami/inventory-service/cmd/plugins"
+	"github.com/openchami/inventory-service/internal/storage"
 )
 
 func GetReadinessCsm(w http.ResponseWriter, r *http.Request) {
@@ -100,6 +101,42 @@ func CreateComponentCsm(w http.ResponseWriter, r *http.Request) {
 		// Get version context from request
 		// Get version context from request (set by version negotiation middleware)
 		versionCtx := versioning.GetVersionContext(r.Context())
+
+		// SMD compatibility: POST upserts by xname. If a component with the same
+		// ID already exists, update it in place so the UID and CreatedAt are
+		// preserved and only UpdatedAt changes.
+		existing, err := plugins.Store.LoadComponentByID(r.Context(), c.ID)
+		if err != nil && err != storage.ErrNotFound {
+			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to look up Component %s: %w", c.ID, err))
+			return
+		}
+		if existing != nil {
+			existing.APIVersion = versionCtx.GroupVersion
+			existing.Kind = "Component"
+			existing.Spec = *c
+			existing.Metadata.Name = c.ID
+			existing.Metadata.UpdatedAt = time.Now()
+
+			if err := validation.ValidateResource(existing); err != nil {
+				respondError(w, http.StatusBadRequest, fmt.Errorf("validation failed: %w", err))
+				return
+			}
+			if err := validation.ValidateWithContext(r.Context(), existing); err != nil {
+				respondError(w, http.StatusBadRequest, fmt.Errorf("validation failed: %w", err))
+				return
+			}
+
+			if err := plugins.Store.SaveComponent(r.Context(), existing); err != nil {
+				respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save Component: %w", err))
+				return
+			}
+
+			if err := events.PublishResourceUpdated(r.Context(), "Component", existing.Metadata.UID, existing.Metadata.Name, existing, map[string]interface{}{"updatedAt": existing.Metadata.UpdatedAt}); err != nil {
+				// Log the error but don't fail the request - events are non-critical
+				fmt.Printf("Warning: Failed to publish resource updated event for Component %s: %v\n", existing.Metadata.UID, err)
+			}
+			continue
+		}
 
 		uid, err := resource.GenerateUIDForResource("Component")
 		if err != nil {

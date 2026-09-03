@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 )
 
 const csmBase = "/hsm/v2/State/Components"
@@ -295,18 +296,53 @@ func TestCsmComponentLifecycle(t *testing.T) {
 	}
 }
 
-// TestCreateComponentCsmDuplicateID verifies that POST /hsm/v2/State/Components rejects
-// a component whose ID already exists, enforcing resource_id uniqueness.
-func TestCreateComponentCsmDuplicateID(t *testing.T) {
+// TestCreateComponentCsmUpsert verifies that POST /hsm/v2/State/Components with an
+// ID that already exists updates the component in place (SMD upsert semantics):
+// the POST succeeds, the UID and CreatedAt are preserved, UpdatedAt advances, and
+// the spec fields are replaced by the new body.
+func TestCreateComponentCsmUpsert(t *testing.T) {
 	xname := "x3000c0s3b0n0"
-	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node"})
+	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node", State: "On", Role: "Compute"})
 	defer csmDelete(t, xname)
 
+	before, status := csmGetOne(t, xname)
+	if status != http.StatusOK {
+		t.Fatalf("expected HTTP 200 for GET after create, got %d", status)
+	}
+
+	// Ensure a measurable gap so UpdatedAt is observably different.
+	time.Sleep(10 * time.Millisecond)
+
+	// Re-POST the same xname with different spec fields.
 	resp := doRequest(t, http.MethodPost, csmBase, csmComponentArray{
-		Components: []*csmComponentSpec{{ID: xname, Type: "Node"}},
+		Components: []*csmComponentSpec{{ID: xname, Type: "Node", State: "Off", Role: "Service"}},
 	})
-	defer resp.Body.Close()
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		t.Errorf("expected non-2xx on duplicate component ID %q, got HTTP %d", xname, resp.StatusCode)
+	requireStatus(t, resp, http.StatusCreated)
+	resp.Body.Close()
+
+	after, status := csmGetOne(t, xname)
+	if status != http.StatusOK {
+		t.Fatalf("expected HTTP 200 for GET after upsert, got %d", status)
+	}
+
+	// UID and CreatedAt are stable across the upsert; UpdatedAt advances.
+	if after.Metadata.UID != before.Metadata.UID {
+		t.Errorf("expected UID to be preserved on upsert: before=%q after=%q",
+			before.Metadata.UID, after.Metadata.UID)
+	}
+	if after.Metadata.CreatedAt != before.Metadata.CreatedAt {
+		t.Errorf("expected CreatedAt to be preserved on upsert: before=%q after=%q",
+			before.Metadata.CreatedAt, after.Metadata.CreatedAt)
+	}
+	if after.Metadata.UpdatedAt == before.Metadata.UpdatedAt {
+		t.Errorf("expected UpdatedAt to change on upsert, still %q", after.Metadata.UpdatedAt)
+	}
+
+	// Spec fields are replaced by the new POST body.
+	if after.Spec.State != "Off" {
+		t.Errorf("expected State=Off after upsert, got %q", after.Spec.State)
+	}
+	if after.Spec.Role != "Service" {
+		t.Errorf("expected Role=Service after upsert, got %q", after.Spec.Role)
 	}
 }
