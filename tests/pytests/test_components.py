@@ -45,11 +45,11 @@ def test_components(discover_hardware):
         pytest.fail(f"Failed to GET new component {new_id}: {response.status_code}")
 
     created = json.loads(response.text)
-    assert created.get("spec", {}).get("ID") == new_id, \
-        f"Expected ID {new_id!r}, got {created.get('spec', {}).get('ID')!r}"
+    assert created.get("ID") == new_id, \
+        f"Expected ID {new_id!r}, got {created.get('ID')!r}"
 
     # Step 5: Modify the component spec
-    updated_spec = created.get("spec", {}).copy()
+    updated_spec = created.copy()
     updated_spec["State"] = "Off"
 
     # Step 6: PUT the modified component
@@ -65,8 +65,8 @@ def test_components(discover_hardware):
         pytest.fail(f"Failed to GET updated component {new_id}: {response.status_code}")
 
     after_put = json.loads(response.text)
-    assert after_put.get("spec", {}).get("State") == "Off", \
-        f"Expected State 'Off' after PUT, got {after_put.get('spec', {}).get('State')!r}"
+    assert after_put.get("State") == "Off", \
+        f"Expected State 'Off' after PUT, got {after_put.get('State')!r}"
 
     # Step 8: DELETE the component
     response = requests.delete(f"{inventory_base_url}/v2/State/Components/{new_id}")
