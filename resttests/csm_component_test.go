@@ -36,15 +36,19 @@ const csmBase = "/hsm/v2/State/Components"
 // These mirror csm_models.go / component_types.go without importing package main.
 
 type csmComponentSpec struct {
-	ID      string `json:"ID"`
-	Type    string `json:"Type,omitempty"`
-	State   string `json:"State,omitempty"`
-	Flag    string `json:"Flag,omitempty"`
-	Role    string `json:"Role,omitempty"`
-	SubRole string `json:"SubRole,omitempty"`
-	Arch    string `json:"Arch,omitempty"`
-	Class   string `json:"Class,omitempty"`
-	NID     any    `json:"NID,omitempty"`
+	ID       string `json:"ID"`
+	Type     string `json:"Type,omitempty"`
+	State    string `json:"State,omitempty"`
+	Flag     string `json:"Flag,omitempty"`
+	Enabled  *bool  `json:"Enabled,omitempty"`
+	SwStatus string `json:"SoftwareStatus,omitempty"`
+	Role     string `json:"Role,omitempty"`
+	SubRole  string `json:"SubRole,omitempty"`
+	Subtype  string `json:"Subtype,omitempty"`
+	NetType  string `json:"NetType,omitempty"`
+	Arch     string `json:"Arch,omitempty"`
+	Class    string `json:"Class,omitempty"`
+	NID      any    `json:"NID,omitempty"`
 }
 
 // csmComponentArray mirrors cmd/server.ComponentArray.
@@ -344,5 +348,76 @@ func TestCreateComponentCsmUpsert(t *testing.T) {
 	}
 	if after.Spec.Role != "Service" {
 		t.Errorf("expected Role=Service after upsert, got %q", after.Spec.Role)
+	}
+}
+
+// TestCreateComponentCsmFieldMapping verifies that the CSM batch POST
+// (POST /hsm/v2/State/Components) persists the full set of SMD component
+// fields — not just ID/Type. A component is created with every mappable
+// field populated and each is asserted to survive a POST → GET round-trip.
+func TestCreateComponentCsmFieldMapping(t *testing.T) {
+	xname := "x3000c0s4b0n0"
+	enabled := true
+	want := &csmComponentSpec{
+		ID:       xname,
+		Type:     "Node",
+		State:    "On",
+		Flag:     "OK",
+		Enabled:  &enabled,
+		SwStatus: "AdminUp",
+		Role:     "Compute",
+		SubRole:  "Worker",
+		Subtype:  "river",
+		NetType:  "Sling",
+		Arch:     "X86",
+		Class:    "River",
+		NID:      42,
+	}
+	csmCreate(t, want)
+	defer csmDelete(t, xname)
+
+	got, status := csmGetOne(t, xname)
+	if status != http.StatusOK {
+		t.Fatalf("expected HTTP 200 for GET after POST, got %d", status)
+	}
+
+	if got.Spec.ID != want.ID {
+		t.Errorf("ID: expected %q, got %q", want.ID, got.Spec.ID)
+	}
+	if got.Spec.Type != want.Type {
+		t.Errorf("Type: expected %q, got %q", want.Type, got.Spec.Type)
+	}
+	if got.Spec.State != want.State {
+		t.Errorf("State: expected %q, got %q", want.State, got.Spec.State)
+	}
+	if got.Spec.Flag != want.Flag {
+		t.Errorf("Flag: expected %q, got %q", want.Flag, got.Spec.Flag)
+	}
+	if got.Spec.Enabled == nil || *got.Spec.Enabled != enabled {
+		t.Errorf("Enabled: expected %v, got %v", enabled, got.Spec.Enabled)
+	}
+	if got.Spec.SwStatus != want.SwStatus {
+		t.Errorf("SoftwareStatus: expected %q, got %q", want.SwStatus, got.Spec.SwStatus)
+	}
+	if got.Spec.Role != want.Role {
+		t.Errorf("Role: expected %q, got %q", want.Role, got.Spec.Role)
+	}
+	if got.Spec.SubRole != want.SubRole {
+		t.Errorf("SubRole: expected %q, got %q", want.SubRole, got.Spec.SubRole)
+	}
+	if got.Spec.Subtype != want.Subtype {
+		t.Errorf("Subtype: expected %q, got %q", want.Subtype, got.Spec.Subtype)
+	}
+	if got.Spec.NetType != want.NetType {
+		t.Errorf("NetType: expected %q, got %q", want.NetType, got.Spec.NetType)
+	}
+	if got.Spec.Arch != want.Arch {
+		t.Errorf("Arch: expected %q, got %q", want.Arch, got.Spec.Arch)
+	}
+	if got.Spec.Class != want.Class {
+		t.Errorf("Class: expected %q, got %q", want.Class, got.Spec.Class)
+	}
+	if fmt.Sprintf("%v", got.Spec.NID) != "42" {
+		t.Errorf("NID: expected 42, got %v", got.Spec.NID)
 	}
 }
