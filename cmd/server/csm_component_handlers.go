@@ -79,7 +79,8 @@ func GetComponentCsm(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusNotFound, fmt.Errorf("component not found: %s", id))
 		return
 	}
-	respondJSON(w, http.StatusOK, component)
+	// SMD returns a flat component (fields at top level), not the fabrica wrapper.
+	respondJSON(w, http.StatusOK, component.Spec)
 }
 
 // CreateComponent creates a new Component resource
