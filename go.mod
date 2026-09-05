@@ -11,7 +11,7 @@ require (
 	github.com/getkin/kin-openapi v0.146.0
 	github.com/go-chi/chi/v5 v5.3.1
 	github.com/google/jsonschema-go v0.4.3
-	github.com/mattn/go-sqlite3 v1.14.49
+	github.com/mattn/go-sqlite3 v1.14.52
 	github.com/openchami/fabrica v0.4.9
 	github.com/openchami/tokensmith v0.4.1
 	github.com/rs/zerolog v1.35.1
