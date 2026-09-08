@@ -10,6 +10,16 @@ from deepdiff import DeepDiff
 from conftest import smd_base_url, inventory_base_url, print_response
 
 
+# Field(s) used to match resources between SMD and the inventory service when
+# comparing:
+#   Components         -> ID
+#   ComponentEndpoints -> ID
+#   EthernetInterfaces -> ID
+#   RedfishEndpoints   -> ID
+#   ServiceEndpoints   -> RedfishEndpointID + RedfishType (no ID)
+#   Hardware           -> ID
+
+
 def test_compare_components(discover_hardware):
     response = requests.get(f"{smd_base_url}/v2/State/Components")
     if response.status_code != 200:

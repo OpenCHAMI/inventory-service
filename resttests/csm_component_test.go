@@ -15,7 +15,7 @@
  *   POST  body   : ComponentArray  { "Components": [ <ComponentSpec>, ... ] }
  *   POST  returns: HTTP 201, no body
  *   GET / returns: ComponentArray  { "Components": [ <ComponentSpec>, ... ] }
- *   GET /{id}:    full Component   (apiVersion, kind, metadata, spec, status)
+ *   GET /{id}:    flat ComponentSpec (fields at top level, SMD-compatible)
  *   PUT  body   : ComponentSpec
  *   PUT  returns: updated ComponentSpec
  *   DELETE /{id}: DeleteResponse { message, uid }
@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 )
 
 const csmBase = "/hsm/v2/State/Components"
@@ -35,28 +36,24 @@ const csmBase = "/hsm/v2/State/Components"
 // These mirror csm_models.go / component_types.go without importing package main.
 
 type csmComponentSpec struct {
-	ID      string `json:"ID"`
-	Type    string `json:"Type,omitempty"`
-	State   string `json:"State,omitempty"`
-	Flag    string `json:"Flag,omitempty"`
-	Role    string `json:"Role,omitempty"`
-	SubRole string `json:"SubRole,omitempty"`
-	Arch    string `json:"Arch,omitempty"`
-	Class   string `json:"Class,omitempty"`
-	NID     any    `json:"NID,omitempty"`
+	ID       string `json:"ID"`
+	Type     string `json:"Type,omitempty"`
+	State    string `json:"State,omitempty"`
+	Flag     string `json:"Flag,omitempty"`
+	Enabled  *bool  `json:"Enabled,omitempty"`
+	SwStatus string `json:"SoftwareStatus,omitempty"`
+	Role     string `json:"Role,omitempty"`
+	SubRole  string `json:"SubRole,omitempty"`
+	Subtype  string `json:"Subtype,omitempty"`
+	NetType  string `json:"NetType,omitempty"`
+	Arch     string `json:"Arch,omitempty"`
+	Class    string `json:"Class,omitempty"`
+	NID      any    `json:"NID,omitempty"`
 }
 
 // csmComponentArray mirrors cmd/server.ComponentArray.
 type csmComponentArray struct {
 	Components []*csmComponentSpec `json:"Components"`
-}
-
-// csmComponentFull mirrors v1.Component returned by GetComponentCsm.
-type csmComponentFull struct {
-	APIVersion string            `json:"apiVersion"`
-	Kind       string            `json:"kind"`
-	Metadata   componentMetadata `json:"metadata"` // reuse from component_test.go
-	Spec       csmComponentSpec  `json:"spec"`
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -70,17 +67,36 @@ func csmCreate(t *testing.T, specs ...*csmComponentSpec) {
 	resp.Body.Close()
 }
 
-// csmGetOne fetches a single component by xname ID and returns the full Component.
-func csmGetOne(t *testing.T, xname string) (*csmComponentFull, int) {
+// csmGetOne fetches a single component by xname ID and returns the flat SMD
+// ComponentSpec (fields at top level, no fabrica metadata).
+func csmGetOne(t *testing.T, xname string) (*csmComponentSpec, int) {
 	t.Helper()
 	resp := doRequest(t, http.MethodGet, fmt.Sprintf("%s/%s", csmBase, xname), nil)
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return nil, resp.StatusCode
 	}
-	var c csmComponentFull
+	var c csmComponentSpec
 	decodeJSON(t, resp, &c)
 	return &c, resp.StatusCode
+}
+
+// nativeComponentByXname finds a component in the native GET /components list by
+// its xname (Spec.ID). The flat CSM response omits fabrica metadata (UID,
+// timestamps), so tests that need to observe those read them from here.
+func nativeComponentByXname(t *testing.T, xname string) *componentResponse {
+	t.Helper()
+	resp := doRequest(t, http.MethodGet, "/components", nil)
+	requireStatus(t, resp, http.StatusOK)
+	var list []componentResponse
+	decodeJSON(t, resp, &list)
+	for i := range list {
+		if list[i].Spec.ID == xname {
+			return &list[i]
+		}
+	}
+	t.Fatalf("component %s not found in native /components list", xname)
+	return nil
 }
 
 // csmDelete deletes a component by xname ID.
@@ -104,8 +120,8 @@ func TestCreateComponentCsm(t *testing.T) {
 	if status != http.StatusOK {
 		t.Fatalf("expected HTTP 200 for GET after POST, got %d", status)
 	}
-	if comp.Spec.ID != xname {
-		t.Errorf("expected Spec.ID=%q, got %q", xname, comp.Spec.ID)
+	if comp.ID != xname {
+		t.Errorf("expected ID=%q, got %q", xname, comp.ID)
 	}
 }
 
@@ -131,8 +147,8 @@ func TestCreateComponentCsmBulk(t *testing.T) {
 			t.Errorf("expected HTTP 200 for %s, got %d", x, status)
 			continue
 		}
-		if comp.Spec.ID != x {
-			t.Errorf("expected Spec.ID=%q, got %q", x, comp.Spec.ID)
+		if comp.ID != x {
+			t.Errorf("expected ID=%q, got %q", x, comp.ID)
 		}
 	}
 }
@@ -173,11 +189,8 @@ func TestGetComponentCsm(t *testing.T) {
 	if status != http.StatusOK {
 		t.Fatalf("expected HTTP 200, got %d", status)
 	}
-	if comp.Spec.ID != xname {
-		t.Errorf("expected Spec.ID=%q, got %q", xname, comp.Spec.ID)
-	}
-	if comp.Kind != "Component" {
-		t.Errorf("expected Kind=Component, got %q", comp.Kind)
+	if comp.ID != xname {
+		t.Errorf("expected ID=%q, got %q", xname, comp.ID)
 	}
 }
 
@@ -204,11 +217,11 @@ func TestUpdateComponentCsm(t *testing.T) {
 	if status != http.StatusOK {
 		t.Fatalf("expected HTTP 200 after PUT, got %d", status)
 	}
-	if comp.Spec.State != "Ready" {
-		t.Errorf("expected Spec.State=Ready after PUT, got %q", comp.Spec.State)
+	if comp.State != "Ready" {
+		t.Errorf("expected State=Ready after PUT, got %q", comp.State)
 	}
-	if comp.Spec.Role != "Compute" {
-		t.Errorf("expected Spec.Role=Compute after PUT, got %q", comp.Spec.Role)
+	if comp.Role != "Compute" {
+		t.Errorf("expected Role=Compute after PUT, got %q", comp.Role)
 	}
 }
 
@@ -248,10 +261,10 @@ func TestCsmComponentLifecycle(t *testing.T) {
 	if status != http.StatusOK {
 		t.Fatalf("POST→GET: expected HTTP 200, got %d", status)
 	}
-	if comp.Spec.ID != xname {
-		t.Errorf("POST→GET: expected Spec.ID=%q, got %q", xname, comp.Spec.ID)
+	if comp.ID != xname {
+		t.Errorf("POST→GET: expected ID=%q, got %q", xname, comp.ID)
 	}
-	t.Logf("Created component UID: %s", comp.Metadata.UID)
+	t.Logf("Created component UID: %s", nativeComponentByXname(t, xname).Metadata.UID)
 
 	// ── GET all – component must appear ───────────────────────────────────────
 	listResp := doRequest(t, http.MethodGet, csmBase, nil)
@@ -280,8 +293,8 @@ func TestCsmComponentLifecycle(t *testing.T) {
 	if status != http.StatusOK {
 		t.Fatalf("GET after PUT: expected HTTP 200, got %d", status)
 	}
-	if comp.Spec.State != "On" {
-		t.Errorf("PUT: expected Spec.State=On, got %q", comp.Spec.State)
+	if comp.State != "On" {
+		t.Errorf("PUT: expected State=On, got %q", comp.State)
 	}
 
 	// ── DELETE ────────────────────────────────────────────────────────────────
@@ -295,18 +308,124 @@ func TestCsmComponentLifecycle(t *testing.T) {
 	}
 }
 
-// TestCreateComponentCsmDuplicateID verifies that POST /hsm/v2/State/Components rejects
-// a component whose ID already exists, enforcing resource_id uniqueness.
-func TestCreateComponentCsmDuplicateID(t *testing.T) {
+// TestCreateComponentCsmUpsert verifies that POST /hsm/v2/State/Components with an
+// ID that already exists updates the component in place (SMD upsert semantics):
+// the POST succeeds, the UID and CreatedAt are preserved, UpdatedAt advances, and
+// the spec fields are replaced by the new body.
+func TestCreateComponentCsmUpsert(t *testing.T) {
 	xname := "x3000c0s3b0n0"
-	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node"})
+	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node", State: "On", Role: "Compute"})
 	defer csmDelete(t, xname)
 
+	// UID/CreatedAt/UpdatedAt are inventory-service internals that the flat CSM
+	// response intentionally omits, so read them from the native /components list.
+	before := nativeComponentByXname(t, xname)
+
+	// Ensure a measurable gap so UpdatedAt is observably different.
+	time.Sleep(10 * time.Millisecond)
+
+	// Re-POST the same xname with different spec fields.
 	resp := doRequest(t, http.MethodPost, csmBase, csmComponentArray{
-		Components: []*csmComponentSpec{{ID: xname, Type: "Node"}},
+		Components: []*csmComponentSpec{{ID: xname, Type: "Node", State: "Off", Role: "Service"}},
 	})
-	defer resp.Body.Close()
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		t.Errorf("expected non-2xx on duplicate component ID %q, got HTTP %d", xname, resp.StatusCode)
+	requireStatus(t, resp, http.StatusCreated)
+	resp.Body.Close()
+
+	after := nativeComponentByXname(t, xname)
+
+	// UID and CreatedAt are stable across the upsert; UpdatedAt advances.
+	if after.Metadata.UID != before.Metadata.UID {
+		t.Errorf("expected UID to be preserved on upsert: before=%q after=%q",
+			before.Metadata.UID, after.Metadata.UID)
+	}
+	if after.Metadata.CreatedAt != before.Metadata.CreatedAt {
+		t.Errorf("expected CreatedAt to be preserved on upsert: before=%q after=%q",
+			before.Metadata.CreatedAt, after.Metadata.CreatedAt)
+	}
+	if after.Metadata.UpdatedAt == before.Metadata.UpdatedAt {
+		t.Errorf("expected UpdatedAt to change on upsert, still %q", after.Metadata.UpdatedAt)
+	}
+
+	// Spec fields are replaced by the new POST body (observed via the flat CSM GET).
+	got, status := csmGetOne(t, xname)
+	if status != http.StatusOK {
+		t.Fatalf("expected HTTP 200 for CSM GET after upsert, got %d", status)
+	}
+	if got.State != "Off" {
+		t.Errorf("expected State=Off after upsert, got %q", got.State)
+	}
+	if got.Role != "Service" {
+		t.Errorf("expected Role=Service after upsert, got %q", got.Role)
+	}
+}
+
+// TestCreateComponentCsmFieldMapping verifies that the CSM batch POST
+// (POST /hsm/v2/State/Components) persists the full set of SMD component
+// fields — not just ID/Type. A component is created with every mappable
+// field populated and each is asserted to survive a POST → GET round-trip.
+func TestCreateComponentCsmFieldMapping(t *testing.T) {
+	xname := "x3000c0s4b0n0"
+	enabled := true
+	want := &csmComponentSpec{
+		ID:       xname,
+		Type:     "Node",
+		State:    "On",
+		Flag:     "OK",
+		Enabled:  &enabled,
+		SwStatus: "AdminUp",
+		Role:     "Compute",
+		SubRole:  "Worker",
+		Subtype:  "river",
+		NetType:  "Sling",
+		Arch:     "X86",
+		Class:    "River",
+		NID:      42,
+	}
+	csmCreate(t, want)
+	defer csmDelete(t, xname)
+
+	got, status := csmGetOne(t, xname)
+	if status != http.StatusOK {
+		t.Fatalf("expected HTTP 200 for GET after POST, got %d", status)
+	}
+
+	if got.ID != want.ID {
+		t.Errorf("ID: expected %q, got %q", want.ID, got.ID)
+	}
+	if got.Type != want.Type {
+		t.Errorf("Type: expected %q, got %q", want.Type, got.Type)
+	}
+	if got.State != want.State {
+		t.Errorf("State: expected %q, got %q", want.State, got.State)
+	}
+	if got.Flag != want.Flag {
+		t.Errorf("Flag: expected %q, got %q", want.Flag, got.Flag)
+	}
+	if got.Enabled == nil || *got.Enabled != enabled {
+		t.Errorf("Enabled: expected %v, got %v", enabled, got.Enabled)
+	}
+	if got.SwStatus != want.SwStatus {
+		t.Errorf("SoftwareStatus: expected %q, got %q", want.SwStatus, got.SwStatus)
+	}
+	if got.Role != want.Role {
+		t.Errorf("Role: expected %q, got %q", want.Role, got.Role)
+	}
+	if got.SubRole != want.SubRole {
+		t.Errorf("SubRole: expected %q, got %q", want.SubRole, got.SubRole)
+	}
+	if got.Subtype != want.Subtype {
+		t.Errorf("Subtype: expected %q, got %q", want.Subtype, got.Subtype)
+	}
+	if got.NetType != want.NetType {
+		t.Errorf("NetType: expected %q, got %q", want.NetType, got.NetType)
+	}
+	if got.Arch != want.Arch {
+		t.Errorf("Arch: expected %q, got %q", want.Arch, got.Arch)
+	}
+	if got.Class != want.Class {
+		t.Errorf("Class: expected %q, got %q", want.Class, got.Class)
+	}
+	if fmt.Sprintf("%v", got.NID) != "42" {
+		t.Errorf("NID: expected 42, got %v", got.NID)
 	}
 }
