@@ -21,6 +21,13 @@ import (
 	"github.com/openchami/inventory-service/internal/storage"
 )
 
+// Lock is a hand-written CSM-compat resource and is not covered by the generated
+// registerResourcePrefixes(); register its UID prefix here so reservation
+// creation can generate Lock UIDs.
+func init() {
+	resource.RegisterResourcePrefix("Lock", "lock")
+}
+
 // lockFilterSet is the internal, normalized set of component filters shared by
 // the /hsm/v2/locks endpoints. Partition filtering is intentionally not part of
 // this set: it is rejected at the handler boundary because inventory-service has
