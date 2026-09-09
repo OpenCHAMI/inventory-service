@@ -87,6 +87,12 @@ func respondComponentQuery(w http.ResponseWriter, r *http.Request, query *Compon
 		return
 	}
 
+	// SMD treats the special xnames "all" and "s0" (whole system) as a
+	// wildcard matching every component; power-control queries with "all".
+	if containsFold(query.ComponentIDs, "all") || containsFold(query.ComponentIDs, "s0") {
+		query.ComponentIDs = nil
+	}
+
 	result := ComponentArray{Components: make([]*v1.ComponentSpec, 0, len(components))}
 	for i := range components {
 		spec := &components[i].Spec

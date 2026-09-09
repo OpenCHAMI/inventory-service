@@ -79,6 +79,32 @@ func TestQueryComponentsCsmEmptyBody(t *testing.T) {
 	}
 }
 
+// TestQueryComponentsCsmAllWildcard verifies POST /Query with the SMD wildcard
+// ComponentIDs=["all"] returns every component (this is exactly what
+// power-control sends via FillHSMData(["all"])).
+func TestQueryComponentsCsmAllWildcard(t *testing.T) {
+	xname := "x9000c0s0b0n3"
+	csmCreate(t, &csmComponentSpec{ID: xname, Type: "Node"})
+	defer csmDelete(t, xname)
+
+	resp := doRequest(t, http.MethodPost, csmQueryBase, csmComponentQuery{ComponentIDs: []string{"all"}})
+	requireStatus(t, resp, http.StatusOK)
+
+	var list csmComponentArray
+	decodeJSON(t, resp, &list)
+
+	found := false
+	for _, c := range list.Components {
+		if c != nil && c.ID == xname {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("component %s not found in all-wildcard query result", xname)
+	}
+}
+
 // TestQueryComponentsCsmUnknownXname verifies POST /Query for an xname that does
 // not exist returns HTTP 200 with an empty (non-error) result.
 func TestQueryComponentsCsmUnknownXname(t *testing.T) {
