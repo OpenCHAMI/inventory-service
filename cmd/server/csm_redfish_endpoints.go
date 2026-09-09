@@ -337,40 +337,54 @@ func createV2SubResources(
 		return out
 	}
 
-	// saveEthInterfaces creates EthernetInterface resources from V2 ethernet entries.
+	// saveEthInterfaces upserts EthernetInterface resources from V2 ethernet
+	// entries. EthernetInterfaces are keyed by MAC (colons stripped); when that
+	// MAC is already known the existing resource is updated in place, preserving
+	// its UID and CreatedAt, so a MAC shared across endpoints reassigns rather
+	// than colliding on the unique resource ID (matching SMD's upsert behaviour).
 	saveEthInterfaces := func(compID, compType string, eths []RedfishEndpointV2EthernetInterface) error {
 		for _, eth := range eths {
 			if eth.MAC == "" {
 				continue
 			}
 			macID := strings.ReplaceAll(strings.ToLower(eth.MAC), ":", "")
-			uid, err := resource.GenerateUIDForResource("EthernetInterface")
-			if err != nil {
-				return fmt.Errorf("failed to generate UID for EthernetInterface %s: %w", macID, err)
-			}
 			var ipAddresses []v1.IPAddress
 			if eth.IP != "" {
 				ipAddresses = []v1.IPAddress{{IPAddress: eth.IP}}
 			}
-			ei := &v1.EthernetInterface{
-				APIVersion: versionCtx.ServeVersion,
-				Kind:       "EthernetInterface",
-				Spec: v1.EthernetInterfaceSpec{
-					ID:          macID,
-					Description: eth.Description,
-					MACAddr:     eth.MAC,
-					IPAddresses: ipAddresses,
-					LastUpdate:  now.UTC().Format(time.RFC3339Nano),
-					CompID:      compID,
-					Type:        compType,
-				},
+
+			ei, err := plugins.Store.LoadEthernetInterfaceByID(ctx, macID)
+			if err == storage.ErrNotFound {
+				uid, uidErr := resource.GenerateUIDForResource("EthernetInterface")
+				if uidErr != nil {
+					return fmt.Errorf("failed to generate UID for EthernetInterface %s: %w", macID, uidErr)
+				}
+				ei = &v1.EthernetInterface{}
+				ei.Metadata.UID = uid
+				ei.Metadata.CreatedAt = now
+			} else if err != nil {
+				return fmt.Errorf("failed to load EthernetInterface %s: %w", macID, err)
 			}
-			ei.Metadata.UID = uid
+
+			ei.APIVersion = versionCtx.ServeVersion
+			ei.Kind = "EthernetInterface"
+			ei.Spec = v1.EthernetInterfaceSpec{
+				ID:          macID,
+				Description: eth.Description,
+				MACAddr:     eth.MAC,
+				IPAddresses: ipAddresses,
+				LastUpdate:  now.UTC().Format(time.RFC3339Nano),
+				CompID:      compID,
+				Type:        compType,
+			}
 			ei.Metadata.Name = macID
-			ei.Metadata.CreatedAt = now
 			ei.Metadata.UpdatedAt = now
-			ei.Metadata.Labels = make(map[string]string)
-			ei.Metadata.Annotations = make(map[string]string)
+			if ei.Metadata.Labels == nil {
+				ei.Metadata.Labels = make(map[string]string)
+			}
+			if ei.Metadata.Annotations == nil {
+				ei.Metadata.Annotations = make(map[string]string)
+			}
 			if err := plugins.Store.SaveEthernetInterface(ctx, ei); err != nil {
 				return fmt.Errorf("failed to save EthernetInterface %s: %w", macID, err)
 			}
