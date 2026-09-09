@@ -7,6 +7,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -51,6 +52,74 @@ func GetComponentsCsm(w http.ResponseWriter, r *http.Request) {
 		componentsCsm.Components[i] = &c.Spec
 	}
 	respondJSON(w, http.StatusOK, componentsCsm)
+}
+
+// QueryComponentsCsm handles POST /hsm/v2/State/Components/Query. It mirrors
+// SMD's component query: the body carries optional filters and the response is
+// a ComponentArray. An empty body (or a query without ComponentIDs) matches
+// every component. Power-control relies on this endpoint to build its
+// in-memory component map.
+func QueryComponentsCsm(w http.ResponseWriter, r *http.Request) {
+	var query ComponentQuery
+	if err := json.NewDecoder(r.Body).Decode(&query); err != nil && err != io.EOF {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
+		return
+	}
+
+	respondComponentQuery(w, r, &query)
+}
+
+// QueryComponentByXnameCsm handles GET /hsm/v2/State/Components/Query/{xname}.
+// It returns a ComponentArray containing the single matching component.
+func QueryComponentByXnameCsm(w http.ResponseWriter, r *http.Request) {
+	xname := chi.URLParam(r, "xname")
+	if xname == "" {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("xname is required"))
+		return
+	}
+	respondComponentQuery(w, r, &ComponentQuery{ComponentIDs: []string{xname}})
+}
+
+func respondComponentQuery(w http.ResponseWriter, r *http.Request, query *ComponentQuery) {
+	components, err := plugins.Store.LoadAllComponents(r.Context())
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load components: %w", err))
+		return
+	}
+
+	result := ComponentArray{Components: make([]*v1.ComponentSpec, 0, len(components))}
+	for i := range components {
+		spec := &components[i].Spec
+		if componentMatchesQuery(spec, query) {
+			result.Components = append(result.Components, spec)
+		}
+	}
+	respondJSON(w, http.StatusOK, result)
+}
+
+func componentMatchesQuery(spec *v1.ComponentSpec, query *ComponentQuery) bool {
+	if len(query.ComponentIDs) > 0 && !containsFold(query.ComponentIDs, spec.ID) {
+		return false
+	}
+	if len(query.Type) > 0 && !containsFold(query.Type, spec.Type) {
+		return false
+	}
+	if len(query.State) > 0 && !containsFold(query.State, spec.State) {
+		return false
+	}
+	if len(query.Role) > 0 && !containsFold(query.Role, spec.Role) {
+		return false
+	}
+	if len(query.SubRole) > 0 && !containsFold(query.SubRole, spec.SubRole) {
+		return false
+	}
+	if len(query.Class) > 0 && !containsFold(query.Class, spec.Class) {
+		return false
+	}
+	if len(query.Arch) > 0 && !containsFold(query.Arch, spec.Arch) {
+		return false
+	}
+	return true
 }
 
 // GetComponent returns a specific Component resource by UID

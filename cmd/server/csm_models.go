@@ -11,6 +11,20 @@ type ComponentArray struct {
 	Components []*v1.ComponentSpec `json:"Components"`
 }
 
+// ComponentQuery is the SMD-compatible request body for
+// POST /hsm/v2/State/Components/Query. All filters are optional; an empty
+// query (or one with no ComponentIDs) matches every component.
+type ComponentQuery struct {
+	ComponentIDs []string `json:"ComponentIDs,omitempty"`
+	Partition    []string `json:"partition,omitempty"`
+	Type         []string `json:"type,omitempty"`
+	State        []string `json:"state,omitempty"`
+	Role         []string `json:"role,omitempty"`
+	SubRole      []string `json:"subrole,omitempty"`
+	Class        []string `json:"class,omitempty"`
+	Arch         []string `json:"arch,omitempty"`
+}
+
 type ComponentEndpointArray struct {
 	ComponentEndpoints []*v1.ComponentEndpointSpec `json:"ComponentEndpoints"`
 }

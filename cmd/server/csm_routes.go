@@ -31,6 +31,8 @@ func RegisterProtectedCsmRoutes(r chi.Router) {
 		r.Get("/", GetComponentsCsm)
 		r.Post("/", CreateComponentCsm)
 		// r.Delete("/", DeleteAllComponentCsm) // todo (smd has it but maybe not needed)
+		r.Post("/Query", QueryComponentsCsm)
+		r.Get("/Query/{xname}", QueryComponentByXnameCsm)
 		r.Route("/{id}", func(r chi.Router) {
 			r.Get("/", GetComponentCsm)
 			r.Put("/", UpdateComponentCsm)
