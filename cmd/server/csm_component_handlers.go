@@ -282,6 +282,12 @@ func DeleteComponentCsm(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// SMD parity: a component's reservation/lock record is deleted along
+		// with the component itself.
+		if err := plugins.Store.DeleteLockByID(r.Context(), id); err != nil {
+			fmt.Printf("Warning: Failed to delete Lock for Component %s: %v\n", id, err)
+		}
+
 		// Publish resource deleted event
 		deleteMetadata := map[string]interface{}{
 			"deletedAt": time.Now(),
