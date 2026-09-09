@@ -435,11 +435,11 @@ func createV2SubResources(
 		comp, err := plugins.Store.LoadComponentByID(ctx, nodeID)
 		if err == storage.ErrNotFound {
 			// Component (Node)
-			compUID, err := resource.GenerateUIDForResource("Component")
-			if err != nil {
-				return fmt.Errorf("failed to generate UID for Node Component %s: %w", nodeID, err)
+			compUID, uidErr := resource.GenerateUIDForResource("Component")
+			if uidErr != nil {
+				return fmt.Errorf("failed to generate UID for Node Component %s: %w", nodeID, uidErr)
 			}
-			comp := &v1.Component{
+			comp = &v1.Component{
 				APIVersion: versionCtx.ServeVersion,
 				Kind:       "Component",
 				Spec: v1.ComponentSpec{
