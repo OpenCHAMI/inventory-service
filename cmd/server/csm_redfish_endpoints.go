@@ -119,10 +119,28 @@ func CreateRedfishEndpointCsm(w http.ResponseWriter, r *http.Request) {
 
 	// Get version context from request (set by version negotiation middleware)
 	versionCtx := versioning.GetVersionContext(r.Context())
-	uid, err := resource.GenerateUIDForResource("RedfishEndpoint")
-	if err != nil {
-		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to generate UID: %w", err))
+
+	// SMD treats re-registration of an existing RedfishEndpoint as an idempotent
+	// upsert (magellan re-POSTs on every scan). Preserve the original UID and
+	// CreatedAt when the endpoint already exists so the save updates in place
+	// instead of colliding on the unique resource ID.
+	now := time.Now()
+	existing, err := plugins.Store.LoadRedfishEndpointByID(r.Context(), req.ID)
+	if err != nil && err != storage.ErrNotFound {
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load RedfishEndpoint %s: %w", req.ID, err))
 		return
+	}
+	uid := ""
+	createdAt := now
+	if existing != nil {
+		uid = existing.Metadata.UID
+		createdAt = existing.Metadata.CreatedAt
+	} else {
+		uid, err = resource.GenerateUIDForResource("RedfishEndpoint")
+		if err != nil {
+			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to generate UID: %w", err))
+			return
+		}
 	}
 
 	// Versioned mode: flat fields with fabrica.Metadata
@@ -135,8 +153,7 @@ func CreateRedfishEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	// Initialize metadata from request
 	redfishEndpoint.Metadata.UID = uid
 	redfishEndpoint.Metadata.Name = req.ID
-	now := time.Now()
-	redfishEndpoint.Metadata.CreatedAt = now
+	redfishEndpoint.Metadata.CreatedAt = createdAt
 	redfishEndpoint.Metadata.UpdatedAt = now
 
 	// Set labels and annotations
@@ -396,29 +413,91 @@ func createV2SubResources(
 	for _, manager := range v2req.Managers {
 		compID := endpoint.ID
 
-		// Component (NodeBMC)
-		compUID, err := resource.GenerateUIDForResource("Component")
-		if err != nil {
-			return fmt.Errorf("failed to generate UID for NodeBMC Component %s: %w", compID, err)
-		}
+		// Component (NodeBMC) — upsert by ID so re-discovery keeps UID/CreatedAt.
 		enabled := true
-		comp := &v1.Component{
-			APIVersion: versionCtx.ServeVersion,
-			Kind:       "Component",
-			Spec: v1.ComponentSpec{
-				ID:      compID,
-				Type:    "NodeBMC",
-				Enabled: &enabled,
-			},
+		comp, err := plugins.Store.LoadComponentByID(ctx, compID)
+		if err == storage.ErrNotFound {
+			compUID, uidErr := resource.GenerateUIDForResource("Component")
+			if uidErr != nil {
+				return fmt.Errorf("failed to generate UID for NodeBMC Component %s: %w", compID, uidErr)
+			}
+			comp = &v1.Component{
+				APIVersion: versionCtx.ServeVersion,
+				Kind:       "Component",
+				Spec: v1.ComponentSpec{
+					ID:      compID,
+					Type:    "NodeBMC",
+					Enabled: &enabled,
+				},
+			}
+			comp.Metadata.UID = compUID
+			comp.Metadata.Name = compID
+			comp.Metadata.CreatedAt = now
+			comp.Metadata.UpdatedAt = now
+			comp.Metadata.Labels = make(map[string]string)
+			comp.Metadata.Annotations = make(map[string]string)
+		} else if err != nil {
+			return fmt.Errorf("failed to load NodeBMC Component %s: %w", compID, err)
+		} else {
+			comp.Spec.Type = "NodeBMC"
+			comp.Spec.Enabled = &enabled
+			comp.Metadata.UpdatedAt = now
 		}
-		comp.Metadata.UID = compUID
-		comp.Metadata.Name = compID
-		comp.Metadata.CreatedAt = now
-		comp.Metadata.UpdatedAt = now
-		comp.Metadata.Labels = make(map[string]string)
-		comp.Metadata.Annotations = make(map[string]string)
 		if err := plugins.Store.SaveComponent(ctx, comp); err != nil {
 			return fmt.Errorf("failed to save NodeBMC Component %s: %w", compID, err)
+		}
+
+		// ComponentEndpoint (Manager) — upsert by ID so downstream services can
+		// resolve the BMC's EthernetNICInfo via GET /ComponentEndpoints/<bmc-xname>.
+		managerPath := extractPath(manager.URI)
+		mcep, err := plugins.Store.LoadComponentEndpointByID(ctx, compID)
+		if err == storage.ErrNotFound {
+			cepUID, uidErr := resource.GenerateUIDForResource("ComponentEndpoint")
+			if uidErr != nil {
+				return fmt.Errorf("failed to generate UID for Manager ComponentEndpoint %s: %w", compID, uidErr)
+			}
+			mcep = &v1.ComponentEndpoint{}
+			mcep.Metadata.UID = cepUID
+			mcep.Metadata.CreatedAt = now
+		} else if err != nil {
+			return fmt.Errorf("failed to load Manager ComponentEndpoint %s: %w", compID, err)
+		}
+		mcep.APIVersion = versionCtx.ServeVersion
+		mcep.Kind = "ComponentEndpoint"
+		mcep.Spec = v1.ComponentEndpointSpec{
+			ID:                    compID,
+			Type:                  "NodeBMC",
+			RedfishType:           "Manager",
+			RedfishSubtype:        manager.Type,
+			UUID:                  manager.UUID,
+			OdataID:               managerPath,
+			RfEndpointID:          endpoint.ID,
+			RedfishEndpointFQDN:   fqdn,
+			URL:                   fqdn + managerPath,
+			ComponentEndpointType: "ComponentEndpointManager",
+			Enabled:               true,
+			RedfishManagerInfo: &v1.ComponentManagerInfo{
+				Name: manager.Name,
+				Actions: &v1.ManagerActions{
+					ManagerReset: v1.ActionReset{
+						AllowableValues: []string{"ForceRestart", "GracefulRestart"},
+						RFActionInfo:    managerPath + "/ResetActionInfo",
+						Target:          managerPath + "/Actions/Manager.Reset",
+					},
+				},
+				EthNICInfo: nicInfoFromEths(manager.EthernetInterfaces),
+			},
+		}
+		mcep.Metadata.Name = compID
+		mcep.Metadata.UpdatedAt = now
+		if mcep.Metadata.Labels == nil {
+			mcep.Metadata.Labels = make(map[string]string)
+		}
+		if mcep.Metadata.Annotations == nil {
+			mcep.Metadata.Annotations = make(map[string]string)
+		}
+		if err := plugins.Store.SaveComponentEndpoint(ctx, mcep); err != nil {
+			return fmt.Errorf("failed to save Manager ComponentEndpoint %s: %w", compID, err)
 		}
 
 		// EthernetInterfaces for this manager
@@ -473,12 +552,22 @@ func createV2SubResources(
 			return fmt.Errorf("failed to save Node Component %s: %w", nodeID, err)
 		}
 
-		// ComponentEndpoint (ComputerSystem)
-		cepUID, err := resource.GenerateUIDForResource("ComponentEndpoint")
-		if err != nil {
-			return fmt.Errorf("failed to generate UID for System ComponentEndpoint %s: %w", nodeID, err)
-		}
+		// ComponentEndpoint (ComputerSystem) — upsert by ID so re-discovery keeps
+		// UID/CreatedAt instead of colliding on the unique resource ID.
 		systemPath := extractPath(system.URI)
+		cepUID := ""
+		cepCreatedAt := now
+		if existingCEP, cepErr := plugins.Store.LoadComponentEndpointByID(ctx, nodeID); cepErr == storage.ErrNotFound {
+			cepUID, err = resource.GenerateUIDForResource("ComponentEndpoint")
+			if err != nil {
+				return fmt.Errorf("failed to generate UID for System ComponentEndpoint %s: %w", nodeID, err)
+			}
+		} else if cepErr != nil {
+			return fmt.Errorf("failed to load System ComponentEndpoint %s: %w", nodeID, cepErr)
+		} else {
+			cepUID = existingCEP.Metadata.UID
+			cepCreatedAt = existingCEP.Metadata.CreatedAt
+		}
 		cep := &v1.ComponentEndpoint{
 			APIVersion: versionCtx.ServeVersion,
 			Kind:       "ComponentEndpoint",
@@ -513,7 +602,7 @@ func createV2SubResources(
 		}
 		cep.Metadata.UID = cepUID
 		cep.Metadata.Name = nodeID
-		cep.Metadata.CreatedAt = now
+		cep.Metadata.CreatedAt = cepCreatedAt
 		cep.Metadata.UpdatedAt = now
 		cep.Metadata.Labels = make(map[string]string)
 		cep.Metadata.Annotations = make(map[string]string)
