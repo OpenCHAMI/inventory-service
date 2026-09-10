@@ -17,6 +17,7 @@ import (
 	"github.com/openchami/fabrica/pkg/versioning"
 	v1 "github.com/openchami/inventory-service/apis/inventory-service.openchami.org/v1"
 	"github.com/openchami/inventory-service/cmd/plugins"
+	"github.com/openchami/inventory-service/internal/storage"
 )
 
 // GetEthernetInterfacesCsm returns all EthernetInterface resources
@@ -39,6 +40,16 @@ func CreateEthernetInterfaceCsm(w http.ResponseWriter, r *http.Request) {
 	var req v1.EthernetInterfaceSpec
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
+		return
+	}
+
+	// SMD returns 409 when an EthernetInterface with the same MAC already exists.
+	// Updates must go through PUT /EthernetInterfaces/{id}.
+	if existing, err := plugins.Store.LoadEthernetInterfaceByID(r.Context(), req.ID); err == nil && existing != nil {
+		respondError(w, http.StatusConflict, errEthInterfaceConflict)
+		return
+	} else if err != nil && err != storage.ErrNotFound {
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load EthernetInterface %s: %w", req.ID, err))
 		return
 	}
 

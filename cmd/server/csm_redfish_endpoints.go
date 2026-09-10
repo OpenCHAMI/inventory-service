@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -23,6 +24,11 @@ import (
 	"github.com/openchami/inventory-service/cmd/plugins"
 	"github.com/openchami/inventory-service/internal/storage"
 )
+
+// errEthInterfaceConflict signals that a discovered EthernetInterface has a MAC
+// that already belongs to an existing interface. SMD returns 409 in this case
+// unless forceUpdate is requested (matching its createCompEthInterfacesV2 path).
+var errEthInterfaceConflict = errors.New("operation would conflict with an existing component ethernet interface that has the same MAC address.")
 
 // GetRedfishEndpointsCsm returns all RedfishEndpoint resources
 func GetRedfishEndpointsCsm(w http.ResponseWriter, r *http.Request) {
@@ -180,7 +186,12 @@ func CreateRedfishEndpointCsm(w http.ResponseWriter, r *http.Request) {
 	// for every entry in the Systems and Managers arrays, mirroring what
 	// parseRedfishEndpointDataV2 does in OpenCHAMI/smd.
 	if isV2Format {
-		if err := createV2SubResources(r.Context(), req, v2req, versionCtx); err != nil {
+		if err := createV2SubResources(r.Context(), req, v2req, versionCtx, false); err != nil {
+			// SMD returns 409 on a duplicate-MAC conflict when forceUpdate is not set.
+			if errors.Is(err, errEthInterfaceConflict) {
+				respondError(w, http.StatusConflict, err)
+				return
+			}
 			// Log but do not fail — the RedfishEndpoint itself was saved successfully.
 			fmt.Printf("Warning: CreateRedfishEndpointCsm: failed to create V2 sub-resources for %s: %v\n", req.ID, err)
 		}
@@ -214,11 +225,12 @@ func UpdateRedfishEndpointV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req v1.RedfishEndpointSpec
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	var v2req RedfishEndpointV2Request
+	if err := json.NewDecoder(r.Body).Decode(&v2req); err != nil {
 		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
 		return
 	}
+	req := v2req.RedfishEndpointSpec
 
 	// Apply updates
 
@@ -242,6 +254,16 @@ func UpdateRedfishEndpointV2(w http.ResponseWriter, r *http.Request) {
 	if err := plugins.Store.SaveRedfishEndpoint(r.Context(), redfishEndpoint); err != nil {
 		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save RedfishEndpoint: %w", err))
 		return
+	}
+
+	// PUT matches SMD's forceUpdate=true discovery path: (re)create V2 sub-resources,
+	// overwriting EthernetInterfaces that share a MAC instead of returning 409.
+	if len(v2req.Systems) > 0 || len(v2req.Managers) > 0 {
+		versionCtx := versioning.GetVersionContext(r.Context())
+		if err := createV2SubResources(r.Context(), req, v2req, versionCtx, true); err != nil {
+			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to update V2 sub-resources for %s: %w", req.ID, err))
+			return
+		}
 	}
 
 	// Publish resource updated event
@@ -317,6 +339,7 @@ func createV2SubResources(
 	endpoint v1.RedfishEndpointSpec,
 	v2req RedfishEndpointV2Request,
 	versionCtx *versioning.VersionContext,
+	forceUpdate bool,
 ) error {
 	now := time.Now()
 
@@ -359,7 +382,7 @@ func createV2SubResources(
 	// MAC is already known the existing resource is updated in place, preserving
 	// its UID and CreatedAt, so a MAC shared across endpoints reassigns rather
 	// than colliding on the unique resource ID (matching SMD's upsert behaviour).
-	saveEthInterfaces := func(compID, compType string, eths []RedfishEndpointV2EthernetInterface) error {
+	saveEthInterfaces := func(compID, compType string, eths []RedfishEndpointV2EthernetInterface, forceUpdate bool) error {
 		for _, eth := range eths {
 			if eth.MAC == "" {
 				continue
@@ -371,7 +394,8 @@ func createV2SubResources(
 			}
 
 			ei, err := plugins.Store.LoadEthernetInterfaceByID(ctx, macID)
-			if err == storage.ErrNotFound {
+			switch {
+			case err == storage.ErrNotFound:
 				uid, uidErr := resource.GenerateUIDForResource("EthernetInterface")
 				if uidErr != nil {
 					return fmt.Errorf("failed to generate UID for EthernetInterface %s: %w", macID, uidErr)
@@ -379,8 +403,15 @@ func createV2SubResources(
 				ei = &v1.EthernetInterface{}
 				ei.Metadata.UID = uid
 				ei.Metadata.CreatedAt = now
-			} else if err != nil {
+			case err != nil:
 				return fmt.Errorf("failed to load EthernetInterface %s: %w", macID, err)
+			default:
+				// MAC already exists. SMD returns 409 unless forceUpdate is set, in
+				// which case it deletes and reinserts; here we overwrite in place,
+				// preserving the existing UID and CreatedAt.
+				if !forceUpdate {
+					return fmt.Errorf("%w: %s", errEthInterfaceConflict, eth.MAC)
+				}
 			}
 
 			ei.APIVersion = versionCtx.ServeVersion
@@ -501,7 +532,7 @@ func createV2SubResources(
 		}
 
 		// EthernetInterfaces for this manager
-		if err := saveEthInterfaces(compID, "NodeBMC", manager.EthernetInterfaces); err != nil {
+		if err := saveEthInterfaces(compID, "NodeBMC", manager.EthernetInterfaces, forceUpdate); err != nil {
 			return err
 		}
 	}
@@ -611,7 +642,7 @@ func createV2SubResources(
 		}
 
 		// EthernetInterfaces for this system
-		if err := saveEthInterfaces(nodeID, "Node", system.EthernetInterfaces); err != nil {
+		if err := saveEthInterfaces(nodeID, "Node", system.EthernetInterfaces, forceUpdate); err != nil {
 			return err
 		}
 	}

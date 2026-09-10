@@ -8,15 +8,17 @@
  * Component, ComponentEndpoint, and EthernetInterface sub-resources
  * (createV2SubResources in csm_redfish_endpoints.go).
  *
- * These tests focus on EthernetInterface upsert-by-MAC: EthernetInterfaces are keyed
- * by MAC (colons stripped), so a MAC shared across systems/endpoints must UPDATE the
- * existing resource in place — preserving its UID and CreatedAt — rather than abort
- * discovery on the unique resource ID. This mirrors SMD's upsert behaviour.
+ * These tests focus on EthernetInterface duplicate-MAC handling. EthernetInterfaces
+ * are keyed by MAC (colons stripped). Matching SMD, a MAC that already exists causes
+ * a 409 Conflict during non-forced discovery (POST), while the forceUpdate path (PUT
+ * on an existing endpoint) updates the interface in place, preserving its UID and
+ * CreatedAt.
  */
 
 package resttests
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 )
@@ -64,10 +66,9 @@ func findNativeEIByID(t *testing.T, id string) (ethernetInterfaceResponse, bool)
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 // TestCreateRedfishEndpointCsmV2SharedMAC verifies that a V2 discovery body whose
-// systems share a single MAC does not abort sub-resource creation: every node's
-// ComponentEndpoint is created and the shared EthernetInterface is upserted to the
-// last system that referenced it (last-writer-wins) instead of failing on the
-// unique resource ID.
+// systems share a single MAC is rejected with 409, matching SMD: the duplicate MAC
+// conflicts with the interface created for the first system, and non-forced discovery
+// (POST) does not overwrite it.
 func TestCreateRedfishEndpointCsmV2SharedMAC(t *testing.T) {
 	const (
 		reID  = "x9000c7s0b0"
@@ -96,7 +97,7 @@ func TestCreateRedfishEndpointCsmV2SharedMAC(t *testing.T) {
 	}
 
 	resp := doRequest(t, http.MethodPost, csmREBase, body)
-	requireStatus(t, resp, http.StatusCreated)
+	requireStatus(t, resp, http.StatusConflict)
 	resp.Body.Close()
 
 	defer func() {
@@ -107,29 +108,13 @@ func TestCreateRedfishEndpointCsmV2SharedMAC(t *testing.T) {
 		csmDelete(t, node0)
 		csmDelete(t, node1)
 	}()
-
-	// Both nodes' ComponentEndpoints must exist — discovery did not abort.
-	if _, st := csmCEGetOne(t, node0); st != http.StatusOK {
-		t.Errorf("expected ComponentEndpoint %s to exist (HTTP 200), got %d", node0, st)
-	}
-	if _, st := csmCEGetOne(t, node1); st != http.StatusOK {
-		t.Errorf("expected ComponentEndpoint %s to exist (HTTP 200), got %d", node1, st)
-	}
-
-	// The shared EthernetInterface exists once, owned by the last system.
-	spec, st := csmEIGetOne(t, macID)
-	if st != http.StatusOK {
-		t.Fatalf("expected EthernetInterface %s to exist (HTTP 200), got %d", macID, st)
-	}
-	if spec.ComponentID != node1 {
-		t.Errorf("expected shared EthernetInterface ComponentID=%q (last writer), got %q", node1, spec.ComponentID)
-	}
 }
 
 // TestCreateRedfishEndpointCsmV2EthernetInterfaceUpsertPreservesIdentity verifies
-// that re-discovering the same MAC under a different endpoint updates the existing
-// EthernetInterface in place: its UID and CreatedAt are preserved while its
-// ComponentID is reassigned to the newly-discovered node.
+// SMD-parity duplicate-MAC handling: a second endpoint that re-declares an existing
+// MAC via POST is rejected with 409, while re-running discovery for the SAME endpoint
+// via PUT (SMD's forceUpdate path) updates the EthernetInterface in place, preserving
+// its UID and CreatedAt.
 func TestCreateRedfishEndpointCsmV2EthernetInterfaceUpsertPreservesIdentity(t *testing.T) {
 	const (
 		reA   = "x9000c7s1b0"
@@ -140,8 +125,8 @@ func TestCreateRedfishEndpointCsmV2EthernetInterfaceUpsertPreservesIdentity(t *t
 		macID = "decafc0ffe02"
 	)
 
-	discover := func(reID, uri string) {
-		body := csmV2RedfishEndpoint{
+	makeBody := func(reID, uri string) csmV2RedfishEndpoint {
+		return csmV2RedfishEndpoint{
 			csmRedfishEndpointSpec: newCsmRedfishEndpoint(reID, reID+".example.com"),
 			Systems: []csmV2System{
 				{
@@ -152,12 +137,13 @@ func TestCreateRedfishEndpointCsmV2EthernetInterfaceUpsertPreservesIdentity(t *t
 				},
 			},
 		}
-		resp := doRequest(t, http.MethodPost, csmREBase, body)
-		requireStatus(t, resp, http.StatusCreated)
-		resp.Body.Close()
 	}
 
-	discover(reA, "/redfish/v1/Systems/0/EthernetInterfaces/0")
+	// First discovery via POST creates the interface owned by nodeA.
+	resp := doRequest(t, http.MethodPost, csmREBase, makeBody(reA, "/redfish/v1/Systems/0/EthernetInterfaces/0"))
+	requireStatus(t, resp, http.StatusCreated)
+	resp.Body.Close()
+
 	defer func() {
 		csmREDelete(t, reA)
 		csmREDelete(t, reB)
@@ -176,20 +162,28 @@ func TestCreateRedfishEndpointCsmV2EthernetInterfaceUpsertPreservesIdentity(t *t
 		t.Fatalf("expected ComponentID=%q after first discovery, got %q", nodeA, first.Spec.ComponentID)
 	}
 
-	// Re-discover the same MAC under a different endpoint.
-	discover(reB, "/redfish/v1/Systems/0/EthernetInterfaces/0")
+	// A different endpoint that re-declares the same MAC via POST conflicts (409).
+	resp = doRequest(t, http.MethodPost, csmREBase, makeBody(reB, "/redfish/v1/Systems/0/EthernetInterfaces/0"))
+	requireStatus(t, resp, http.StatusConflict)
+	resp.Body.Close()
+
+	// Re-running discovery for the SAME endpoint via PUT uses the forceUpdate path and
+	// updates the interface in place, preserving its identity.
+	resp = doRequest(t, http.MethodPut, fmt.Sprintf("%s/%s", csmREBase, reA), makeBody(reA, "/redfish/v1/Systems/0/EthernetInterfaces/0"))
+	requireStatus(t, resp, http.StatusOK)
+	resp.Body.Close()
 
 	second, ok := findNativeEIByID(t, macID)
 	if !ok {
-		t.Fatalf("expected EthernetInterface %s to still exist after second discovery", macID)
+		t.Fatalf("expected EthernetInterface %s to still exist after PUT", macID)
 	}
 	if second.Metadata.UID != first.Metadata.UID {
-		t.Errorf("expected UID preserved across upsert: was %q, got %q", first.Metadata.UID, second.Metadata.UID)
+		t.Errorf("expected UID preserved across forceUpdate: was %q, got %q", first.Metadata.UID, second.Metadata.UID)
 	}
 	if second.Metadata.CreatedAt != first.Metadata.CreatedAt {
-		t.Errorf("expected CreatedAt preserved across upsert: was %q, got %q", first.Metadata.CreatedAt, second.Metadata.CreatedAt)
+		t.Errorf("expected CreatedAt preserved across forceUpdate: was %q, got %q", first.Metadata.CreatedAt, second.Metadata.CreatedAt)
 	}
-	if second.Spec.ComponentID != nodeB {
-		t.Errorf("expected ComponentID reassigned to %q after re-discovery, got %q", nodeB, second.Spec.ComponentID)
+	if second.Spec.ComponentID != nodeA {
+		t.Errorf("expected ComponentID to remain %q after PUT, got %q", nodeA, second.Spec.ComponentID)
 	}
 }
