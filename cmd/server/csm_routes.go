@@ -33,6 +33,7 @@ func RegisterProtectedCsmRoutes(r chi.Router) {
 		// r.Delete("/", DeleteAllComponentCsm) // todo (smd has it but maybe not needed)
 		r.Post("/Query", QueryComponentsCsm)
 		r.Get("/Query/{xname}", QueryComponentByXnameCsm)
+		r.Patch("/BulkStateData", BulkStateDataCsm)
 		r.Route("/{id}", func(r chi.Router) {
 			r.Get("/", GetComponentCsm)
 			r.Put("/", UpdateComponentCsm)
@@ -139,6 +140,12 @@ func RegisterProtectedCsmRoutes(r chi.Router) {
 		r.Route("/{id}", func(r chi.Router) {
 			r.Get("/", GetMembershipCsm)
 		})
+	})
+	// SysInfo routes. power-control's doTransition fetches power maps before
+	// issuing a power action; inventory-service manages none, so the endpoint
+	// returns an empty array (a 404 would break power-control's JSON decode).
+	r.Route("/hsm/v2/sysinfo/powermaps", func(r chi.Router) {
+		r.Get("/", GetPowerMapsCsm)
 	})
 	// Lock / reservation routes (SMD /hsm/v2/locks). Admin lock flags
 	// (Locked, ReservationDisabled) are stored on the Component; reservations
