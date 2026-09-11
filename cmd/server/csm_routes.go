@@ -138,4 +138,28 @@ func RegisterProtectedCsmRoutes(r chi.Router) {
 			r.Get("/", GetMembershipCsm)
 		})
 	})
+	// Lock / reservation routes (SMD /hsm/v2/locks). Admin lock flags
+	// (Locked, ReservationDisabled) are stored on the Component; reservations
+	// are stored as Lock records keyed by component xname.
+	r.Route("/hsm/v2/locks", func(r chi.Router) {
+		r.Route("/status", func(r chi.Router) {
+			r.Get("/", GetLockStatusCsm)
+			r.Post("/", PostLockStatusCsm)
+		})
+		r.Post("/lock", LockComponentsCsm)
+		r.Post("/unlock", UnlockComponentsCsm)
+		r.Post("/disable", DisableComponentsCsm)
+		r.Post("/repair", RepairComponentsCsm)
+		r.Route("/reservations", func(r chi.Router) {
+			r.Post("/", CreateReservationsCsm)
+			r.Post("/release", ReleaseReservationsCsm)
+			r.Post("/remove", RemoveReservationsCsm)
+		})
+		r.Route("/service/reservations", func(r chi.Router) {
+			r.Post("/", CreateServiceReservationsCsm)
+			r.Post("/renew", RenewServiceReservationsCsm)
+			r.Post("/release", ReleaseServiceReservationsCsm)
+			r.Post("/check", CheckServiceReservationsCsm)
+		})
+	})
 }
