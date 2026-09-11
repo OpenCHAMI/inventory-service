@@ -11,6 +11,42 @@ type ComponentArray struct {
 	Components []*v1.ComponentSpec `json:"Components"`
 }
 
+// ComponentQuery is the SMD-compatible request body for
+// POST /hsm/v2/State/Components/Query. All filters are optional; an empty
+// query (or one with no ComponentIDs) matches every component.
+type ComponentQuery struct {
+	ComponentIDs []string `json:"ComponentIDs,omitempty"`
+	Partition    []string `json:"partition,omitempty"`
+	Type         []string `json:"type,omitempty"`
+	State        []string `json:"state,omitempty"`
+	Role         []string `json:"role,omitempty"`
+	SubRole      []string `json:"subrole,omitempty"`
+	Class        []string `json:"class,omitempty"`
+	Arch         []string `json:"arch,omitempty"`
+}
+
+// CompUpdate is the SMD-compatible request body for the bulk component state
+// PATCH endpoints (e.g. PATCH /hsm/v2/State/Components/BulkStateData). Only the
+// fields exercised by power-control's state write-back are modelled.
+type CompUpdate struct {
+	ComponentIDs   []string `json:"ComponentIDs"`
+	State          string   `json:"State,omitempty"`
+	Flag           string   `json:"Flag,omitempty"`
+	Enabled        *bool    `json:"Enabled,omitempty"`
+	SoftwareStatus string   `json:"SoftwareStatus,omitempty"`
+	Role           string   `json:"Role,omitempty"`
+	SubRole        string   `json:"SubRole,omitempty"`
+}
+
+// PowerMap is the SMD-compatible power-map object returned by
+// GET /hsm/v2/sysinfo/powermaps. inventory-service does not manage power maps,
+// so the collection is always empty, but the route must still return a valid
+// JSON array (power-control unmarshals the response body).
+type PowerMap struct {
+	ID        string   `json:"id"`
+	PoweredBy []string `json:"poweredBy,omitempty"`
+}
+
 type ComponentEndpointArray struct {
 	ComponentEndpoints []*v1.ComponentEndpointSpec `json:"ComponentEndpoints"`
 }

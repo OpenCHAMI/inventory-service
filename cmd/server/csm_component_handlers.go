@@ -7,6 +7,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -51,6 +52,80 @@ func GetComponentsCsm(w http.ResponseWriter, r *http.Request) {
 		componentsCsm.Components[i] = &c.Spec
 	}
 	respondJSON(w, http.StatusOK, componentsCsm)
+}
+
+// QueryComponentsCsm handles POST /hsm/v2/State/Components/Query. It mirrors
+// SMD's component query: the body carries optional filters and the response is
+// a ComponentArray. An empty body (or a query without ComponentIDs) matches
+// every component. Power-control relies on this endpoint to build its
+// in-memory component map.
+func QueryComponentsCsm(w http.ResponseWriter, r *http.Request) {
+	var query ComponentQuery
+	if err := json.NewDecoder(r.Body).Decode(&query); err != nil && err != io.EOF {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
+		return
+	}
+
+	respondComponentQuery(w, r, &query)
+}
+
+// QueryComponentByXnameCsm handles GET /hsm/v2/State/Components/Query/{xname}.
+// It returns a ComponentArray containing the single matching component.
+func QueryComponentByXnameCsm(w http.ResponseWriter, r *http.Request) {
+	xname := chi.URLParam(r, "xname")
+	if xname == "" {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("xname is required"))
+		return
+	}
+	respondComponentQuery(w, r, &ComponentQuery{ComponentIDs: []string{xname}})
+}
+
+func respondComponentQuery(w http.ResponseWriter, r *http.Request, query *ComponentQuery) {
+	components, err := plugins.Store.LoadAllComponents(r.Context())
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load components: %w", err))
+		return
+	}
+
+	// SMD treats the special xnames "all" and "s0" (whole system) as a
+	// wildcard matching every component; power-control queries with "all".
+	if containsFold(query.ComponentIDs, "all") || containsFold(query.ComponentIDs, "s0") {
+		query.ComponentIDs = nil
+	}
+
+	result := ComponentArray{Components: make([]*v1.ComponentSpec, 0, len(components))}
+	for i := range components {
+		spec := &components[i].Spec
+		if componentMatchesQuery(spec, query) {
+			result.Components = append(result.Components, spec)
+		}
+	}
+	respondJSON(w, http.StatusOK, result)
+}
+
+func componentMatchesQuery(spec *v1.ComponentSpec, query *ComponentQuery) bool {
+	if len(query.ComponentIDs) > 0 && !containsFold(query.ComponentIDs, spec.ID) {
+		return false
+	}
+	if len(query.Type) > 0 && !containsFold(query.Type, spec.Type) {
+		return false
+	}
+	if len(query.State) > 0 && !containsFold(query.State, spec.State) {
+		return false
+	}
+	if len(query.Role) > 0 && !containsFold(query.Role, spec.Role) {
+		return false
+	}
+	if len(query.SubRole) > 0 && !containsFold(query.SubRole, spec.SubRole) {
+		return false
+	}
+	if len(query.Class) > 0 && !containsFold(query.Class, spec.Class) {
+		return false
+	}
+	if len(query.Arch) > 0 && !containsFold(query.Arch, spec.Arch) {
+		return false
+	}
+	return true
 }
 
 // GetComponent returns a specific Component resource by UID
@@ -255,13 +330,56 @@ func UpdateComponentCsm(w http.ResponseWriter, r *http.Request) {
 	if err := events.PublishResourceUpdated(r.Context(), "Component", component.Metadata.UID, component.Metadata.Name, component, updateMetadata); err != nil {
 		// Log the error but don't fail the request - events are non-critical
 		fmt.Printf("Warning: Failed to publish resource updated event for Component %s: %v\n", component.Metadata.UID, err)
-
 	}
 
 	respondJSON(w, http.StatusOK, component.Spec)
 }
 
-// DeleteComponent deletes a Component resource
+// BulkStateDataCsm handles PATCH /hsm/v2/State/Components/BulkStateData. It
+// mirrors SMD's bulk State/Flag update: apply State (and Flag, defaulting to
+// OK) to every component named in ComponentIDs, then return 204. Power-control's
+// monitorHW loop uses this to write hardware-observed power states back to HSM.
+func BulkStateDataCsm(w http.ResponseWriter, r *http.Request) {
+	var update CompUpdate
+	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
+		return
+	}
+	if update.State == "" {
+		respondError(w, http.StatusBadRequest, fmt.Errorf("Missing State"))
+		return
+	}
+	flag := update.Flag
+	if flag == "" {
+		flag = "OK"
+	}
+	for _, id := range update.ComponentIDs {
+		component, err := plugins.Store.LoadComponentByID(r.Context(), id)
+		if err != nil && err != storage.ErrNotFound {
+			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to load component %s: %w", id, err))
+			return
+		}
+		if component == nil {
+			continue
+		}
+		component.Spec.State = update.State
+		component.Spec.Flag = flag
+		component.Metadata.UpdatedAt = time.Now()
+		if err := plugins.Store.SaveComponent(r.Context(), component); err != nil {
+			respondError(w, http.StatusInternalServerError, fmt.Errorf("failed to save component %s: %w", id, err))
+			return
+		}
+	}
+	respondJSON(w, http.StatusNoContent, nil)
+}
+
+// GetPowerMapsCsm handles GET /hsm/v2/sysinfo/powermaps. inventory-service does
+// not manage power maps, so it returns an empty JSON array — matching SMD's
+// response shape so power-control can unmarshal it during a transition.
+func GetPowerMapsCsm(w http.ResponseWriter, r *http.Request) {
+	respondJSON(w, http.StatusOK, []PowerMap{})
+}
+
 func DeleteComponentCsm(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
