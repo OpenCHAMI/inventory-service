@@ -41,12 +41,17 @@ def discover_hardware(request):
         if not json_files:
             pytest.fail(f"No JSON files found in {discovery_json_dir}")
         for json_file in json_files:
-            print(f"POSTing {json_file} to RedfishEndpoints")
             with open(json_file) as f:
                 payload = json.load(f)
-            response = requests.post(f"{smd_base_url}/v2/Inventory/RedfishEndpoints", json=payload)
+            # Seed via PUT /{xname} (forceUpdate=true in SMD). The bulk POST
+            # collection runs discovery with forceUpdate=false and 409s on the
+            # duplicate Manager MAC, because SMD v2.20.5 inserts the manager
+            # EthernetInterface twice during V2 discovery.
+            xname = payload["ID"]
+            print(f"PUTting {json_file} to RedfishEndpoints/{xname}")
+            response = requests.put(f"{smd_base_url}/v2/Inventory/RedfishEndpoints/{xname}", json=payload)
             if not response.ok:
-                response_failure("POST", response)
+                response_failure("PUT", response)
 
     if is_redfish_discovery_enabled:
         bmc_nodes = [ "x0c0s1b0", "x0c0s2b0", "x0c0s3b0", "x0c0s4b0" ]

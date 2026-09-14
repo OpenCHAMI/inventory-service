@@ -158,6 +158,31 @@ func (s *EntStorage) LoadGroupByLabel(ctx context.Context, label string) (*v1.Gr
 	return storage.LoadGroupByLabel(ctx, label)
 }
 
+func (s *EntStorage) LoadAllLocks(ctx context.Context) ([]*v1.Lock, error) {
+	return storage.LoadAllLocks(ctx)
+}
+
+func (s *EntStorage) LoadLock(ctx context.Context, uid string) (*v1.Lock, error) {
+	return storage.LoadLock(ctx, uid)
+}
+
+func (s *EntStorage) LoadLockByID(ctx context.Context, id string) (*v1.Lock, error) {
+	return storage.LoadLockByID(ctx, id)
+}
+
+func (s *EntStorage) SaveLock(ctx context.Context, resource *v1.Lock) error {
+	resource.ID = resource.Spec.ID
+	return storage.SaveLock(ctx, resource)
+}
+
+func (s *EntStorage) DeleteLock(ctx context.Context, uid string) error {
+	return storage.DeleteLock(ctx, uid)
+}
+
+func (s *EntStorage) DeleteLockByID(ctx context.Context, id string) error {
+	return storage.DeleteLockByID(ctx, id)
+}
+
 func (s *EntStorage) LoadHardwareByID(ctx context.Context, id string) (*v1.Hardware, error) {
 	return storage.LoadHardwareByID(ctx, id)
 }

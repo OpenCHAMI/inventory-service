@@ -22,4 +22,14 @@ type StorageExtras interface {
 	LoadHardwareByID(ctx context.Context, id string) (*v1.Hardware, error)
 	LoadServiceEndpointsByRedfishType(ctx context.Context, redfishType string) ([]*v1.ServiceEndpoint, error)
 	LoadServiceEndpointsByRedfishTypeAndID(ctx context.Context, redfishType string, redfishID string) ([]*v1.ServiceEndpoint, error)
+
+	// Lock records back the SMD-compatible /hsm/v2/locks endpoints. Locks are
+	// keyed by component xname (Spec.ID) and are not exposed as a native REST
+	// resource.
+	LoadAllLocks(ctx context.Context) ([]*v1.Lock, error)
+	LoadLock(ctx context.Context, uid string) (*v1.Lock, error)
+	LoadLockByID(ctx context.Context, id string) (*v1.Lock, error)
+	SaveLock(ctx context.Context, resource *v1.Lock) error
+	DeleteLock(ctx context.Context, uid string) error
+	DeleteLockByID(ctx context.Context, id string) error
 }

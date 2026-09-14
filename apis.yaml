@@ -11,3 +11,4 @@ groups:
         - ServiceEndpoint
         - Group
         - Hardware
+        - Lock

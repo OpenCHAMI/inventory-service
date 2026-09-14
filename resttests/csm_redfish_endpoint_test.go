@@ -279,16 +279,52 @@ func TestCsmRedfishEndpointLifecycle(t *testing.T) {
 	}
 }
 
-// TestCreateRedfishEndpointCsmDuplicateID verifies that POST .../RedfishEndpoints
-// rejects a redfish endpoint whose ID already exists, enforcing resource_id uniqueness.
+// findNativeREByID returns the native RedfishEndpoint resource (with metadata)
+// whose Spec.ID matches id, or ok=false if none exists.
+func findNativeREByID(t *testing.T, id string) (redfishEndpointResponse, bool) {
+	t.Helper()
+	resp := doRequest(t, http.MethodGet, "/redfishendpoints", nil)
+	requireStatus(t, resp, http.StatusOK)
+	var list []redfishEndpointResponse
+	decodeJSON(t, resp, &list)
+	for _, re := range list {
+		if re.Spec.ID == id {
+			return re, true
+		}
+	}
+	return redfishEndpointResponse{}, false
+}
+
+// TestCreateRedfishEndpointCsmDuplicateID verifies that re-POSTing an existing
+// RedfishEndpoint ID is an idempotent upsert (matching SMD): it succeeds, updates
+// the spec, and preserves the resource's UID and CreatedAt.
 func TestCreateRedfishEndpointCsmDuplicateID(t *testing.T) {
 	id := "x3000c0s13b0"
 	csmRECreate(t, newCsmRedfishEndpoint(id, "bmc-dup.example.com"))
 	defer csmREDelete(t, id)
 
-	resp := doRequest(t, http.MethodPost, csmREBase, newCsmRedfishEndpoint(id, "bmc-dup.example.com"))
+	first, ok := findNativeREByID(t, id)
+	if !ok {
+		t.Fatalf("expected RedfishEndpoint %s to exist after first POST", id)
+	}
+
+	resp := doRequest(t, http.MethodPost, csmREBase, newCsmRedfishEndpoint(id, "bmc-dup2.example.com"))
 	defer resp.Body.Close()
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		t.Errorf("expected non-2xx on duplicate redfish endpoint ID %q, got HTTP %d", id, resp.StatusCode)
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		t.Fatalf("expected 2xx on idempotent re-POST of redfish endpoint ID %q, got HTTP %d", id, resp.StatusCode)
+	}
+
+	second, ok := findNativeREByID(t, id)
+	if !ok {
+		t.Fatalf("expected RedfishEndpoint %s to still exist after re-POST", id)
+	}
+	if second.Metadata.UID != first.Metadata.UID {
+		t.Errorf("expected UID preserved across upsert: was %q, got %q", first.Metadata.UID, second.Metadata.UID)
+	}
+	if second.Metadata.CreatedAt != first.Metadata.CreatedAt {
+		t.Errorf("expected CreatedAt preserved across upsert: was %q, got %q", first.Metadata.CreatedAt, second.Metadata.CreatedAt)
+	}
+	if second.Spec.Hostname != "bmc-dup2.example.com" {
+		t.Errorf("expected Hostname updated to %q, got %q", "bmc-dup2.example.com", second.Spec.Hostname)
 	}
 }

@@ -26,7 +26,7 @@ EOF
 
 SCRIPT_DIR=$( dirname "$0" )
 
-SMD_IMAGE=ghcr.io/openchami/smd:v2.20.3
+SMD_IMAGE=ghcr.io/openchami/smd:v2.20.5
 INVENTORY_SERVICE_IMAGE=inventory-service:latest
 ENABLE_DISCOVERY=false
 
