@@ -10,11 +10,24 @@ on:
       - 'v*.*.*'
   workflow_dispatch:
 
-permissions:
-  contents: write
-  packages: write
+permissions: write-all # Necessary for provenance attestation, gpg signing, and release upload
 
 jobs:
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      rpm-unsigned: ${{ steps.names.outputs.rpm-unsigned }}
+      rpm-signed:   ${{ steps.names.outputs.rpm-signed }}
+      keys-public:  ${{ steps.names.outputs.keys-public }}
+    steps:
+      - id: names
+        run: |
+          {
+            echo "rpm-unsigned=rpms-unsigned"
+            echo "rpm-signed=rpms-signed"
+            echo "keys-public=gpg-public-keys"
+          } >> "$GITHUB_OUTPUT"
+
   goreleaser:
     runs-on: ubuntu-latest
     steps:
@@ -56,3 +69,27 @@ jobs:
           args: ${{ github.ref_type == 'tag' && 'release --clean' || 'release --clean --snapshot' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  rpmbuild:
+    needs: [config, goreleaser]
+    uses: OpenCHAMI/github-actions/.github/workflows/build-rpm-quadlet.yml@v3.7
+    secrets: inherit
+    with:
+      artifact-name-unsigned-rpms: ${{ needs.config.outputs.rpm-unsigned }}
+
+  rpmsign:
+    needs: [config, rpmbuild]
+    uses: OpenCHAMI/github-actions/.github/workflows/gpg-sign-artifacts.yml@v3.7
+    secrets: inherit
+    with:
+      artifact-name-unsigned-rpms: ${{ needs.config.outputs.rpm-unsigned }}
+      artifact-name-signed-rpms:   ${{ needs.config.outputs.rpm-signed }}
+      artifact-name-public-keys:   ${{ needs.config.outputs.keys-public }}
+
+  release:
+    needs: [config, rpmsign]
+    uses: OpenCHAMI/github-actions/.github/workflows/release-signed-artifacts.yml@v3.7
+    secrets: inherit
+    with:
+      artifact-name-signed-rpms:  ${{ needs.config.outputs.rpm-signed }}
+      artifact-name-public-keys:  ${{ needs.config.outputs.keys-public }}
