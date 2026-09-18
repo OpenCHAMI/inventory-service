@@ -14,7 +14,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.52
 	github.com/openchami/fabrica v0.4.9
-	github.com/openchami/tokensmith v0.4.1
+	github.com/openchami/tokensmith v0.4.2
 	github.com/rs/zerolog v1.35.1
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
